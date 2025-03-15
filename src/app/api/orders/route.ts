@@ -6,7 +6,7 @@ import { createOrder } from '@/services/printful';
 import { authOptions } from '@/lib/auth';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2023-10-16', // aktualizujte podle nejnovější verze
+  apiVersion: '2025-02-24.acacia', // aktualizujte podle nejnovější verze
 });
 
 const prisma = new PrismaClient();
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     // 2. Vypočítat celkovou cenu
     let total = 0;
     const orderItems = items.map((item: any) => {
-      const variant = variants.find(v => v.id === item.variantId);
+      const variant = variants.find(( v : any) => v.id === item.variantId);
       if (!variant) throw new Error('Varianta nenalezena');
       
       const itemTotal = variant.price * item.quantity;
@@ -110,75 +110,3 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// src/app/api/orders/[id]/fulfill/route.ts
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const orderId = params.id;
-    
-    // 1. Načíst objednávku z databáze
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
-      include: {
-        items: {
-          include: {
-            variant: true
-          }
-        },
-        shippingInfo: true
-      }
-    });
-    
-    if (!order) {
-      return NextResponse.json(
-        { message: `Order ${orderId} not found` },
-        { status: 404 }
-      );
-    }
-    
-    // 2. Vytvořit data pro Printful API
-    const printfulOrderData = {
-      recipient: {
-        name: order.shippingInfo?.name,
-        address1: order.shippingInfo?.address1,
-        address2: order.shippingInfo?.address2 || undefined,
-        city: order.shippingInfo?.city,
-        state_code: order.shippingInfo?.state || undefined,
-        country_code: order.shippingInfo?.country,
-        zip: order.shippingInfo?.zip,
-        phone: order.shippingInfo?.phone || undefined,
-        email: order.shippingInfo?.email
-      },
-      items: order.items.map(item => ({
-        variant_id: parseInt(item.variant.printfulVariantId),
-        quantity: item.quantity
-      }))
-    };
-    
-    // 3. Odeslat objednávku do Printful
-    const printfulResponse = await createOrder(printfulOrderData);
-    
-    // 4. Aktualizovat objednávku v databázi
-    const updatedOrder = await prisma.order.update({
-      where: { id: orderId },
-      data: {
-        printfulOrderId: printfulResponse.id.toString(),
-        status: 'processing'
-      }
-    });
-    
-    return NextResponse.json({
-      order: updatedOrder,
-      printfulOrder: printfulResponse
-    });
-    
-  } catch (error) {
-    console.error('Error fulfilling order with Printful:', error);
-    return NextResponse.json(
-      { message: 'Chyba při zpracování objednávky' },
-      { status: 500 }
-    );
-  }
-}

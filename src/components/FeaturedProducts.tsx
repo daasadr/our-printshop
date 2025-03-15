@@ -4,13 +4,16 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
-import { Product, Variant, Design } from '@prisma/client';
+import { Product, Variant, Design } from '@/types/prisma';
+
 
 // Typ pro produkt s variantami a designy
 interface ProductWithDetails extends Product {
   variants: Variant[];
   designs: Design[];
 }
+
+
 
 const FeaturedProducts: React.FC = () => {
   const [products, setProducts] = useState<ProductWithDetails[]>([]);

@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 
+
 const PRINTFUL_API_URL = 'https://api.printful.com';
 const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY;
 
@@ -23,7 +24,7 @@ export async function getProducts() {
 }
 
 // Vytvoření nového produktu s designem
-export async function createProduct(productData) {
+export async function createProduct(productData : PrintfulProductData) {
   const response = await fetch(`${PRINTFUL_API_URL}/store/products`, {
     method: 'POST',
     headers: getHeaders(),
@@ -38,7 +39,7 @@ export async function createProduct(productData) {
 }
 
 // Nahrání designu
-export async function uploadDesign(file) {
+export async function uploadDesign(file : File) {
   const formData = new FormData();
   formData.append('file', file);
   
@@ -58,7 +59,7 @@ export async function uploadDesign(file) {
 }
 
 // Vytvoření objednávky
-export async function createOrder(orderData) {
+export async function createOrder(orderData : PrinfulOrderData) {
   const response = await fetch(`${PRINTFUL_API_URL}/orders`, {
     method: 'POST',
     headers: getHeaders(),
@@ -73,7 +74,7 @@ export async function createOrder(orderData) {
 }
 
 // Získání informací o objednávce
-export async function getOrder(orderId) {
+export async function getOrder(orderId : string) {
   const response = await fetch(`${PRINTFUL_API_URL}/orders/${orderId}`, {
     headers: getHeaders()
   });
@@ -86,7 +87,7 @@ export async function getOrder(orderId) {
 }
 
 // Sledování stavu zásob
-export async function getProductVariantStock(variantId) {
+export async function getProductVariantStock(variantId : number | string) {
   const response = await fetch(`${PRINTFUL_API_URL}/store/variants/${variantId}`, {
     headers: getHeaders()
   });

@@ -1,3 +1,7 @@
+"use client" ;
+
+import Link from 'next/link';
+
 const Footer: React.FC = () => {
     return (
       <footer className="bg-gray-100 pt-12 pb-8">

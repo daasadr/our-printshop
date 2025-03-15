@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Product, Variant, Design } from '@prisma/client';
+import { Product, Variant, Design } from '@/types/prisma';;
 import { useCart } from '@/hooks/useCart';
 
 interface ProductDetailProps {
