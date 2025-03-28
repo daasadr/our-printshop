@@ -1,4 +1,6 @@
 import fetch from 'node-fetch';
+import { FileWithPath } from 'react-dropzone';
+import { PrintfulFileResponse, PrintfulProductResponse, PrintfulProductData, PrintfulOrderData } from '@/types/printful';
 
 
 const PRINTFUL_API_URL = 'https://api.printful.com';
@@ -59,7 +61,7 @@ export async function uploadDesign(file : File) {
 }
 
 // Vytvoření objednávky
-export async function createOrder(orderData : PrinfulOrderData) {
+export async function createOrder(orderData : PrintfulOrderData) {
   const response = await fetch(`${PRINTFUL_API_URL}/orders`, {
     method: 'POST',
     headers: getHeaders(),

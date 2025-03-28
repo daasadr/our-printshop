@@ -24,6 +24,7 @@ model Product {
   printfulId      String    @unique
   printfulSync    Boolean   @default(false)
   isActive        Boolean   @default(true)
+  category        String    @default("other")
   variants        Variant[]
   designs         Design[]
   createdAt       DateTime  @default(now())

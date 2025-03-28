@@ -39,7 +39,7 @@ const Header: React.FC = () => {
           <Link href="/" className="flex-shrink-0">
             <div className="h-10 w-32 relative">
               {/* Zde by bylo vaše logo */}
-              <div className="font-bold text-xl">VášBrand</div>
+              <div className="font-bold text-xl">HappyWilderness</div>
             </div>
           </Link>
 
