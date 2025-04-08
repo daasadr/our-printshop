@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { ProductWithRelations, FormattedProduct, ProductQueryInput } from '@/types/prisma';
+import { ProductWithRelations, FormattedProduct } from '@/types/prisma';
+import { convertEurToCzk } from '@/utils/currency';
 
 const prisma = new PrismaClient();
 
@@ -9,10 +10,10 @@ export async function GET(req: NextRequest) {
     const url = new URL(req.url);
     const limit = parseInt(url.searchParams.get('limit') || '4'); // Výchozí limit je 4 produkty
     
-    // Vytvoření dotazu s explicitním typem
-    const productsQuery: ProductQueryInput = {
+    // Získání nejnovějších produktů z databáze
+    const latestProducts = await prisma.product.findMany({
       where: {
-        isActive: true
+        isActive: true,
       },
       include: {
         variants: {
@@ -29,20 +30,25 @@ export async function GET(req: NextRequest) {
       orderBy: {
         createdAt: 'desc', // Řazení podle data vytvoření (nejnovější první)
       },
-    };
-
-    // Použití správného typu pro produkt s jeho relacemi
-    const latestProducts = await prisma.product.findMany(productsQuery) as ProductWithRelations[];
+    }) as ProductWithRelations[];
 
     // Formátování dat pro klienta
-    const formattedProducts: FormattedProduct[] = latestProducts.map(product => ({
-      id: product.id,
-      title: product.title,
-      description: product.description,
-      previewUrl: product.designs[0]?.previewUrl || '',
-      price: product.variants[0]?.price || 0,
-      variants: product.variants,
-      designs: product.designs
+    const formattedProducts: FormattedProduct[] = await Promise.all(latestProducts.map(async product => {
+      // Převedeme ceny všech variant
+      const convertedVariants = await Promise.all(product.variants.map(async variant => ({
+        ...variant,
+        price: await convertEurToCzk(variant.price)
+      })));
+
+      return {
+        id: product.id,
+        title: product.title,
+        description: product.description,
+        previewUrl: product.designs[0]?.previewUrl || '',
+        price: product.variants[0]?.price ? await convertEurToCzk(product.variants[0].price) : 0,
+        variants: convertedVariants,
+        designs: product.designs
+      };
     }));
 
     return NextResponse.json(formattedProducts);

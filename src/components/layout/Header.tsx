@@ -72,9 +72,9 @@ const Header: React.FC = () => {
               O nás
             </Link>
             <Link
-              href="/contact"
+              href="/kontakt"
               className={`text-sm font-medium ${
-                isActive('/contact') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
+                isActive('/kontakt') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
               }`}
             >
               Kontakt
@@ -136,9 +136,9 @@ const Header: React.FC = () => {
                 O nás
               </Link>
               <Link
-                href="/contact"
-                className={`text-base ${
-                  isActive('/contact') ? 'text-blue-600 font-medium' : 'text-gray-700'
+                href="/kontakt"
+                className={`block px-3 py-2 rounded-md text-base font-medium ${
+                  isActive('/kontakt') ? 'text-blue-600 font-medium' : 'text-gray-700'
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >

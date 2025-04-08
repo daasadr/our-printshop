@@ -11,8 +11,8 @@ const inter = Inter({ subsets: ['latin', 'latin-ext'] });
 // Metadata stránky
 export const metadata: Metadata = {
   title: {
-    default: 'VášBrand | Originální oblečení s autorskými potisky',
-    template: '%s | VášBrand'
+    default: 'Wild Shop | Originální oblečení s autorskými potisky',
+    template: '%s | Wild Shop'
   },
   description: 'Objevte unikátní kolekci oblečení s autorskými potisky. Každý kus je vyroben na míru podle vašich požadavků.',
   keywords: ['autorské potisky', 'originální oblečení', 'print on demand', 'český design', 'trička s potiskem'],
@@ -22,15 +22,15 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'cs_CZ',
     url: 'https://www.vasbrand.cz',
-    siteName: 'VášBrand',
-    title: 'VášBrand | Originální oblečení s autorskými potisky',
+    siteName: 'Wild Shop',
+    title: 'Wild Shop | Originální oblečení s autorskými potisky',
     description: 'Objevte unikátní kolekci oblečení s autorskými potisky. Každý kus je vyroben na míru podle vašich požadavků.',
     images: [
       {
         url: '/images/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'VášBrand - Originální oblečení s autorskými potisky'
+        alt: 'Wild Shop - Originální oblečení s autorskými potisky'
       }
     ]
   }

@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
-import { ProductWithRelations, FormattedProduct } from '@/types/prisma';
+import { FormattedProduct } from '@/types/prisma';
+import { formatPriceCZK } from '@/utils/currency';
 
 const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
   const [products, setProducts] = useState<FormattedProduct[]>([]);
@@ -35,17 +36,16 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
   }, [limit]);
 
   const handleAddToCart = (product: FormattedProduct) => {
-    // Vybereme první variantu produktu pro přidání do košíku
-    const variant = product.variants?.[0];
-    if (!variant) return;
-
-    addToCart({
-      variantId: variant.id,
-      quantity: 1,
-      name: `${product.title} - ${variant.name}`,
-      price: variant.price,
-      image: product.designs?.[0]?.previewUrl || ''
-    });
+    // Přidáme produkt do košíku pouze pokud má varianty
+    if (product.variants && product.variants.length > 0) {
+      addToCart({
+        variantId: product.variants[0].id,
+        quantity: 1,
+        name: `${product.title}`,
+        price: product.price,
+        image: product.previewUrl || ''
+      });
+    }
   };
 
   if (isLoading) {
@@ -68,13 +68,13 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {products.map((product) => (
-        <div key={product.id} className="group relative">
-          <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
-            {product.designs && product.designs.length > 0 && product.designs[0]?.previewUrl ? (
+        <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
+          <div className="aspect-square overflow-hidden">
+            {product.previewUrl ? (
               <Link href={`/products/${product.id}`}>
                 <div className="relative w-full h-full">
                   <Image
-                    src={product.designs[0].previewUrl}
+                    src={product.previewUrl}
                     alt={product.title}
                     fill
                     className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
@@ -83,37 +83,45 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
               </Link>
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
-                No image
+                Obrázek produktu
               </div>
             )}
           </div>
          
-          <div className="mt-4">
-            <h3 className="text-sm font-medium text-gray-900">
-              <Link href={`/products/${product.id}`}>
-                <span className="absolute inset-0" aria-hidden="true" />
+          <div className="p-4">
+            <Link href={`/products/${product.id}`}>
+              <h3 className="text-sm font-medium text-gray-900 hover:text-blue-600">
                 {product.title}
-              </Link>
-            </h3>
-            <p className="mt-1 text-sm text-gray-500">
-              {product.variants && product.variants.length > 0 && 
-                `${product.variants.length} variant${product.variants.length > 1 ? 'y' : 'a'}`}
+              </h3>
+            </Link>
+            
+            <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+              {product.description}
             </p>
-            <p className="mt-2 text-sm font-medium text-gray-900">
-              {product.variants && product.variants[0] ? 
-                `${product.variants[0].price.toFixed(2)} Kč` : 
-                'Cena není k dispozici'}
-            </p>
-          </div>
-         
-          <div className="mt-4">
-            <button
-              onClick={() => handleAddToCart(product)}
-              className="w-full py-2 px-4 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
-              disabled={!product.variants || product.variants.length === 0}
-            >
-              Do košíku
-            </button>
+            
+            <div className="mt-4 flex justify-between items-center">
+              {product.price > 0 ? (
+                <p className="text-lg font-medium text-gray-900">
+                  {formatPriceCZK(product.price)}
+                </p>
+              ) : (
+                <p className="text-sm text-gray-500">
+                  Cena není k dispozici
+                </p>
+              )}
+              
+              <button
+                onClick={() => handleAddToCart(product)}
+                className={`px-3 py-1.5 ${
+                  product.variants && product.variants.length > 0 
+                    ? 'bg-blue-600 hover:bg-blue-700' 
+                    : 'bg-gray-400 cursor-not-allowed'
+                } text-white text-sm font-medium rounded-md transition-colors`}
+                disabled={!product.variants || product.variants.length === 0}
+              >
+                Do košíku
+              </button>
+            </div>
           </div>
         </div>
       ))}
@@ -167,25 +175,26 @@ const ProductPlaceholders: React.FC = () => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {placeholders.map((product) => (
-        <div key={product.id} className="group relative">
-          <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
+        <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md">
+          <div className="aspect-square overflow-hidden">
             <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
               Obrázek produktu
             </div>
           </div>
          
-          <div className="mt-4">
+          <div className="p-4">
             <h3 className="text-sm font-medium text-gray-900">{product.title}</h3>
             <p className="mt-1 text-sm text-gray-500">Více variant</p>
-            <p className="mt-2 text-sm font-medium text-gray-900">{product.price.toFixed(2)} Kč</p>
-          </div>
-         
-          <div className="mt-4">
-            <button
-              className="w-full py-2 px-4 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Do košíku
-            </button>
+            <div className="mt-4 flex justify-between items-center">
+              <p className="text-lg font-medium text-gray-900">
+                {formatPriceCZK(product.price)}
+              </p>
+              <button
+                className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
+              >
+                Do košíku
+              </button>
+            </div>
           </div>
         </div>
       ))}

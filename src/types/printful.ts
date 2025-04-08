@@ -62,3 +62,5 @@ export interface PrintfulFileResponse {
       tax?: string;
     };
   }
+
+  

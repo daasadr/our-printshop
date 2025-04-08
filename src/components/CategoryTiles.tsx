@@ -7,12 +7,13 @@ interface Category {
   name: string;
   displayName: string;
   imagePlaceholder: string;
-  image?: string;
+  image: string;
 }
 
 interface CategoryTilesProps {
   title?: string;
   showTitle?: boolean;
+  titleClassName?: string;
   categories: Category[];
   className?: string;
 }
@@ -51,43 +52,38 @@ const defaultCategories: Category[] = [
 const CategoryTiles: React.FC<CategoryTilesProps> = ({
   title = "Naše kategorie",
   showTitle = true,
+  titleClassName = "",
   categories = defaultCategories,
   className = ""
 }) => {
   return (
-    <div className={`py-8 ${className}`}>
-      <div className="container mx-auto px-4">
-        {showTitle && (
-          <h2 className="text-3xl font-bold text-center mb-8">{title}</h2>
-        )}
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories.map((category) => (
-            <Link key={category.id} href={`/products?category=${category.name}`} className="group">
-              <div className="relative overflow-hidden rounded-lg aspect-square shadow-md hover:shadow-lg transition-all">
-                <div className="absolute inset-0 bg-gray-200">
-                  {category.image ? (
-                    <Image
-                      src={category.image}
-                      alt={category.displayName}
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-300 text-gray-500">
-                      {category.imagePlaceholder}
-                    </div>
-                  )}
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-2">{category.displayName}</h3>
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+    <div className={`container mx-auto px-4 ${className}`}>
+      {showTitle && (
+        <h2 className={`text-3xl font-bold text-center mb-6 ${titleClassName}`}>{title}</h2>
+      )}
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {categories.map((category) => (
+          <Link
+            key={category.id}
+            href={`/products?category=${category.name}`}
+            className="group relative rounded-lg overflow-hidden aspect-[4/3] bg-black/40 backdrop-blur-sm 
+                     transition-transform hover:scale-105 hover:shadow-xl"
+          >
+            <Image
+              src={category.image}
+              alt={category.displayName}
+              fill
+              className="object-cover group-hover:opacity-75 transition-opacity"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 p-6">
+              <h3 className="text-xl font-semibold text-white">
+                {category.displayName}
+              </h3>
+            </div>
+          </Link>
+        ))}
       </div>
     </div>
   );

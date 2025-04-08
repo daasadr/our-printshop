@@ -1,23 +1,25 @@
 import React from 'react';
 import Image from 'next/image';
 
+import jungleBgImage from '../../../public/images/jungle-bg.jpg'; 
+
 export const metadata = {
-  title: 'Náš příběh | VášBrand',
-  description: 'Příběh a filozofie našeho e-shopu s originálními autorskými potisky.'
+  title: 'wild shop',
+  description: 'Příběh a filozofie našeho e-shopu.'
 };
 
 export default function AboutPage() {
   return (
     <div className="relative min-h-screen">
-      {/* Pozadí - obrázek džungle */}
-      <div className="absolute inset-0 z-0">
-        <Image 
-          src="/images/jungle-bg.jpg" 
-          alt="Džungle" 
-          fill 
-          className="object-cover"
-          priority
-        />
+    {/* Pozadí - obrázek džungle */}
+    <div className="absolute inset-0 z-0">
+      <Image
+        src={jungleBgImage} // Použití importovaného obrázku
+        alt="Džungle"
+        fill
+        className="object-cover"
+        priority
+      />
         {/* Překrytí pro lepší čitelnost textu */}
         <div className="absolute inset-0 bg-black/50" />
       </div>

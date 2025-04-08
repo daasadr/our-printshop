@@ -1,16 +1,25 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import LatestProducts from '@/components/LatestProducts';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import CategoryTiles from '@/components/CategoryTiles';
 
 export default function Home() {
   return (
-    <div>
+    <div className="bg-gradient-to-b from-emerald-50 via-amber-50 to-teal-50">
       {/* Hero sekce */}
-      <section className="relative bg-gray-900 text-white">
-        <div className="absolute inset-0 z-0 opacity-60">
-          {/* Overlay obrázku - můžete přidat vlastní obrázek */}
-          <div className="w-full h-full bg-gradient-to-r from-blue-900 to-purple-900" />
+      <section className="relative min-h-[600px] flex items-center text-white overflow-hidden">
+        {/* Obrázek na pozadí */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/tropical-jungle.jpg"
+            alt="Tropical Jungle Background"
+            fill
+            className="object-cover"
+            priority
+          />
+          {/* Tmavý overlay pro lepší čitelnost textu */}
+          <div className="absolute inset-0 bg-black/40" />
         </div>
         
         <div className="container mx-auto px-4 py-24 md:py-32 relative z-10">
@@ -37,49 +46,53 @@ export default function Home() {
         </div>
       </section>
 
-      <CategoryTiles categories={[
-  {
-    id: 'home-decor',
-    name: 'home-decor',
-    displayName: 'Domov a dekorace',
-    imagePlaceholder: 'Domov',
-    image: '/images/categories/home-decor.jpg'
-  },
-  {
-    id: 'women',
-    name: 'women',
-    displayName: 'Stylově pro dámy',
-    imagePlaceholder: 'Ženy',
-    image: '/images/categories/women.jpg'
-  },
-  {
-    id: 'men',
-    name: 'men',
-    displayName: 'Pánská kolekce',
-    imagePlaceholder: 'Muži',
-    image: '/images/categories/men.jpg'
-  },
-  {
-    id: 'kids',
-    name: 'kids',
-    displayName: 'Pro malé objevitele',
-    imagePlaceholder: 'Děti',
-    image: '/images/categories/kids.jpg'
-  }
-]} />
-
-    
-
-      {/* Nejnovější produkty */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Nejnovější produkty</h2>
-          <LatestProducts limit = {4}/>
+      {/* Kategorie a nejnovější produkty s khaki gradientem */}
+      <div className="bg-gradient-to-br from-[#1a2a1b] via-[#3a4a3b] to-[#1a2a1b] text-white py-16">
+        {/* Kategorie */}
+        <div className="mb-24">
+          <CategoryTiles categories={[
+            {
+              id: 'home-decor',
+              name: 'home-decor',
+              displayName: 'Domov a dekorace',
+              imagePlaceholder: 'Domov',
+              image: '/images/home.jpg'
+            },
+            {
+              id: 'women',
+              name: 'women',
+              displayName: 'Stylově pro dámy',
+              imagePlaceholder: 'Ženy',
+              image: '/images/women.jpeg'
+            },
+            {
+              id: 'men',
+              name: 'men',
+              displayName: 'Pánská kolekce',
+              imagePlaceholder: 'Muži',
+              image: '/images/men.jpg'
+            },
+            {
+              id: 'kids',
+              name: 'kids',
+              displayName: 'Pro malé objevitele',
+              imagePlaceholder: 'Děti',
+              image: '/images/kids.jpeg'
+            }
+          ]} />
         </div>
-      </section>
 
-      {/* Výzva k akci */}
-      <section className="py-16 bg-blue-600 text-white">
+        {/* Nejnovější produkty */}
+        <div>
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center mb-12">Nejnovější produkty</h2>
+            <LatestProducts limit={4} />
+          </div>
+        </div>
+      </div>
+
+      {/* Výzva k akci s vlastním gradientem */}
+      <section className="py-16 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">Připraveni vyjádřit svůj styl?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
@@ -87,25 +100,25 @@ export default function Home() {
           </p>
           <Link 
             href="/products" 
-            className="inline-block px-8 py-4 bg-white text-blue-600 font-medium rounded-md hover:bg-gray-100 transition-colors"
+            className="inline-block px-8 py-4 bg-white text-emerald-600 font-medium rounded-md hover:bg-gray-100 transition-colors"
           >
             Nakupovat teď
           </Link>
         </div>
       </section>
 
-      {/* Přihlášení k odběru novinek */}
-      <section className="py-16 bg-gray-50">
+      {/* Newsletter signup s khaki gradientem */}
+      <div className="bg-gradient-to-br from-[#1a2a1b] via-[#3a4a3b] to-[#1a2a1b] text-white py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-3xl font-bold mb-4">Zůstaňte v obraze</h2>
-            <p className="text-gray-600 mb-8">
+            <p className="text-gray-200 mb-8">
               Přihlaste se k odběru novinek a buďte první, kdo se dozví o nových designech a speciálních nabídkách.
             </p>
             <NewsletterSignup />
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 }

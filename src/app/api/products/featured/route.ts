@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { ProductWithRelations, FormattedProduct, ProductQueryInput } from '@/types/prisma';
+import { ProductWithRelations, FormattedProduct } from '@/types/prisma';
+import { convertEurToCzk } from '@/utils/currency';
 
 const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest) {
   try {
-    // Vytvoření dotazu s explicitním typem
-    const productsQuery: ProductQueryInput = {
+    // Získání doporučených produktů z databáze
+    const featuredProducts = await prisma.product.findMany({
       where: {
-        isActive: true
+        isActive: true,
       },
       include: {
         variants: {
@@ -26,20 +27,25 @@ export async function GET(req: NextRequest) {
       orderBy: {
         createdAt: 'desc', // Nejnovější produkty
       },
-    };
-
-    // Použití správného typu pro produkt s jeho relacemi
-    const featuredProducts = await prisma.product.findMany(productsQuery) as ProductWithRelations[];
+    }) as ProductWithRelations[];
 
     // Formátování dat pro klienta
-    const formattedProducts: FormattedProduct[] = featuredProducts.map(product => ({
-      id: product.id,
-      title: product.title,
-      description: product.description,
-      previewUrl: product.designs[0]?.previewUrl || '',
-      price: product.variants[0]?.price || 0,
-      variants: product.variants,
-      designs: product.designs
+    const formattedProducts: FormattedProduct[] = await Promise.all(featuredProducts.map(async product => {
+      // Převedeme ceny všech variant
+      const convertedVariants = await Promise.all(product.variants.map(async variant => ({
+        ...variant,
+        price: await convertEurToCzk(variant.price)
+      })));
+
+      return {
+        id: product.id,
+        title: product.title,
+        description: product.description,
+        previewUrl: product.designs[0]?.previewUrl || '',
+        price: product.variants[0]?.price ? await convertEurToCzk(product.variants[0].price) : 0,
+        variants: convertedVariants,
+        designs: product.designs
+      };
     }));
 
     return NextResponse.json(formattedProducts);

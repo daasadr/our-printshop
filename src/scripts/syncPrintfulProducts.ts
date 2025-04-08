@@ -1,134 +1,345 @@
 import { PrismaClient } from '@prisma/client';
-import { getProducts } from '@/services/printful';
+import fetch from 'node-fetch';
+import { convertEurToCzk } from '../utils/currency';
 
 const prisma = new PrismaClient();
+const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY;
 
-interface PrintfulVariant {
-  id: number;
-  product_id: number;
-  name: string;
-  size?: string;
-  color?: string;
-  retail_price: string;
-  [key: string]: any;
+if (!PRINTFUL_API_KEY) {
+  console.error('Chybí PRINTFUL_API_KEY v proměnných prostředí');
+  process.exit(1);
 }
 
-interface PrintfulProduct {
+// Definice rozhraní pro Printful API
+interface PrintfulVariant {
   id: number;
   name: string;
-  description?: string;
-  sync_variants: PrintfulVariant[];
-  [key: string]: any;
+  size?: string | null;
+  color?: string | null;
+  retail_price: string;
+  in_stock?: boolean;
+  files?: Array<{
+    id: number;
+    type: string;
+    url?: string;
+    filename?: string;
+    size?: number;
+    width?: number;
+    height?: number;
+    dpi?: number;
+  }>;
+}
+
+interface PrintfulSyncProduct {
+  id: number;
+  name: string;
+  thumbnail_url?: string;
+  sync_product: {
+    id: number;
+    name: string;
+    thumbnail_url?: string;
+  };
 }
 
 interface PrintfulResponse {
   code: number;
-  result: PrintfulProduct[];
-  [key: string]: any;
+  result: PrintfulSyncProduct[];
+}
+
+interface PrintfulProductDetails {
+  result: {
+    id: number;
+    name: string;
+    sync_variants?: PrintfulVariant[];
+    [key: string]: any;
+  };
 }
 
 // Funkce pro určení kategorie podle názvu produktu
-function determineCategory(product: PrintfulProduct): string {
-  const name = product.name.toLowerCase();
+function determineCategory(productName: string): string {
+  const name = productName.toLowerCase();
+ 
+  // Dámské oblečení
+  if (name.includes('dress') || name.includes('šaty') || 
+      name.includes('dámsk') || name.includes('women') || 
+      name.includes('female') || name.includes('lady')) {
+    return 'women';
+  }
   
-  if (name.includes('tričko') || name.includes('t-shirt')) {
-    if (name.includes('dámsk') || name.includes('women') || name.includes('dress')) {
+  // Trička
+  if (name.includes('tričko') || name.includes('t-shirt') || name.includes('tee')) {
+    if (name.includes('dámsk') || name.includes('women') || name.includes('female')) {
       return 'women';
-    } else if (name.includes('dětsk') || name.includes('kids')) {
+    } else if (name.includes('dětsk') || name.includes('kids') || name.includes('child')) {
       return 'kids';
     } else {
       return 'men';
     }
+  } 
+  
+  // Mikiny a svetry
+  if (name.includes('mikina') || name.includes('hoodie') || name.includes('sweatshirt') || 
+      name.includes('sweater') || name.includes('svetr')) {
+    return name.includes('dámsk') || name.includes('women') || name.includes('female') ? 'women' : 'men';
   }
   
-  if (name.includes('mikina') || name.includes('hoodie')) {
-    return name.includes('dámsk') ? 'women' : 'men';
+  // Dětské oblečení
+  if (name.includes('dětsk') || name.includes('kids') || name.includes('child') || 
+      name.includes('baby') || name.includes('infant')) {
+    return 'kids';
   }
   
-  if (name.includes('plakát') || name.includes('hrnek')) {
+  // Pánské oblečení
+  if (name.includes('pánsk') || name.includes('men') || name.includes('male') || 
+      name.includes('guy') || name.includes('gentleman')) {
+    return 'men';
+  }
+  
+  // Domov a dekorace
+  if (name.includes('plakát') || name.includes('poster') || name.includes('hrnek') || 
+      name.includes('mug') || name.includes('dekor') || name.includes('decor') || 
+      name.includes('home') || name.includes('domov') || name.includes('wall') || 
+      name.includes('stěna') || name.includes('canvas') || name.includes('plátno')) {
     return 'home-decor';
   }
   
+  // Pokud nemůžeme určit kategorii, vrátíme 'other'
   return 'other';
 }
 
 async function syncPrintfulProducts() {
   try {
-    console.log('Starting Printful products synchronization...');
+    console.log('Začínám synchronizaci produktů z Printful...');
+   
+    // Získání sync produktů z Printful API
+    const response = await fetch('https://api.printful.com/store/products', {
+      headers: {
+        'Authorization': `Bearer ${PRINTFUL_API_KEY}`
+      }
+    });
     
-    // Získat produkty z Printful
-    const printfulResponse = await getProducts() as PrintfulResponse;
-    
-    // Ověřit, že data jsou ve správném formátu
-    if (!printfulResponse || !printfulResponse.result) {
-      throw new Error('Invalid response from Printful API');
+    if (!response.ok) {
+      throw new Error(`Chyba Printful API: ${response.status} ${response.statusText}`);
     }
     
-    const printfulProducts = printfulResponse.result;
+    const data = await response.json() as PrintfulResponse;
     
-    console.log(`Found ${printfulProducts.length} products on Printful`);
-    
+    if (!data || !data.result) {
+      throw new Error('Neplatná odpověď z Printful API');
+    }
+   
+    const printfulProducts = data.result;
+   
+    console.log(`Nalezeno ${printfulProducts.length} produktů na Printful`);
+   
     // Pro každý produkt v Printful
-    for (const product of printfulProducts) {
-      // Určit kategorii
-      const category = determineCategory(product);
-      console.log(`Product: ${product.name}, Category: ${category}`);
+    for (const syncProduct of printfulProducts) {
+      const productName = syncProduct.sync_product.name;
       
-      // Zkontrolovat, zda produkt existuje v databázi
-      const existingProduct = await prisma.product.findUnique({
-        where: { printfulId: product.id.toString() }
-      });
+      // Určíme kategorii
+      const category = determineCategory(productName);
+      console.log(`Produkt: ${productName}, Kategorie: ${category}`);
       
-      if (existingProduct) {
-        // Aktualizovat existující produkt
-        console.log(`Updating product: ${product.name}`);
-        
-        await prisma.product.update({
-          where: { id: existingProduct.id },
-          data: {
-            title: product.name,
-            description: product.description || product.name,
-            printfulSync: true,
-          }
-        });
-      } else {
-        // Vytvořit nový produkt
-        console.log(`Creating new product: ${product.name}`);
-        
-        const newProduct = await prisma.product.create({
-          data: {
-            title: product.name,
-            description: product.description || product.name,
-            printfulId: product.id.toString(),
-            printfulSync: true,
-            isActive: true,
+      try {
+        // Získáme informace o produktu včetně obrázků a cen
+        const productResponse = await fetch(`https://api.printful.com/store/products/${syncProduct.id}`, {
+          headers: {
+            'Authorization': `Bearer ${PRINTFUL_API_KEY}`
           }
         });
         
-        // Vytvořit varianty
-        for (const variant of product.sync_variants || []) {
-          await prisma.variant.create({
+        if (!productResponse.ok) {
+          console.error(`Chyba při získávání detailů produktu ${syncProduct.id}: ${productResponse.status}`);
+          continue;
+        }
+        
+        const productDetails = await productResponse.json() as PrintfulProductDetails;
+        
+        if (!productDetails || !productDetails.result) {
+          console.error(`Neplatná odpověď pro detaily produktu ${syncProduct.id}`);
+          continue;
+        }
+        
+        // Najdeme hlavní obrázek produktu - zkusíme získat nejlepší dostupný obrázek
+        let thumbnailUrl = syncProduct.sync_product.thumbnail_url || syncProduct.thumbnail_url;
+        
+        // Pokud nemáme thumbnail, zkusíme najít obrázek v sync_variants
+        if (!thumbnailUrl && productDetails.result.sync_variants && productDetails.result.sync_variants.length > 0) {
+          for (const variant of productDetails.result.sync_variants) {
+            if (variant.files && variant.files.length > 0) {
+              // Najdeme první obrázek typu 'preview' nebo 'default'
+              const previewFile = variant.files.find(file => 
+                file.type === 'preview' || file.type === 'default'
+              );
+              
+              if (previewFile && previewFile.url) {
+                thumbnailUrl = previewFile.url;
+                break;
+              }
+            }
+          }
+        }
+        
+        // Zkontrolujeme, zda produkt existuje v databázi
+        const existingProduct = await prisma.product.findFirst({
+          where: { 
+            printfulId: syncProduct.id.toString() 
+          },
+          include: {
+            variants: true,
+            designs: true
+          }
+        });
+        
+        if (!existingProduct) {
+          // Vytvoříme nový produkt
+          console.log(`Vytvářím nový produkt: ${productName}`);
+          
+          // Nejprve vytvoříme produkt
+          const newProduct = await prisma.product.create({
             data: {
-              productId: newProduct.id,
-              printfulVariantId: variant.id.toString(),
-              name: variant.name || 'Default',
-              size: variant.size || null,
-              color: variant.color || null,
-              price: parseFloat(variant.retail_price) || 0,
+              title: productName,
+              description: `Originální produkt: ${productName}`,
+              printfulId: syncProduct.id.toString(),
+              printfulSync: true,
               isActive: true,
+              category
             }
           });
+          
+          // Pak přidáme design, pokud máme thumbnail
+          if (thumbnailUrl) {
+            await prisma.design.create({
+              data: {
+                name: `Design pro ${productName}`,
+                printfulFileId: syncProduct.id.toString(),
+                previewUrl: thumbnailUrl,
+                products: {
+                  connect: { id: newProduct.id }
+                }
+              }
+            });
+            
+            console.log(`Vytvořen nový design pro produkt: ${productName}`);
+          }
+          
+          // Nakonec přidáme varianty
+          if (productDetails.result.sync_variants && productDetails.result.sync_variants.length > 0) {
+            for (const variant of productDetails.result.sync_variants) {
+              if (!variant.id || !variant.retail_price) {
+                console.warn(`Variant ${variant.id} nemá všechny potřebné údaje, přeskakuji.`);
+                continue;
+              }
+              
+              const eurPrice = parseFloat(variant.retail_price);
+              const czkPrice = convertEurToCzk(eurPrice);
+              
+              await prisma.variant.create({
+                data: {
+                  printfulVariantId: variant.id.toString(),
+                  name: variant.name || 'Default',
+                  size: variant.size || null,
+                  color: variant.color || null,
+                  price: czkPrice,
+                  isActive: true,
+                  product: {
+                    connect: { id: newProduct.id }
+                  }
+                }
+              });
+            }
+            
+            console.log(`Vytvořeny varianty pro produkt: ${productName}`);
+          }
+        } else {
+          // Aktualizujeme existující produkt
+          console.log(`Aktualizuji produkt: ${productName}`);
+          
+          await prisma.product.update({
+            where: { id: existingProduct.id },
+            data: {
+              title: productName,
+              description: `Originální produkt: ${productName}`,
+              printfulSync: true,
+              isActive: true,
+              category
+            }
+          });
+          
+          // Aktualizujeme design, pokud existuje, jinak vytvoříme nový
+          if (thumbnailUrl) {
+            if (existingProduct.designs.length > 0) {
+              await prisma.design.update({
+                where: { id: existingProduct.designs[0].id },
+                data: {
+                  previewUrl: thumbnailUrl
+                }
+              });
+            } else {
+              await prisma.design.create({
+                data: {
+                  name: `Design pro ${productName}`,
+                  printfulFileId: syncProduct.id.toString(),
+                  previewUrl: thumbnailUrl,
+                  products: {
+                    connect: { id: existingProduct.id }
+                  }
+                }
+              });
+            }
+          }
+          
+          // Aktualizujeme varianty
+          if (productDetails.result.sync_variants && productDetails.result.sync_variants.length > 0) {
+            for (const variant of productDetails.result.sync_variants) {
+              const existingVariant = existingProduct.variants.find(
+                v => v.printfulVariantId === variant.id.toString()
+              );
+              
+              const eurPrice = parseFloat(variant.retail_price);
+              const czkPrice = convertEurToCzk(eurPrice);
+              
+              if (existingVariant) {
+                await prisma.variant.update({
+                  where: { id: existingVariant.id },
+                  data: {
+                    name: variant.name || 'Default',
+                    size: variant.size || null,
+                    color: variant.color || null,
+                    price: czkPrice,
+                    isActive: true
+                  }
+                });
+              } else {
+                await prisma.variant.create({
+                  data: {
+                    printfulVariantId: variant.id.toString(),
+                    name: variant.name || 'Default',
+                    size: variant.size || null,
+                    color: variant.color || null,
+                    price: czkPrice,
+                    isActive: true,
+                    product: {
+                      connect: { id: existingProduct.id }
+                    }
+                  }
+                });
+              }
+            }
+          }
         }
+      } catch (productError) {
+        console.error(`Chyba při zpracování produktu ${syncProduct.id}:`, productError);
       }
     }
-    
-    console.log('Synchronization completed successfully!');
+   
+    console.log('Synchronizace byla úspěšně dokončena!');
   } catch (error) {
-    console.error('Error syncing products:', error);
+    console.error('Chyba při synchronizaci produktů:', error);
   } finally {
     await prisma.$disconnect();
   }
 }
 
-// Spustit synchronizaci
+// Spustíme synchronizaci
 syncPrintfulProducts();

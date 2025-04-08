@@ -25,8 +25,20 @@ model Product {
   printfulSync    Boolean   @default(false)
   isActive        Boolean   @default(true)
   category        String    @default("other")
+  categoryId      String?
+  categoryRelation Category? @relation(fields: [categoryId], references: [id])
   variants        Variant[]
   designs         Design[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Category {
+  id              String    @id @default(cuid())
+  name            String    @unique
+  displayName     String
+  printfulCategory String
+  products        Product[]
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 }
@@ -98,4 +110,15 @@ model ShippingInfo {
   phone           String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+}
+
+model ExchangeRate {
+  id        String   @id @default(cuid())
+  fromCurrency String
+  toCurrency   String
+  rate      Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([fromCurrency, toCurrency])
 }

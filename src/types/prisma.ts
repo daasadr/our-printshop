@@ -1,15 +1,17 @@
-import { Product, Variant, Design, Order, OrderItem, ShippingInfo, User, Prisma } from '@prisma/client';
+import { Product, Variant, Design, Order, OrderItem, ShippingInfo, User, Category, Prisma } from '@prisma/client';
 
 // Produkt s variantami a designy
 export interface ProductWithRelations extends Product {
   variants: Variant[];
   designs: Design[];
+  categoryRelation?: Category | null;
 }
 
 // Pro zpětnou kompatibilitu - stejný typ jako ProductWithRelations
 export interface ProductWithDetails extends Product {
   variants: Variant[];
   designs: Design[];
+  categoryRelation?: Category | null;
 }
 
 // Varianta produktu s odkazem na produkt
@@ -35,27 +37,13 @@ export interface FormattedProduct {
   price: number;
   variants: Variant[];
   designs: Design[];
+  category?: string;
+  categoryRelation?: Category | null;
 }
 
-// Typ pro dotaz na produkty
-export type ProductQueryInput = {
-  where: {
-    isActive: boolean;
-    category?: string;
-  };
-  include: {
-    variants: {
-      where: {
-        isActive: boolean;
-      };
-      orderBy: {
-        price: Prisma.SortOrder;
-      };
-    };
-    designs: boolean;
-  };
-  take?: number;
-  orderBy?: {
-    createdAt: Prisma.SortOrder;
-  };
-};
+// Kategorie s produkty
+export interface CategoryWithProducts extends Category {
+  products: Product[];
+}
+
+
