@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import sgMail from '@sendgrid/mail';
+import { Resend } from 'resend';
 
-if (!process.env.SENDGRID_API_KEY) {
-  throw new Error('Missing SENDGRID_API_KEY environment variable');
+if (!process.env.RESEND_API_KEY) {
+  throw new Error('Missing RESEND_API_KEY environment variable');
 }
 
-// Nastavení SendGrid API klíče
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,12 +23,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Nastavení e-mailu
-    const msg = {
+    const { data, error } = await resend.emails.send({
+      from: 'HappyWilderness <onboarding@resend.dev>',
       to: 'happypomeloofficial@gmail.com',
-      from: {
-        email: 'happypomeloofficial@gmail.com',
-        name: 'Kontaktní formulář HappyWilderness'
-      },
       subject: `Nová zpráva od ${name}`,
       text: `Jméno: ${name}\nEmail: ${email}\n\nZpráva:\n${message}`,
       html: `
@@ -39,12 +35,15 @@ export async function POST(req: NextRequest) {
         <p><strong>Zpráva:</strong></p>
         <p>${message.replace(/\n/g, '<br>')}</p>
       `,
-      replyTo: email
-    };
+      reply_to: email
+    });
 
-    console.log('Pokus o odeslání e-mailu');
-    const response = await sgMail.send(msg);
-    console.log('E-mail úspěšně odeslán:', response[0].statusCode);
+    if (error) {
+      console.error('Chyba při odesílání:', error);
+      throw error;
+    }
+
+    console.log('E-mail úspěšně odeslán:', data?.id);
 
     return NextResponse.json(
       { message: 'E-mail byl úspěšně odeslán' },
