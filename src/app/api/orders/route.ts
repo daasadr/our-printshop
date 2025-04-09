@@ -11,6 +11,22 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 const prisma = new PrismaClient();
 
+interface OrderItem {
+  productId: string;
+  variantId: string;
+  quantity: number;
+}
+
+interface ShippingDetails {
+  name: string;
+  street: string;
+  street2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -110,7 +126,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const orders = await prisma.order.findMany({
       include: {
@@ -125,7 +141,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error('Error fetching orders:', error);
     return NextResponse.json(
-      { message: 'Chyba při načítání objednávek' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   } finally {

@@ -1,7 +1,9 @@
 // Skript pro kontrolu synchronizace s Printful
-const { PrismaClient } = require('@prisma/client');
+import dotenv from 'dotenv';
+import { PrismaClient } from '@prisma/client';
 const fetch = require('node-fetch');
-require('dotenv').config();
+
+dotenv.config();
 
 const prisma = new PrismaClient();
 const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY;

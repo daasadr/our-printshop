@@ -1,33 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { ProductWithRelations, FormattedProduct } from '@/types/prisma';
 import { convertEurToCzk } from '@/utils/currency';
 
 const prisma = new PrismaClient();
 
-export async function GET(_req: NextRequest) {
+export async function GET() {
   try {
     // Získání doporučených produktů z databáze
     const featuredProducts = await prisma.product.findMany({
       where: {
-        isActive: true,
+        isFeatured: true,
       },
       include: {
-        variants: {
-          where: {
-            isActive: true,
-          },
-          orderBy: {
-            price: 'asc',
-          },
-        },
-        designs: true,
+        variants: true,
       },
-      take: 4, // Omezíme na 4 produkty
-      orderBy: {
-        createdAt: 'desc', // Nejnovější produkty
-      },
-    }) as ProductWithRelations[];
+    });
 
     // Formátování dat pro klienta
     const formattedProducts: FormattedProduct[] = await Promise.all(featuredProducts.map(async product => {
@@ -52,7 +40,7 @@ export async function GET(_req: NextRequest) {
   } catch (error) {
     console.error('Error fetching featured products:', error);
     return NextResponse.json(
-      { message: 'Chyba při načítání doporučených produktů' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   } finally {

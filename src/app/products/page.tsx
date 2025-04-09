@@ -13,6 +13,21 @@ export const metadata = {
   description: 'Prohlédněte si naši kompletní kolekci originálních produktů s autorskými potisky.'
 };
 
+interface Product {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  imageUrl: string;
+  category: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  imageUrl: string;
+}
+
 /**
  * Získá produkty podle kategorie
  */
@@ -81,7 +96,8 @@ export default async function ProductsPage({
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
   const categoryParam = typeof searchParams.category === 'string' ? searchParams.category : undefined;
-  const products = await getProducts(categoryParam);
+  const products = await getProducts(categoryParam) as Product[];
+  const categories = await getCategories() as Category[];
  
   return (
     <main className="min-h-screen relative">

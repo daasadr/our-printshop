@@ -6,7 +6,7 @@ import { authOptions } from '@/lib/auth';
 
 const prisma = new PrismaClient();
 
-export async function POST(req: NextRequest) {
+export async function POST() {
   try {
     // Volitelně: Kontrola autentizace
     const session = await getServerSession(authOptions);
@@ -65,9 +65,11 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Error uploading design:', error);
     return NextResponse.json(
-      { message: 'Chyba při nahrávání designu' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
