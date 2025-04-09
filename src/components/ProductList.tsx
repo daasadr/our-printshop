@@ -4,45 +4,23 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
 import { formatPriceCZK } from '@/utils/currency';
-
-interface Product {
-  id: string;
-  title: string;
-  description: string;
-  previewUrl: string;
-  price: number;
-  variants: any[];
-  designs: any[];
-}
+import { Product } from '@/types/prisma';
+import ProductCard from './ProductCard';
 
 interface ProductListProps {
   products: Product[];
-  emptyMessage?: string;
+  className?: string;
 }
 
-const ProductList: React.FC<ProductListProps> = ({ 
-  products,
-  emptyMessage = "Momentálně nemáme žádné produkty v této kategorii."
-}) => {
-  if (!products || products.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <h2 className="text-2xl font-semibold mb-4">{emptyMessage}</h2>
-        <p className="text-gray-600">
-          Zkuste vybrat jinou kategorii nebo se vraťte později. Neustále rozšiřujeme naši nabídku.
-        </p>
-      </div>
-    );
-  }
- 
+export default function ProductList({ products, className = '' }: ProductListProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ${className}`}>
       {products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
     </div>
   );
-};
+}
 
 interface ProductCardProps {
   product: Product;
@@ -128,5 +106,3 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     </div>
   );
 };
-
-export default ProductList;

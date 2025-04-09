@@ -9,6 +9,22 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 const prisma = new PrismaClient();
 
+interface PrintfulOrderItem {
+  variantId: string;
+  quantity: number;
+  price: number;
+}
+
+interface ShippingDetails {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  zip: string;
+  country: string;
+}
+
 const createPrintfulOrder = async (session: Stripe.Checkout.Session) => {
   const { shippingDetails, orderItems } = session.metadata || {};
   
@@ -16,8 +32,8 @@ const createPrintfulOrder = async (session: Stripe.Checkout.Session) => {
     throw new Error('Chybí informace o objednávce');
   }
 
-  const shipping = JSON.parse(shippingDetails);
-  const items = JSON.parse(orderItems);
+  const shipping = JSON.parse(shippingDetails) as ShippingDetails;
+  const items = JSON.parse(orderItems) as PrintfulOrderItem[];
 
   // Vytvoření objednávky v Printful
   const response = await fetch('https://api.printful.com/orders', {
@@ -37,7 +53,7 @@ const createPrintfulOrder = async (session: Stripe.Checkout.Session) => {
         phone: shipping.phone,
         email: shipping.email
       },
-      items: items.map((item: any) => ({
+      items: items.map(item => ({
         sync_variant_id: item.variantId,
         quantity: item.quantity,
         retail_price: item.price
@@ -72,10 +88,11 @@ export async function POST(req: NextRequest) {
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
     );
-  } catch (err: any) {
-    console.error(`Webhook Error: ${err.message}`);
+  } catch (err) {
+    const error = err as Error;
+    console.error(`Webhook Error: ${error.message}`);
     return NextResponse.json(
-      { message: `Webhook Error: ${err.message}` },
+      { message: `Webhook Error: ${error.message}` },
       { status: 400 }
     );
   }

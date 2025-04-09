@@ -5,7 +5,7 @@ import { convertEurToCzk } from '@/utils/currency';
 
 const prisma = new PrismaClient();
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     // Získání doporučených produktů z databáze
     const featuredProducts = await prisma.product.findMany({
