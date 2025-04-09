@@ -1,26 +1,24 @@
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
+import { PrismaClient } from '@prisma/client';
 import Link from 'next/link';
-import prisma from '@/lib/prisma';
-import { stripe } from '@/lib/stripe';
+
+const prisma = new PrismaClient();
 
 export const metadata: Metadata = {
-  title: 'Objednávka dokončena | HappyWilderness',
-  description: 'Děkujeme za vaši objednávku',
+  title: 'Objednávka potvrzena | HappyWilderness',
+  description: 'Potvrzení vaší objednávky',
 };
 
-async function getOrderFromSession(sessionId: string) {
+async function getOrder(sessionId: string) {
   try {
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
-    if (!session?.metadata?.orderId) return null;
-
-    return await prisma.order.findUnique({
-      where: { id: session.metadata.orderId },
+    const order = await prisma.order.findUnique({
+      where: { stripeSessionId: sessionId },
       include: {
         shippingAddress: true,
-        items: true,
       },
     });
+    return order;
   } catch (error) {
     console.error('Error fetching order:', error);
     return null;
@@ -32,61 +30,72 @@ export default async function OrderSuccessPage({
 }: {
   searchParams: { session_id: string };
 }) {
-  const sessionId = searchParams.session_id;
-  if (!sessionId) {
+  const { session_id } = searchParams;
+
+  if (!session_id) {
     redirect('/');
   }
 
-  const order = await getOrderFromSession(sessionId);
+  const order = await getOrder(session_id);
+
   if (!order) {
     redirect('/');
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-green-900 to-green-800 text-white py-12">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="bg-white/10 backdrop-blur-lg rounded-lg p-8 shadow-xl">
+    <main className="min-h-screen bg-gradient-to-b from-green-900 to-green-800 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto">
+        <div className="bg-white/10 backdrop-blur-md rounded-lg p-8 text-white">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold mb-4">Děkujeme za vaši objednávku!</h1>
-            <p className="text-lg text-green-200">
-              Vaše objednávka byla úspěšně dokončena a brzy ji začneme zpracovávat.
+            <h1 className="text-3xl font-bold mb-2">Děkujeme za vaši objednávku!</h1>
+            <p className="text-green-200">
+              Vaše objednávka byla úspěšně přijata a zpracována.
             </p>
           </div>
 
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl font-semibold mb-3">Detaily objednávky</h2>
-              <p>Číslo objednávky: {order.id}</p>
-              <p>Celková částka: {order.total.toLocaleString('cs-CZ')} Kč</p>
+              <h2 className="text-xl font-semibold mb-2">Detaily objednávky</h2>
+              <div className="bg-white/5 rounded-lg p-4 space-y-2">
+                <p>
+                  <span className="font-medium">Číslo objednávky:</span>{' '}
+                  {order.printfulOrderId}
+                </p>
+                <p>
+                  <span className="font-medium">Celková částka:</span>{' '}
+                  {order.total.toLocaleString('cs-CZ')} Kč
+                </p>
+              </div>
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold mb-3">Doručovací adresa</h2>
-              <p>{order.shippingAddress.name}</p>
-              <p>{order.shippingAddress.address1}</p>
-              <p>{order.shippingAddress.city}, {order.shippingAddress.zip}</p>
-              <p>{order.shippingAddress.country}</p>
+              <h2 className="text-xl font-semibold mb-2">Dodací adresa</h2>
+              <div className="bg-white/5 rounded-lg p-4 space-y-2">
+                <p>{order.shippingAddress.name}</p>
+                <p>{order.shippingAddress.address1}</p>
+                {order.shippingAddress.address2 && (
+                  <p>{order.shippingAddress.address2}</p>
+                )}
+                <p>
+                  {order.shippingAddress.zip} {order.shippingAddress.city}
+                </p>
+                <p>{order.shippingAddress.country}</p>
+              </div>
             </div>
 
-            <div>
-              <h2 className="text-xl font-semibold mb-3">Objednané položky</h2>
-              <ul className="space-y-2">
-                {order.items.map((item) => (
-                  <li key={item.id} className="flex justify-between">
-                    <span>{item.name} × {item.quantity}</span>
-                    <span>{(item.price * item.quantity).toLocaleString('cs-CZ')} Kč</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="text-center mt-8">
-              <p className="mb-4">
-                Na e-mail {order.shippingAddress.email} jsme vám poslali potvrzení objednávky.
+            <div className="text-center text-green-200">
+              <p>
+                Potvrzovací email byl odeslán na adresu {order.customerEmail}.
               </p>
+              <p className="mt-2">
+                Sledujte prosím stav vaší objednávky v emailu.
+              </p>
+            </div>
+
+            <div className="text-center">
               <Link
                 href="/"
-                className="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+                className="inline-block bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors"
               >
                 Zpět na hlavní stránku
               </Link>
