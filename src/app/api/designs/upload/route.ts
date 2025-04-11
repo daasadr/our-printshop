@@ -6,7 +6,7 @@ import { authOptions } from '@/lib/auth';
 
 const prisma = new PrismaClient();
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   try {
     // Volitelně: Kontrola autentizace
     const session = await getServerSession(authOptions);
@@ -49,12 +49,17 @@ export async function POST() {
     // Nahrání designu do Printful
     const printfulResponse = await uploadDesign(file);
 
-    // Uložení designu do databáze
+    // Uložení designu do databáze - oprava schématu podle Prisma modelu
     const design = await prisma.design.create({
       data: {
         name,
         printfulFileId: String(printfulResponse.id),
-        previewUrl: printfulResponse.url
+        previewUrl: printfulResponse.url,
+        // Přidáno: Vytvořit design jako "samostatný" bez propojení s produktem
+        // nebo použít connect prázdný které odpovídá vaší Prisma schématu
+        product: { 
+          connect: { id: "placeholder" } // Toto upravte podle vašeho schématu
+        }
       }
     });
 

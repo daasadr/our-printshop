@@ -22,7 +22,7 @@ export interface OrderWithRelations extends Order {
   items: (OrderItem & {
     variant: VariantWithProduct;
   })[];
-  shippingAddress: ShippingInfo | null;
+  shippingInfo: ShippingInfo | null;
   user: User | null;
 }
 
@@ -48,58 +48,3 @@ export interface FormattedProduct {
 export interface CategoryWithProducts extends Category {
   products: PrismaProduct[];
 }
-
-export interface Product {
-  id: string;
-  title: string;
-  description: string;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  variants: ProductVariant[];
-  designs: ProductDesign[];
-}
-
-export interface ProductVariant {
-  id: string;
-  name: string;
-  price: number;
-  isActive: boolean;
-  previewUrl: string;
-  productId: string;
-  printfulVariantId: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface ProductDesign {
-  id: string;
-  previewUrl: string;
-  productId: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface ProductWithRelations extends Product {
-  variants: ProductVariant[];
-  designs: ProductDesign[];
-}
-
-export interface FormattedProduct {
-  id: string;
-  title: string;
-  description: string;
-  previewUrl: string;
-  price: number;
-  variants: (Variant & { price: number })[];
-  designs: Design[];
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  category: string;
-  categoryId: string | null;
-  printfulId: string;
-  printfulSync: boolean;
-}
-
-

@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import fetch from 'node-fetch';
-import { convertEurToCzk } from '../utils/currency';
+import { convertEurToCzkSync } from '../utils/currency';
 
 const prisma = new PrismaClient();
 const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY;
@@ -214,7 +214,8 @@ async function syncPrintfulProducts() {
                 name: `Design pro ${productName}`,
                 printfulFileId: syncProduct.id.toString(),
                 previewUrl: thumbnailUrl,
-                products: {
+                // Oprava: Použít správné propojení pro design
+                product: {
                   connect: { id: newProduct.id }
                 }
               }
@@ -232,7 +233,8 @@ async function syncPrintfulProducts() {
               }
               
               const eurPrice = parseFloat(variant.retail_price);
-              const czkPrice = convertEurToCzk(eurPrice);
+              // Použít synchronní verzi pro převod měny
+              const czkPrice = convertEurToCzkSync(eurPrice);
               
               await prisma.variant.create({
                 data: {
@@ -281,7 +283,7 @@ async function syncPrintfulProducts() {
                   name: `Design pro ${productName}`,
                   printfulFileId: syncProduct.id.toString(),
                   previewUrl: thumbnailUrl,
-                  products: {
+                  product: {
                     connect: { id: existingProduct.id }
                   }
                 }
@@ -297,7 +299,8 @@ async function syncPrintfulProducts() {
               );
               
               const eurPrice = parseFloat(variant.retail_price);
-              const czkPrice = convertEurToCzk(eurPrice);
+              // Použít synchronní verzi pro převod měny
+              const czkPrice = convertEurToCzkSync(eurPrice);
               
               if (existingVariant) {
                 await prisma.variant.update({

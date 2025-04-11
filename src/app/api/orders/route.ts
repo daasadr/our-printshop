@@ -8,7 +8,6 @@ import { authOptions } from '@/lib/auth';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-02-24.acacia', // aktualizujte podle nejnovější verze
 });
-
 const prisma = new PrismaClient();
 
 interface OrderItem {
@@ -57,7 +56,7 @@ export async function POST(req: NextRequest) {
     // 2. Vypočítat celkovou cenu
     let total = 0;
     const orderItems = items.map((item: any) => {
-      const variant = variants.find(( v : any) => v.id === item.variantId);
+      const variant = variants.find((v: any) => v.id === item.variantId);
       if (!variant) throw new Error('Varianta nenalezena');
       
       const itemTotal = variant.price * item.quantity;
@@ -83,12 +82,12 @@ export async function POST(req: NextRequest) {
             ...shippingInfo
           }
         },
-        ...(session?.user?.email ? { 
+        ...(session?.user?.email ? {
           user: {
             connect: {
               email: session.user.email
             }
-          } 
+          }
         } : {})
       }
     });
@@ -128,15 +127,15 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   try {
+    // Oprava: Změna z 'shippingAddress' na 'shippingInfo' v souladu s vaším schématem
     const orders = await prisma.order.findMany({
       include: {
-        shippingAddress: true,
+        shippingInfo: true,
       },
       orderBy: {
         createdAt: 'desc',
       },
     });
-
     return NextResponse.json(orders);
   } catch (error) {
     console.error('Error fetching orders:', error);
@@ -148,4 +147,3 @@ export async function GET() {
     await prisma.$disconnect();
   }
 }
-
