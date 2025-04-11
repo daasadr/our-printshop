@@ -41,14 +41,16 @@ async function getOrder(orderId: string) {
   }
 }
 
+// Správný typ pro props v Next.js App Router
+type Props = {
+  params: {};
+  searchParams: Record<string, string | string[] | undefined>;
+};
+
 // Hlavní komponenta stránky
-export default async function CheckoutSuccessPage({
-  searchParams
-}: {
-  searchParams: { orderId?: string }
-}) {
+export default async function CheckoutSuccessPage({ searchParams }: Props) {
   // Získáme ID objednávky z URL parametrů
-  const { orderId } = searchParams;
+  const orderId = searchParams.orderId as string | undefined;
   
   // Pokud není ID, přesměrujeme na hlavní stránku
   if (!orderId) {
