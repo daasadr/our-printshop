@@ -1,7 +1,7 @@
 // Skript pro kontrolu synchronizace s Printful
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 dotenv.config();
 

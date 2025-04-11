@@ -10,12 +10,20 @@ export async function GET() {
     // Získání doporučených produktů z databáze
     const featuredProducts = await prisma.product.findMany({
       where: {
-        isFeatured: true,
+        isActive: true,
       },
       include: {
-        variants: true,
+        variants: {
+          where: {
+            isActive: true,
+          },
+          orderBy: {
+            price: 'asc',
+          },
+        },
+        designs: true,
       },
-    });
+    }) as ProductWithRelations[];
 
     // Formátování dat pro klienta
     const formattedProducts: FormattedProduct[] = await Promise.all(featuredProducts.map(async product => {

@@ -4,14 +4,12 @@ import { Product as PrismaProduct, Variant, Design, Order, OrderItem, ShippingIn
 export interface ProductWithRelations extends PrismaProduct {
   variants: Variant[];
   designs: Design[];
-  categoryRelation?: Category | null;
 }
 
 // Pro zpětnou kompatibilitu - stejný typ jako ProductWithRelations
 export interface ProductWithDetails extends PrismaProduct {
   variants: Variant[];
   designs: Design[];
-  categoryRelation?: Category | null;
 }
 
 // Varianta produktu s odkazem na produkt
@@ -24,7 +22,7 @@ export interface OrderWithRelations extends Order {
   items: (OrderItem & {
     variant: VariantWithProduct;
   })[];
-  shippingInfo: ShippingInfo | null;
+  shippingAddress: ShippingInfo | null;
   user: User | null;
 }
 
@@ -35,10 +33,15 @@ export interface FormattedProduct {
   description: string;
   previewUrl: string;
   price: number;
-  variants: Variant[];
+  variants: (Variant & { price: number })[];
   designs: Design[];
-  category?: string;
-  categoryRelation?: Category | null;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  category: string;
+  categoryId: string | null;
+  printfulId: string;
+  printfulSync: boolean;
 }
 
 // Kategorie s produkty
@@ -88,8 +91,15 @@ export interface FormattedProduct {
   description: string;
   previewUrl: string;
   price: number;
-  variants: ProductVariant[];
-  designs: ProductDesign[];
+  variants: (Variant & { price: number })[];
+  designs: Design[];
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  category: string;
+  categoryId: string | null;
+  printfulId: string;
+  printfulSync: boolean;
 }
 
 

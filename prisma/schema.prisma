@@ -13,6 +13,7 @@ model User {
   name      String?
   password  String
   orders    Order[]
+  cart      Cart?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
@@ -44,28 +45,30 @@ model Category {
 }
 
 model Variant {
-  id              String    @id @default(cuid())
-  productId       String
-  product         Product   @relation(fields: [productId], references: [id])
-  printfulVariantId String  @unique
-  name            String
-  size            String?
-  color           String?
-  price           Float
-  isActive        Boolean   @default(true)
-  orderItems      OrderItem[]
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id                String   @id @default(cuid())
+  name              String
+  price             Float
+  isActive          Boolean  @default(true)
+  productId         String
+  printfulVariantId String
+  size              String?
+  color             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  product           Product  @relation(fields: [productId], references: [id])
+  orderItems        OrderItem[]
+  cartItems         CartItem[]
 }
 
 model Design {
-  id              String    @id @default(cuid())
-  name            String
-  printfulFileId  String
-  previewUrl      String
-  products        Product[]
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id            String   @id @default(cuid())
+  name          String
+  previewUrl    String
+  printfulFileId String
+  productId     String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  product       Product  @relation(fields: [productId], references: [id])
 }
 
 model Order {

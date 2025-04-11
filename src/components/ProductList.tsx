@@ -4,11 +4,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
 import { formatPriceCZK } from '@/utils/currency';
-import { Product } from '@/types/prisma';
-import ProductCard from './ProductCard';
+import { FormattedProduct } from '@/types/prisma';
 
 interface ProductListProps {
-  products: Product[];
+  products: FormattedProduct[];
   className?: string;
 }
 
@@ -16,14 +15,34 @@ export default function ProductList({ products, className = '' }: ProductListPro
   return (
     <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ${className}`}>
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <Link
+          key={product.id}
+          href={`/products/${product.id}`}
+          className="bg-white/80 backdrop-blur-sm rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
+        >
+          <div className="relative h-64">
+            <Image
+              src={product.previewUrl}
+              alt={product.title}
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="p-4">
+            <h3 className="text-lg font-semibold mb-2">{product.title}</h3>
+            <p className="text-gray-600 mb-4 line-clamp-2">{product.description}</p>
+            <p className="text-lg font-bold text-green-600">
+              {product.price.toLocaleString('cs-CZ')} Kč
+            </p>
+          </div>
+        </Link>
       ))}
     </div>
   );
 }
 
 interface ProductCardProps {
-  product: Product;
+  product: FormattedProduct;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {

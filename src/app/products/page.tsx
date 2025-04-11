@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import Image from 'next/image';
 import CategoryTiles from '@/components/CategoryTiles';
 import ProductList from '@/components/ProductList';
-import { FormattedProduct } from '@/types/prisma';
+import { FormattedProduct, ProductWithRelations } from '@/types/prisma';
 import { convertEurToCzk } from '@/utils/currency';
 
 const prisma = new PrismaClient();
@@ -13,19 +13,12 @@ export const metadata = {
   description: 'Prohlédněte si naši kompletní kolekci originálních produktů s autorskými potisky.'
 };
 
-interface Product {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  imageUrl: string;
-  category: string;
-}
-
 interface Category {
   id: string;
   name: string;
-  imageUrl: string;
+  displayName: string;
+  imagePlaceholder: string;
+  image: string;
 }
 
 /**
@@ -33,13 +26,11 @@ interface Category {
  */
 const getProducts = async (category?: string): Promise<FormattedProduct[]> => {
   try {
-    // Definujeme where podmínku samostatně
     const whereCondition = {
       isActive: true,
       ...(category ? { category } : {})
     };
     
-    // Definujeme include samostatně
     const includeCondition = {
       variants: {
         where: {
@@ -52,24 +43,29 @@ const getProducts = async (category?: string): Promise<FormattedProduct[]> => {
       designs: true,
     };
     
-    // Načtení produktů z databáze
     const products = await prisma.product.findMany({
       where: whereCondition,
       include: includeCondition
-    });
+    }) as ProductWithRelations[];
      
-    // Transformace dat pro UI s převodem cen na CZK
-    return await Promise.all(products.map(async (product: any) => ({
+    return await Promise.all(products.map(async (product) => ({
       id: product.id,
       title: product.title,
       description: product.description,
       previewUrl: product.designs[0]?.previewUrl || '',
       price: product.variants[0]?.price ? await convertEurToCzk(product.variants[0].price) : 0,
-      variants: await Promise.all(product.variants.map(async (variant: any) => ({
+      variants: await Promise.all(product.variants.map(async (variant) => ({
         ...variant,
         price: await convertEurToCzk(variant.price)
       }))),
-      designs: product.designs
+      designs: product.designs,
+      isActive: product.isActive,
+      createdAt: product.createdAt,
+      updatedAt: product.updatedAt,
+      category: product.category,
+      categoryId: product.categoryId,
+      printfulId: product.printfulId,
+      printfulSync: product.printfulSync
     })));
   } catch (error) {
     console.error('Error loading products:', error);
@@ -96,8 +92,38 @@ export default async function ProductsPage({
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
   const categoryParam = typeof searchParams.category === 'string' ? searchParams.category : undefined;
-  const products = await getProducts(categoryParam) as Product[];
-  const categories = await getCategories() as Category[];
+  const products = await getProducts(categoryParam);
+  
+  const categories: Category[] = [
+    {
+      id: 'home-decor',
+      name: 'home-decor',
+      displayName: 'Domov a dekorace',
+      imagePlaceholder: 'Domov',
+      image: '/images/home.jpg'
+    },
+    {
+      id: 'women',
+      name: 'women',
+      displayName: 'Stylově pro dámy',
+      imagePlaceholder: 'Ženy',
+      image: '/images/women.jpeg'
+    },
+    {
+      id: 'men',
+      name: 'men',
+      displayName: 'Pánská kolekce',
+      imagePlaceholder: 'Muži',
+      image: '/images/men.jpg'
+    },
+    {
+      id: 'kids',
+      name: 'kids',
+      displayName: 'Pro malé objevitele',
+      imagePlaceholder: 'Děti',
+      image: '/images/kids.jpeg'
+    }
+  ];
  
   return (
     <main className="min-h-screen relative">
@@ -127,36 +153,7 @@ export default async function ProductsPage({
             title="Procházet podle kategorie"
             titleClassName="text-green-300 text-xl"
             className="mb-10"
-            categories={[
-              {
-                id: 'home-decor',
-                name: 'home-decor',
-                displayName: 'Domov a dekorace',
-                imagePlaceholder: 'Domov',
-                image: '/images/home.jpg'
-              },
-              {
-                id: 'women',
-                name: 'women',
-                displayName: 'Stylově pro dámy',
-                imagePlaceholder: 'Ženy',
-                image: '/images/women.jpeg'
-              },
-              {
-                id: 'men',
-                name: 'men',
-                displayName: 'Pánská kolekce',
-                imagePlaceholder: 'Muži',
-                image: '/images/men.jpg'
-              },
-              {
-                id: 'kids',
-                name: 'kids',
-                displayName: 'Pro malé objevitele',
-                imagePlaceholder: 'Děti',
-                image: '/images/kids.jpeg'
-              }
-            ]}
+            categories={categories}
           />
          
           {/* Seznam produktů */}
