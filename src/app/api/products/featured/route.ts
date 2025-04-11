@@ -40,7 +40,14 @@ export async function GET() {
         previewUrl: product.designs[0]?.previewUrl || '',
         price: product.variants[0]?.price ? await convertEurToCzk(product.variants[0].price) : 0,
         variants: convertedVariants,
-        designs: product.designs
+        designs: product.designs,
+        isActive: product.isActive,
+        createdAt: product.createdAt,
+        updatedAt: product.updatedAt,
+        category: product.category,
+        categoryId: product.categoryId,
+        printfulId: product.printfulId,
+        printfulSync: product.printfulSync
       };
     }));
 

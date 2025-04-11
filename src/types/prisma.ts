@@ -1,4 +1,4 @@
-import { Product as PrismaProduct, Variant, Design, Order, OrderItem, ShippingInfo, User, Category, Prisma } from '@prisma/client';
+import { Product as PrismaProduct, Variant, Design, Order, OrderItem, ShippingInfo, User, Category } from '@prisma/client';
 
 // Produkt s variantami a designy
 export interface ProductWithRelations extends PrismaProduct {
