@@ -3,17 +3,10 @@ import { notFound } from 'next/navigation';
 import { PrismaClient } from '@prisma/client';
 import ProductDetail from '@/components/ProductDetail';
 import ProductSkeleton from '@/components/ProductSkeleton';
-import { Metadata } from 'next';
 import { convertEurToCzk } from '@/utils/currency';
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-}
-
 // Pro využití v app routeru je lepší načítat data přímo v komponentě stránky
-async function getProduct(id: string) {
+async function getProduct(id) {
   const prisma = new PrismaClient();
  
   try {
@@ -49,7 +42,7 @@ async function getProduct(id: string) {
 }
 
 // Generování dynamických metadat pro detail produktu
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params }) {
   const product = await getProduct(params.id);
  
   if (!product) {
@@ -72,7 +65,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function ProductPage({ params }: { params: { id: string } }) {
+export default async function ProductPage({ params }) {
   const product = await getProduct(params.id);
  
   if (!product) {
