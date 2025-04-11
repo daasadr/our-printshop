@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import Stripe from 'stripe';
 import { getServerSession } from 'next-auth';
-import { createOrder } from '@/services/printful';
 import { authOptions } from '@/lib/auth';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -10,21 +9,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 const prisma = new PrismaClient();
 
-interface OrderItem {
-  productId: string;
-  variantId: string;
-  quantity: number;
-}
-
-interface ShippingDetails {
-  name: string;
-  street: string;
-  street2?: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-}
+// Opraveno: odstranění nepoužívaných typů
 
 export async function POST(req: NextRequest) {
   try {
@@ -35,7 +20,7 @@ export async function POST(req: NextRequest) {
     const session = await getServerSession(authOptions);
     
     // 1. Ověřit, že všechny produkty existují a jsou dostupné
-    const variantIds = items.map((item: any) => item.variantId);
+    const variantIds = items.map((item: { variantId: string }) => item.variantId);
     const variants = await prisma.variant.findMany({
       where: {
         id: { in: variantIds },
@@ -55,8 +40,8 @@ export async function POST(req: NextRequest) {
     
     // 2. Vypočítat celkovou cenu
     let total = 0;
-    const orderItems = items.map((item: any) => {
-      const variant = variants.find((v: any) => v.id === item.variantId);
+    const orderItems = items.map((item: { variantId: string; quantity: number }) => {
+      const variant = variants.find((v) => v.id === item.variantId);
       if (!variant) throw new Error('Varianta nenalezena');
       
       const itemTotal = variant.price * item.quantity;

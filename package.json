@@ -11,6 +11,10 @@
     "check-printful": "tsx src/scripts/checkPrintfulSync.ts",
     "check-variants": "tsx src/scripts/checkVariants.ts"
   },
+  "eslintConfig": {
+    "extends": "next/core-web-vitals",
+    "ignorePatterns": ["src/scripts/*.js"]
+  },
   "dependencies": {
     "@auth/prisma-adapter": "^2.8.0",
     "@prisma/client": "^6.5.0",

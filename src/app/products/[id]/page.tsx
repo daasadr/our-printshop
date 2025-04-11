@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { PrismaClient } from '@prisma/client';
 import ProductDetail from '@/components/ProductDetail';
 import ProductSkeleton from '@/components/ProductSkeleton';
-import { Metadata, ResolvingMetadata } from 'next';
+import { Metadata } from 'next';
 import { convertEurToCzk } from '@/utils/currency';
 
 interface PageProps {
@@ -29,15 +29,12 @@ async function getProduct(id: string) {
         designs: true
       }
     });
-
     if (!product) return null;
-
     // Převedeme ceny všech variant na CZK
     const convertedVariants = await Promise.all(product.variants.map(async variant => ({
       ...variant,
       price: await convertEurToCzk(variant.price)
     })));
-
     // Vrátíme produkt s převedenými cenami
     return {
       ...product,
@@ -52,7 +49,7 @@ async function getProduct(id: string) {
 }
 
 // Generování dynamických metadat pro detail produktu
-export async function generateMetadata({ params }: PageProps, parent: ResolvingMetadata): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const product = await getProduct(params.id);
  
   if (!product) {
@@ -68,8 +65,8 @@ export async function generateMetadata({ params }: PageProps, parent: ResolvingM
     openGraph: {
       title: `${product.title} | HappyWilderness`,
       description: product.description,
-      images: product.designs[0]?.previewUrl 
-        ? [product.designs[0].previewUrl] 
+      images: product.designs[0]?.previewUrl
+        ? [product.designs[0].previewUrl]
         : ['/images/default-product.jpg'],
     }
   };

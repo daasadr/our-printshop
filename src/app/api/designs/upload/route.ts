@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
 }
 
 // src/app/api/designs/route.ts
-export async function GET(req: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     // Volitelně: Kontrola autentizace
     const session = await getServerSession(authOptions);
