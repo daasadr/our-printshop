@@ -12,7 +12,7 @@ export const metadata = {
 };
 
 // Funkce pro získání objednávky podle ID
-async function getOrder(orderId: string) {
+async function getOrder(orderId) {
   const prisma = new PrismaClient();
   
   try {
@@ -41,16 +41,10 @@ async function getOrder(orderId: string) {
   }
 }
 
-// Správný typ pro props v Next.js App Router
-type Props = {
-  params: {};
-  searchParams: Record<string, string | string[] | undefined>;
-};
-
 // Hlavní komponenta stránky
-export default async function CheckoutSuccessPage({ searchParams }: Props) {
+export default async function CheckoutSuccessPage({ searchParams }) {
   // Získáme ID objednávky z URL parametrů
-  const orderId = searchParams.orderId as string | undefined;
+  const orderId = searchParams.orderId;
   
   // Pokud není ID, přesměrujeme na hlavní stránku
   if (!orderId) {
