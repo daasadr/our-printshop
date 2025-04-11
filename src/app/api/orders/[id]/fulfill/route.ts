@@ -4,13 +4,13 @@ import { createOrder } from '@/services/printful';
 
 const prisma = new PrismaClient();
 
-// Opravená verze funkce POST s korektní signaturou pro Next.js App Router
+// Použití standardní deklarace bez objektové destrukturalizace
 export async function POST(
-  req: NextRequest,
-  context: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: { id: string } }
 ) {
   try {
-    const orderId = context.params.id;
+    const orderId = params.id;
     
     // 1. Načíst objednávku z databáze
     const order = await prisma.order.findUnique({
@@ -33,7 +33,6 @@ export async function POST(
     }
     
     // 2. Vytvořit data pro Printful API
-    // Oprava: Ošetřit undefined hodnoty a zajistit správnou typovou kompatibilitu
     const printfulOrderData = {
       recipient: {
         name: order.shippingInfo?.name || "No name provided",
@@ -41,7 +40,7 @@ export async function POST(
         address2: order.shippingInfo?.address2 || undefined,
         city: order.shippingInfo?.city || "No city provided",
         state_code: order.shippingInfo?.state || undefined,
-        country_code: order.shippingInfo?.country || "CZ", // Výchozí hodnota
+        country_code: order.shippingInfo?.country || "CZ",
         zip: order.shippingInfo?.zip || "00000",
         phone: order.shippingInfo?.phone || undefined,
         email: order.shippingInfo?.email || "noemail@example.com"
