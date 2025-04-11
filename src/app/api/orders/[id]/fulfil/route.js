@@ -1,16 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { createOrder } from '@/services/printful';
 
 const prisma = new PrismaClient();
 
-// Použití standardní deklarace bez objektové destrukturalizace
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// JS verze route handleru bez typování
+export async function POST(request, context) {
   try {
-    const orderId = params.id;
+    const orderId = context.params.id;
     
     // 1. Načíst objednávku z databáze
     const order = await prisma.order.findUnique({
