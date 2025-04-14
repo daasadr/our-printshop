@@ -43,12 +43,27 @@ export async function GET(req: NextRequest) {
         ? product.designs[0] 
         : null;
       
+      // Získáme URL adresu obrázku
+      const originalPreviewUrl = firstDesign?.previewUrl || '';
+      console.log(`Původní URL obrázku pro produkt ${product.title}: ${originalPreviewUrl}`);
+      
+      // Zajistíme, že URL adresa začíná na https://
+      let processedPreviewUrl = '';
+      if (originalPreviewUrl) {
+        if (originalPreviewUrl.startsWith('http')) {
+          processedPreviewUrl = originalPreviewUrl;
+        } else {
+          processedPreviewUrl = `https://${originalPreviewUrl}`;
+        }
+      }
+      console.log(`Zpracovaná URL obrázku pro produkt ${product.title}: ${processedPreviewUrl}`);
+      
       // Vraťmeme formátovaný produkt
       return {
         id: product.id,
         title: product.title,
         description: product.description,
-        previewUrl: firstDesign?.previewUrl || '',
+        previewUrl: processedPreviewUrl,
         price: firstVariant?.price || 0,
         variants: product.variants,
         designs: product.designs

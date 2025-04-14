@@ -10,6 +10,7 @@ export async function GET() {
     // Získání doporučených produktů z databáze
     const featuredProducts = await prisma.product.findMany({
       where: {
+        isFeatured: true,
         isActive: true,
       },
       include: {
@@ -33,11 +34,26 @@ export async function GET() {
         price: await convertEurToCzk(variant.price)
       })));
 
+      // Získáme URL adresu obrázku
+      const originalPreviewUrl = product.designs[0]?.previewUrl || '';
+      console.log(`Původní URL obrázku pro produkt ${product.title}: ${originalPreviewUrl}`);
+      
+      // Zajistíme, že URL adresa začíná na https://
+      let processedPreviewUrl = '';
+      if (originalPreviewUrl) {
+        if (originalPreviewUrl.startsWith('http')) {
+          processedPreviewUrl = originalPreviewUrl;
+        } else {
+          processedPreviewUrl = `https://${originalPreviewUrl}`;
+        }
+      }
+      console.log(`Zpracovaná URL obrázku pro produkt ${product.title}: ${processedPreviewUrl}`);
+
       return {
         id: product.id,
         title: product.title,
         description: product.description,
-        previewUrl: product.designs[0]?.previewUrl || '',
+        previewUrl: processedPreviewUrl,
         price: product.variants[0]?.price ? await convertEurToCzk(product.variants[0].price) : 0,
         variants: convertedVariants,
         designs: product.designs,

@@ -23,9 +23,46 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
         }
         
         const data = await response.json();
-        setProducts(data);
+        console.log('Načtená data z API:', data);
+        
+        // Kontrola a zpracování URL adres obrázků
+        const processedData = data.map((product: FormattedProduct) => {
+          console.log(`Zpracovávám produkt: ${product.title}`);
+          console.log(`Původní URL obrázku: ${product.previewUrl}`);
+          
+          let processedUrl = product.previewUrl;
+          
+          // Pokud URL neexistuje nebo je prázdná
+          if (!processedUrl) {
+            console.log(`Produkt ${product.title} nemá URL obrázku`);
+            return {
+              ...product,
+              previewUrl: '/images/placeholder.jpg'
+            };
+          }
+
+          // Kontrola, zda URL začíná protokolem
+          if (!processedUrl.startsWith('http')) {
+            processedUrl = `https://${processedUrl}`;
+            console.log(`Upravená URL: ${processedUrl}`);
+          }
+
+          // Kontrola, zda URL není relativní cesta
+          if (processedUrl.startsWith('/')) {
+            processedUrl = `${window.location.origin}${processedUrl}`;
+            console.log(`Převedeno na absolutní URL: ${processedUrl}`);
+          }
+
+          return {
+            ...product,
+            previewUrl: processedUrl
+          };
+        });
+        
+        console.log('Zpracovaná data produktů:', processedData);
+        setProducts(processedData);
       } catch (error) {
-        console.error('Error fetching latest products:', error);
+        console.error('Chyba při načítání nejnovějších produktů:', error);
         setError('Nepodařilo se načíst nejnovější produkty. Zkuste to prosím později.');
       } finally {
         setIsLoading(false);
@@ -45,6 +82,23 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
         price: product.price,
         image: product.previewUrl || ''
       });
+    }
+  };
+
+  const processImageUrl = (url: string | null): string => {
+    if (!url) {
+      console.log('Chybí URL obrázku, používám placeholder');
+      return '/images/placeholder.jpg';
+    }
+
+    try {
+      // Zajistíme, že URL začíná na https://
+      const processedUrl = url.startsWith('http') ? url : `https://${url}`;
+      console.log(`Zpracovaná URL obrázku: ${processedUrl}`);
+      return processedUrl;
+    } catch (error) {
+      console.error('Chyba při zpracování URL obrázku:', error);
+      return '/images/placeholder.jpg';
     }
   };
 
@@ -69,23 +123,19 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {products.map((product) => (
         <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
-          <div className="aspect-square overflow-hidden">
-            {product.previewUrl ? (
-              <Link href={`/products/${product.id}`}>
-                <div className="relative w-full h-full">
-                  <Image
-                    src={product.previewUrl}
-                    alt={product.title}
-                    fill
-                    className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
-                  />
-                </div>
-              </Link>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
-                Obrázek produktu
-              </div>
-            )}
+          <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
+            <Image
+              src={processImageUrl(product.previewUrl)}
+              alt={product.title}
+              width={500}
+              height={500}
+              className="h-full w-full object-cover object-center group-hover:opacity-75"
+              onError={(e) => {
+                console.error(`Chyba při načítání obrázku pro produkt ${product.title}:`, e);
+                const target = e.target as HTMLImageElement;
+                target.src = '/images/placeholder.jpg';
+              }}
+            />
           </div>
          
           <div className="p-4">

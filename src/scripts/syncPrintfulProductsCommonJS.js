@@ -176,7 +176,7 @@ async function syncPrintfulProducts() {
                   name: `Design pro ${productName}`,
                   printfulFileId: syncProduct.id.toString(),
                   previewUrl: thumbnailUrl,
-                  products: {
+                  product: {
                     connect: { id: newProduct.id }
                   }
                 }
@@ -261,7 +261,7 @@ async function syncPrintfulProducts() {
                     name: `Design pro ${productName}`,
                     printfulFileId: syncProduct.id.toString(),
                     previewUrl: thumbnailUrl,
-                    products: {
+                    product: {
                       connect: { id: existingProduct.id }
                     }
                   }

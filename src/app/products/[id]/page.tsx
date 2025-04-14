@@ -1,12 +1,17 @@
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Product, ProductVariant, Design } from '@prisma/client';
 import ProductDetail from '@/components/ProductDetail';
 import ProductSkeleton from '@/components/ProductSkeleton';
 import { convertEurToCzk } from '@/utils/currency';
 
+type ProductWithRelations = Product & {
+  variants: (ProductVariant & { price: number })[];
+  designs: Design[];
+};
+
 // Pro využití v app routeru je lepší načítat data přímo v komponentě stránky
-async function getProduct(id) {
+async function getProduct(id: string): Promise<ProductWithRelations | null> {
   const prisma = new PrismaClient();
  
   try {
@@ -41,8 +46,12 @@ async function getProduct(id) {
   }
 }
 
+type GenerateMetadataProps = {
+  params: { id: string };
+};
+
 // Generování dynamických metadat pro detail produktu
-export async function generateMetadata({ params }) {
+export async function generateMetadata({ params }: GenerateMetadataProps) {
   const product = await getProduct(params.id);
  
   if (!product) {
@@ -65,7 +74,11 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function ProductPage({ params }) {
+type ProductPageProps = {
+  params: { id: string };
+};
+
+export default async function ProductPage({ params }: ProductPageProps) {
   const product = await getProduct(params.id);
  
   if (!product) {
@@ -79,4 +92,4 @@ export default async function ProductPage({ params }) {
       </Suspense>
     </div>
   );
-}
+} 

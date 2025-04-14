@@ -180,6 +180,14 @@ async function syncPrintfulProducts() {
           }
         }
         
+        // Zajistíme, že URL adresa začíná na https://
+        if (thumbnailUrl) {
+          if (!thumbnailUrl.startsWith('http')) {
+            thumbnailUrl = `https://${thumbnailUrl}`;
+          }
+          console.log(`Zpracovaná URL obrázku pro produkt ${productName}: ${thumbnailUrl}`);
+        }
+        
         // Zkontrolujeme, zda produkt existuje v databázi
         const existingProduct = await prisma.product.findFirst({
           where: { 
@@ -209,12 +217,13 @@ async function syncPrintfulProducts() {
           
           // Pak přidáme design, pokud máme thumbnail
           if (thumbnailUrl) {
+            console.log(`Ukládám design pro produkt ${productName} s URL: ${thumbnailUrl}`);
+            
             await prisma.design.create({
               data: {
                 name: `Design pro ${productName}`,
                 printfulFileId: syncProduct.id.toString(),
                 previewUrl: thumbnailUrl,
-                // Oprava: Použít správné propojení pro design
                 product: {
                   connect: { id: newProduct.id }
                 }

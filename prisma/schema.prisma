@@ -65,10 +65,10 @@ model Design {
   name          String
   previewUrl    String
   printfulFileId String
-  productId     String
+  productId     String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  product       Product  @relation(fields: [productId], references: [id])
+  product       Product?  @relation(fields: [productId], references: [id])
 }
 
 model Order {

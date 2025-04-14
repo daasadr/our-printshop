@@ -1,9 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { ProductWithRelations, FormattedProduct } from '@/types/prisma';
+import { PrismaClient, Product, ProductVariant, Design } from '@prisma/client';
 import { convertEurToCzk } from '@/utils/currency';
 
 const prisma = new PrismaClient();
+
+type ProductWithRelations = Product & {
+  variants: (ProductVariant & { price: number })[];
+  designs: Design[];
+};
+
+type FormattedProduct = {
+  id: string;
+  title: string;
+  description: string;
+  previewUrl: string;
+  price: number;
+  variants: (ProductVariant & { price: number })[];
+  designs: Design[];
+};
 
 export async function GET(req: NextRequest) {
   try {
@@ -40,11 +54,26 @@ export async function GET(req: NextRequest) {
         price: await convertEurToCzk(variant.price)
       })));
 
+      // Získáme URL adresu obrázku
+      const originalPreviewUrl = product.designs[0]?.previewUrl || '';
+      console.log(`Původní URL obrázku pro produkt ${product.title}: ${originalPreviewUrl}`);
+      
+      // Zajistíme, že URL adresa začíná na https://
+      let processedPreviewUrl = '';
+      if (originalPreviewUrl) {
+        if (originalPreviewUrl.startsWith('http')) {
+          processedPreviewUrl = originalPreviewUrl;
+        } else {
+          processedPreviewUrl = `https://${originalPreviewUrl}`;
+        }
+      }
+      console.log(`Zpracovaná URL obrázku pro produkt ${product.title}: ${processedPreviewUrl}`);
+
       return {
         id: product.id,
         title: product.title,
         description: product.description,
-        previewUrl: product.designs[0]?.previewUrl || '',
+        previewUrl: processedPreviewUrl,
         price: product.variants[0]?.price ? await convertEurToCzk(product.variants[0].price) : 0,
         variants: convertedVariants,
         designs: product.designs
