@@ -48,10 +48,9 @@ export async function uploadDesign(file: File) {
   const response = await fetch(`${PRINTFUL_API_URL}/files`, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${PRINTFUL_API_KEY}`
+      'Authorization': `Bearer ${PRINTFUL_API_KEY}`,
       // Nebudeme nastavovat Content-Type, to udělá FormData automaticky
     },
-    // @ts-ignore - Ignorujeme tuto typovou chybu, protože FormData je kompatibilní s Fetch API
     body: formData
   });
 

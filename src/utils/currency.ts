@@ -1,8 +1,5 @@
 import { getCurrentRate } from './exchangeRate';
 
-// Fixní kurz EUR/CZK - v produkci by se měl aktualizovat z API
-const EUR_TO_CZK_RATE = 25;
-
 // Formátování ceny v CZK
 export function formatPriceCZK(price: number): string {
   return new Intl.NumberFormat('cs-CZ', {
