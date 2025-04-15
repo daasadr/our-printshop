@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { uploadDesign } from '@/services/printful';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { PrintfulFileResponse } from '@/types/printful';
 
 const prisma = new PrismaClient();
 
@@ -47,19 +48,14 @@ export async function POST(req: NextRequest) {
     }
 
     // Nahrání designu do Printful
-    const printfulResponse = await uploadDesign(file);
+    const printfulResponse = await uploadDesign(file) as { result: PrintfulFileResponse };
 
-    // Uložení designu do databáze - oprava schématu podle Prisma modelu
+    // Uložení designu do databáze
     const design = await prisma.design.create({
       data: {
         name,
-        printfulFileId: String(printfulResponse.id),
-        previewUrl: printfulResponse.url,
-        // Přidáno: Vytvořit design jako "samostatný" bez propojení s produktem
-        // nebo použít connect prázdný které odpovídá vaší Prisma schématu
-        product: { 
-          connect: { id: "placeholder" } // Toto upravte podle vašeho schématu
-        }
+        printfulFileId: String(printfulResponse.result.id),
+        previewUrl: printfulResponse.result.url,
       }
     });
 
