@@ -12,32 +12,35 @@ export async function POST(req: NextRequest) {
     const { sessionId } = await req.json();
     
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
-      expand: ['shipping']
+      expand: ['shipping_details', 'customer_details']
     });
     
-    if (!session || !session.shipping || !session.customer_email) {
+    if (!session || !session.shipping_details || !session.customer_details?.email) {
       return NextResponse.json(
         { error: 'Invalid session data' },
         { status: 400 }
       );
     }
 
+    const shippingDetails = session.shipping_details;
+    const customerEmail = session.customer_details.email;
+
     // Create order in database
     const order = await prisma.order.create({
       data: {
         stripeSessionId: session.id,
-        email: session.customer_email,
+        email: customerEmail,
         total: (session.amount_total || 0) / 100,
         status: 'pending',
         shippingAddress: {
           create: {
-            name: session.shipping.name,
-            street: session.shipping.address.line1,
-            street2: session.shipping.address.line2 || null,
-            city: session.shipping.address.city,
-            state: session.shipping.address.state,
-            postalCode: session.shipping.address.postal_code,
-            country: session.shipping.address.country,
+            name: shippingDetails.name || 'Unknown',
+            street: shippingDetails.address?.line1 || '',
+            street2: shippingDetails.address?.line2 || null,
+            city: shippingDetails.address?.city || '',
+            state: shippingDetails.address?.state || '',
+            postalCode: shippingDetails.address?.postal_code || '',
+            country: shippingDetails.address?.country || '',
           },
         },
       },
