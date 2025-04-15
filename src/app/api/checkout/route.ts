@@ -28,19 +28,20 @@ export async function POST(req: NextRequest) {
     // Create order in database
     const order = await prisma.order.create({
       data: {
-        stripeSessionId: session.id,
-        email: customerEmail,
-        total: (session.amount_total || 0) / 100,
+        stripePaymentIntentId: session.payment_intent as string,
         status: 'pending',
-        shippingAddress: {
+        total: (session.amount_total || 0) / 100,
+        shippingInfo: {
           create: {
             name: shippingDetails.name || 'Unknown',
-            street: shippingDetails.address?.line1 || '',
-            street2: shippingDetails.address?.line2 || null,
+            address1: shippingDetails.address?.line1 || '',
+            address2: shippingDetails.address?.line2 || null,
             city: shippingDetails.address?.city || '',
             state: shippingDetails.address?.state || '',
-            postalCode: shippingDetails.address?.postal_code || '',
+            zip: shippingDetails.address?.postal_code || '',
             country: shippingDetails.address?.country || '',
+            email: customerEmail,
+            phone: shippingDetails.phone || null,
           },
         },
       },
