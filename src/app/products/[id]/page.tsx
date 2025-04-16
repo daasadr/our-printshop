@@ -1,12 +1,12 @@
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
-import { PrismaClient, Product, ProductVariant, Design } from '@prisma/client';
+import { PrismaClient, Product, Variant, Design } from '@prisma/client';
 import ProductDetail from '@/components/ProductDetail';
 import ProductSkeleton from '@/components/ProductSkeleton';
 import { convertEurToCzk } from '@/utils/currency';
 
 type ProductWithRelations = Product & {
-  variants: (ProductVariant & { price: number })[];
+  variants: (Variant & { price: number })[];
   designs: Design[];
 };
 
