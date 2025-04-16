@@ -2,11 +2,18 @@
 
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import type { IConfettiOptions } from 'react-confetti';
 
 // Dynamicky importujeme Confetti komponentu, aby fungovala na klientovi
 const Confetti = dynamic(() => import('react-confetti'), {
   ssr: false
 });
+
+// Definujeme vlastní typy pro Confetti props
+interface ConfettiProps extends Partial<IConfettiOptions> {
+  width: number;
+  height: number;
+}
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -93,42 +100,41 @@ const ContactForm = () => {
     }));
   };
 
+  const confettiProps: ConfettiProps = {
+    width: windowSize.width,
+    height: windowSize.height,
+    recycle: false,
+    numberOfPieces: 1000,
+    gravity: 0.5,
+    initialVelocityY: 50,
+    initialVelocityX: 20,
+    colors: [
+      '#4CAF50', // zelená
+      '#8BC34A', // světle zelená
+      '#CDDC39', // limetková
+      '#FFEB3B', // žlutá
+      '#FFC107', // zlatá
+      '#FF9800', // oranžová
+      '#FF5722', // tmavě oranžová
+      '#E91E63', // růžová
+      '#9C27B0', // fialová
+      '#673AB7', // tmavě fialová
+      '#3F51B5', // indigová
+      '#2196F3', // modrá
+      '#03A9F4', // světle modrá
+      '#00BCD4', // tyrkysová
+      '#009688', // teal
+      '#FF4081', // růžová
+      '#FF5252', // červená
+      '#FF1744', // tmavě červená
+      '#D50000', // karmínová
+      '#C51162'  // vínová
+    ]
+  };
+
   return (
     <>
-      {showConfetti && (
-        <Confetti
-          width={windowSize.width}
-          height={windowSize.height}
-          recycle={false}
-          numberOfPieces={1000}
-          gravity={0.5}
-          initialVelocityY={50}
-          initialVelocityX={20}
-          spread={360}
-          colors={[
-            '#4CAF50', // zelená
-            '#8BC34A', // světle zelená
-            '#CDDC39', // limetková
-            '#FFEB3B', // žlutá
-            '#FFC107', // zlatá
-            '#FF9800', // oranžová
-            '#FF5722', // tmavě oranžová
-            '#E91E63', // růžová
-            '#9C27B0', // fialová
-            '#673AB7', // tmavě fialová
-            '#3F51B5', // indigová
-            '#2196F3', // modrá
-            '#03A9F4', // světle modrá
-            '#00BCD4', // tyrkysová
-            '#009688', // teal
-            '#FF4081', // růžová
-            '#FF5252', // červená
-            '#FF1744', // tmavě červená
-            '#D50000', // karmínová
-            '#C51162'  // vínová
-          ]}
-        />
-      )}
+      {showConfetti && <Confetti {...confettiProps} />}
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
