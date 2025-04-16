@@ -21,7 +21,11 @@ async function getCartItems(): Promise<CartItem[]> {
         include: {
           variant: {
             include: {
-              product: true
+              product: {
+                include: {
+                  designs: true
+                }
+              }
             }
           }
         }
@@ -36,7 +40,7 @@ async function getCartItems(): Promise<CartItem[]> {
     quantity: item.quantity,
     name: item.variant.product.title,
     price: item.variant.price,
-    image: item.variant.product.designs[0]?.previewUrl
+    image: item.variant.product.designs[0]?.previewUrl || ''
   }));
 }
 
