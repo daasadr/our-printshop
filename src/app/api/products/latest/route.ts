@@ -19,13 +19,16 @@ type FormattedProduct = {
   designs: Design[];
 };
 
-export async function GET(req: NextRequest) {
+export async function GET() {
+  // Dočasně vracíme prázdné pole, dokud nebude implementována funkce nejnovějších produktů
+  return NextResponse.json([]);
+
+  // Původní implementace:
+  /*
+  const prisma = new PrismaClient();
+  
   try {
-    const url = new URL(req.url);
-    const limit = parseInt(url.searchParams.get('limit') || '4'); // Výchozí limit je 4 produkty
-    
-    // Získání nejnovějších produktů z databáze
-    const latestProducts = await prisma.product.findMany({
+    const products = await prisma.product.findMany({
       where: {
         isActive: true,
       },
@@ -40,25 +43,19 @@ export async function GET(req: NextRequest) {
         },
         designs: true,
       },
-      take: limit,
       orderBy: {
-        createdAt: 'desc', // Řazení podle data vytvoření (nejnovější první)
+        createdAt: 'desc',
       },
-    }) as ProductWithRelations[];
+      take: 4,
+    });
 
-    // Formátování dat pro klienta
-    const formattedProducts: FormattedProduct[] = await Promise.all(latestProducts.map(async product => {
-      // Převedeme ceny všech variant
+    const formattedProducts = await Promise.all(products.map(async product => {
       const convertedVariants = await Promise.all(product.variants.map(async variant => ({
         ...variant,
         price: await convertEurToCzk(variant.price)
       })));
 
-      // Získáme URL adresu obrázku
       const originalPreviewUrl = product.designs[0]?.previewUrl || '';
-      console.log(`Původní URL obrázku pro produkt ${product.title}: ${originalPreviewUrl}`);
-      
-      // Zajistíme, že URL adresa začíná na https://
       let processedPreviewUrl = '';
       if (originalPreviewUrl) {
         if (originalPreviewUrl.startsWith('http')) {
@@ -67,7 +64,6 @@ export async function GET(req: NextRequest) {
           processedPreviewUrl = `https://${originalPreviewUrl}`;
         }
       }
-      console.log(`Zpracovaná URL obrázku pro produkt ${product.title}: ${processedPreviewUrl}`);
 
       return {
         id: product.id,
@@ -76,7 +72,14 @@ export async function GET(req: NextRequest) {
         previewUrl: processedPreviewUrl,
         price: product.variants[0]?.price ? await convertEurToCzk(product.variants[0].price) : 0,
         variants: convertedVariants,
-        designs: product.designs
+        designs: product.designs,
+        isActive: product.isActive,
+        createdAt: product.createdAt,
+        updatedAt: product.updatedAt,
+        category: product.category,
+        categoryId: product.categoryId,
+        printfulId: product.printfulId,
+        printfulSync: product.printfulSync
       };
     }));
 
@@ -84,10 +87,11 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error('Error fetching latest products:', error);
     return NextResponse.json(
-      { message: 'Chyba při načítání nejnovějších produktů' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   } finally {
     await prisma.$disconnect();
   }
+  */
 }
