@@ -107,19 +107,20 @@ export async function POST(req: NextRequest) {
       // Uložení objednávky do naší databáze
       await prisma.order.create({
         data: {
-          stripeSessionId: session.id,
-          printfulOrderId: printfulOrder.result.id,
           status: 'PAID',
           total: session.amount_total ? session.amount_total / 100 : 0,
-          customerEmail: session.customer_details?.email || '',
-          shippingAddress: {
+          printfulOrderId: printfulOrder.result.id.toString(),
+          shippingInfo: {
             create: {
               name: session.shipping_details?.name || '',
               address1: session.shipping_details?.address?.line1 || '',
-              address2: session.shipping_details?.address?.line2 || '',
+              address2: session.shipping_details?.address?.line2 || null,
               city: session.shipping_details?.address?.city || '',
+              state: null,
               country: session.shipping_details?.address?.country || '',
               zip: session.shipping_details?.address?.postal_code || '',
+              email: session.customer_details?.email || '',
+              phone: session.customer_details?.phone || null
             }
           }
         }
