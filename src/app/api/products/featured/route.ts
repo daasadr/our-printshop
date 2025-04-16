@@ -1,13 +1,19 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { ProductWithRelations, FormattedProduct } from '@/types/prisma';
-import { convertEurToCzk } from '@/utils/currency';
 
-const prisma = new PrismaClient();
+// Dočasně deaktivovaná implementace featured products
+// import { PrismaClient } from '@prisma/client';
+// import { ProductWithRelations, FormattedProduct } from '@/types/prisma';
+// import { convertEurToCzk } from '@/utils/currency';
+// 
+// const prisma = new PrismaClient();
 
 export async function GET() {
+  // Dočasně vracíme prázdné pole, dokud nebude implementována funkce featured products
+  return NextResponse.json([]);
+  
+  // Původní implementace:
+  /*
   try {
-    // Získání doporučených produktů z databáze
     const featuredProducts = await prisma.product.findMany({
       where: {
         isFeatured: true,
@@ -26,19 +32,14 @@ export async function GET() {
       },
     }) as ProductWithRelations[];
 
-    // Formátování dat pro klienta
     const formattedProducts: FormattedProduct[] = await Promise.all(featuredProducts.map(async product => {
-      // Převedeme ceny všech variant
       const convertedVariants = await Promise.all(product.variants.map(async variant => ({
         ...variant,
         price: await convertEurToCzk(variant.price)
       })));
 
-      // Získáme URL adresu obrázku
       const originalPreviewUrl = product.designs[0]?.previewUrl || '';
-      console.log(`Původní URL obrázku pro produkt ${product.title}: ${originalPreviewUrl}`);
       
-      // Zajistíme, že URL adresa začíná na https://
       let processedPreviewUrl = '';
       if (originalPreviewUrl) {
         if (originalPreviewUrl.startsWith('http')) {
@@ -47,7 +48,6 @@ export async function GET() {
           processedPreviewUrl = `https://${originalPreviewUrl}`;
         }
       }
-      console.log(`Zpracovaná URL obrázku pro produkt ${product.title}: ${processedPreviewUrl}`);
 
       return {
         id: product.id,
@@ -77,4 +77,5 @@ export async function GET() {
   } finally {
     await prisma.$disconnect();
   }
+  */
 }
