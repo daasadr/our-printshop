@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import Stripe from 'stripe';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-02-24.acacia', // aktualizujte podle nejnovější verze
-});
+// Dočasně zakomentovaná Stripe implementace
+// import Stripe from 'stripe';
+// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+//   apiVersion: '2025-02-24.acacia',
+// });
+
 const prisma = new PrismaClient();
 
 // Opraveno: odstranění nepoužívaných typů
@@ -16,7 +18,6 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { items, shippingInfo } = body;
     
-    // Volitelně: Získání uživatelské session pro přihlášené uživatele
     const session = await getServerSession(authOptions);
     
     // 1. Ověřit, že všechny produkty existují a jsou dostupné
@@ -57,7 +58,7 @@ export async function POST(req: NextRequest) {
     // 3. Vytvořit order v databázi
     const order = await prisma.order.create({
       data: {
-        status: 'draft',
+        status: 'pending', // Změněno z 'draft' na 'pending', protože nemáme Stripe
         total,
         items: {
           create: orderItems
@@ -76,29 +77,30 @@ export async function POST(req: NextRequest) {
         } : {})
       }
     });
-    
+
+    // Dočasně zakomentovaná Stripe implementace
     // 4. Vytvořit platební záměr Stripe
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(total * 100), // Stripe používá centy
-      currency: 'czk',
-      metadata: {
-        orderId: order.id
-      }
-    });
+    // const paymentIntent = await stripe.paymentIntents.create({
+    //   amount: Math.round(total * 100),
+    //   currency: 'czk',
+    //   metadata: {
+    //     orderId: order.id
+    //   }
+    // });
     
     // 5. Aktualizovat objednávku s klientským tajemstvím
-    await prisma.order.update({
-      where: { id: order.id },
-      data: {
-        stripePaymentIntentId: paymentIntent.id,
-        stripeClientSecret: paymentIntent.client_secret
-      }
-    });
+    // await prisma.order.update({
+    //   where: { id: order.id },
+    //   data: {
+    //     stripePaymentIntentId: paymentIntent.id,
+    //     stripeClientSecret: paymentIntent.client_secret
+    //   }
+    // });
     
-    // 6. Vrátit klientské tajemství pro dokončení platby
+    // Vrátit ID objednávky (bez Stripe client secret)
     return NextResponse.json({
       orderId: order.id,
-      clientSecret: paymentIntent.client_secret
+      message: 'Objednávka byla úspěšně vytvořena'
     });
     
   } catch (error) {
