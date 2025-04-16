@@ -4,11 +4,11 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
-import { ProductWithDetails } from '@/types/prisma';
+import { FormattedProduct } from '@/types/prisma';
 import { formatPriceCZK } from '@/utils/currency';
 
 const FeaturedProducts: React.FC = () => {
-  const [products, setProducts] = useState<ProductWithDetails[]>([]);
+  const [products, setProducts] = useState<FormattedProduct[]>([]);
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -25,7 +25,7 @@ const FeaturedProducts: React.FC = () => {
     fetchProducts();
   }, []);
 
-  const handleAddToCart = async (product: ProductWithDetails) => {
+  const handleAddToCart = async (product: FormattedProduct) => {
     if (!product.variants || product.variants.length === 0) return;
 
     const variant = product.variants[0];
