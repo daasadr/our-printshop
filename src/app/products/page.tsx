@@ -47,9 +47,17 @@ async function getProducts(category: string | null = null): Promise<FormattedPro
         : 0;
       
       // Najdeme URL pro náhled produktu
-      const previewUrl = product.designs.length > 0
-        ? product.designs[0].previewUrl
-        : '/images/placeholder.jpg';
+      let previewUrl = '/images/placeholder.jpg';
+      if (product.designs.length > 0) {
+        const originalPreviewUrl = product.designs[0].previewUrl;
+        if (originalPreviewUrl) {
+          if (originalPreviewUrl.startsWith('http')) {
+            previewUrl = originalPreviewUrl;
+          } else {
+            previewUrl = `https://${originalPreviewUrl}`;
+          }
+        }
+      }
       
       // Převedeme ceny všech variant na CZK
       const convertedVariants = await Promise.all(product.variants.map(async variant => ({
