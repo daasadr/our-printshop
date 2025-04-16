@@ -19,23 +19,24 @@ async function getCartItems(): Promise<CartItem[]> {
     include: {
       items: {
         include: {
-          product: true,
-          variant: true,
-        },
-      },
-    },
+          variant: {
+            include: {
+              product: true
+            }
+          }
+        }
+      }
+    }
   });
 
   if (!cart) return [];
 
   return cart.items.map(item => ({
-    id: item.id,
-    productId: item.productId,
     variantId: item.variantId,
-    name: item.product.name,
-    price: item.variant.price,
     quantity: item.quantity,
-    image: item.product.image,
+    name: item.variant.product.title,
+    price: item.variant.price,
+    image: item.variant.product.designs[0]?.previewUrl
   }));
 }
 
@@ -66,7 +67,7 @@ export default async function CheckoutPage() {
             
             <div className="space-y-4 mb-6">
               {cartItems.map((item) => (
-                <div key={item.id} className="flex justify-between items-center">
+                <div key={item.variantId} className="flex justify-between items-center">
                   <div>
                     <p className="font-medium">{item.name}</p>
                     <p className="text-sm text-gray-300">Množství: {item.quantity}</p>
