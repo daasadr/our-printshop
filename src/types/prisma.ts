@@ -1,4 +1,4 @@
-import { Product, Design } from '@prisma/client';
+import { Product, Design, Variant } from '@prisma/client';
 
 export type ProductVariant = {
   id: string;
@@ -10,7 +10,7 @@ export type ProductVariant = {
 };
 
 export type ProductWithRelations = Product & {
-  variants: (ProductVariant & { price: number })[];
+  variants: (Variant & { price: number })[];
   designs: Design[];
 };
 
@@ -20,7 +20,7 @@ export type FormattedProduct = {
   description: string;
   previewUrl: string;
   price: number;
-  variants: (ProductVariant & { price: number })[];
+  variants: (Variant & { price: number })[];
   designs: Design[];
   category?: string | null;
   isActive?: boolean;

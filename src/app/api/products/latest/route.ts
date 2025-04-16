@@ -1,32 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient, Product, ProductVariant, Design } from '@prisma/client';
+import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+import { ProductWithRelations, FormattedProduct } from '@/types/prisma';
 import { convertEurToCzk } from '@/utils/currency';
 
 const prisma = new PrismaClient();
 
-type ProductWithRelations = Product & {
-  variants: (ProductVariant & { price: number })[];
-  designs: Design[];
-};
-
-type FormattedProduct = {
-  id: string;
-  title: string;
-  description: string;
-  previewUrl: string;
-  price: number;
-  variants: (ProductVariant & { price: number })[];
-  designs: Design[];
-};
-
 export async function GET() {
-  // Dočasně vracíme prázdné pole, dokud nebude implementována funkce nejnovějších produktů
-  return NextResponse.json([]);
-
-  // Původní implementace:
-  /*
-  const prisma = new PrismaClient();
-  
   try {
     const products = await prisma.product.findMany({
       where: {
@@ -47,9 +26,9 @@ export async function GET() {
         createdAt: 'desc',
       },
       take: 4,
-    });
+    }) as ProductWithRelations[];
 
-    const formattedProducts = await Promise.all(products.map(async product => {
+    const formattedProducts: FormattedProduct[] = await Promise.all(products.map(async product => {
       const convertedVariants = await Promise.all(product.variants.map(async variant => ({
         ...variant,
         price: await convertEurToCzk(variant.price)
@@ -93,5 +72,4 @@ export async function GET() {
   } finally {
     await prisma.$disconnect();
   }
-  */
 }
