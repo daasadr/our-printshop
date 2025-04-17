@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient, Prisma } from '@prisma/client';
 import { ProductWithRelations, FormattedProduct } from '@/types/prisma';
+import { convertEurToCzk } from '@/utils/currency';
 
 const prisma = new PrismaClient();
 
@@ -32,7 +33,7 @@ export async function GET(req: NextRequest) {
     }) as ProductWithRelations[];
     
     // Transformace dat pro klienta s ověřením, že existují potřebná data
-    const formattedProducts: FormattedProduct[] = products.map(product => {
+    const formattedProducts: FormattedProduct[] = await Promise.all(products.map(async product => {
       // Najdeme první aktivní variantu nebo použijeme defaultní hodnoty
       const firstVariant = product.variants && product.variants.length > 0 
         ? product.variants[0] 
@@ -57,6 +58,13 @@ export async function GET(req: NextRequest) {
         }
       }
       console.log(`Zpracovaná URL obrázku pro produkt ${product.title}: ${processedPreviewUrl}`);
+
+      // Konvertujeme ceny z EUR na CZK
+      const priceInCzk = firstVariant?.price ? await convertEurToCzk(firstVariant.price) : 0;
+      const convertedVariants = await Promise.all(product.variants.map(async variant => ({
+        ...variant,
+        price: await convertEurToCzk(variant.price)
+      })));
       
       // Vraťmeme formátovaný produkt
       return {
@@ -64,11 +72,11 @@ export async function GET(req: NextRequest) {
         title: product.title,
         description: product.description,
         previewUrl: processedPreviewUrl,
-        price: firstVariant?.price || 0,
-        variants: product.variants,
+        price: priceInCzk,
+        variants: convertedVariants,
         designs: product.designs
       };
-    });
+    }));
    
     // Vracíme data jako JSON
     return NextResponse.json(formattedProducts);
