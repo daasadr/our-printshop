@@ -16,7 +16,7 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
     const fetchLatestProducts = async () => {
       try {
         setError(null);
-        const response = await fetch(`/api/products/latest?limit=${limit}`);
+        const response = await fetch(`/api/products?limit=${limit}`);
         
         if (!response.ok) {
           throw new Error(`Chyba serveru: ${response.status} ${response.statusText}`);
