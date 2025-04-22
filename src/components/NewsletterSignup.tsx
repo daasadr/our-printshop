@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 
 const NewsletterSignup: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -85,7 +86,7 @@ const NewsletterSignup: React.FC = () => {
         
         <p className="mt-3 text-xs text-gray-500">
           Přihlášením k odběru souhlasíte se zpracováním vašich osobních údajů v souladu s našimi 
-          <a href="/privacy" className="underline ml-1">zásadami ochrany soukromí</a>.
+          <Link href="/privacy-policy" className="underline ml-1">zásadami ochrany soukromí</Link>.
         </p>
       </form>
     </div>

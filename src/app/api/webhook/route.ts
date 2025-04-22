@@ -52,7 +52,14 @@ async function fulfillOrder(orderId: string) {
         variant_id: parseInt(item.variant.printfulVariantId),
         quantity: item.quantity,
         retail_price: item.price.toString()
-      }))
+      })),
+      retail_costs: {
+        currency: 'CZK',
+        subtotal: order.total,
+        discount: 0,
+        shipping: 0,
+        tax: 0
+      }
     };
 
     // 3. Odeslat objednávku do Printful
@@ -113,11 +120,19 @@ export async function POST(req: Request) {
           data: {
             status: 'paid',
             stripePaymentIntentId: session.payment_intent as string,
+            stripeSessionId: session.id
           },
         });
 
         // 2. Odeslat objednávku do Printful
         await fulfillOrder(orderId);
+
+        // 3. Vymazat košík, pokud existuje
+        if (session.metadata?.cartId) {
+          await prisma.cart.delete({
+            where: { id: session.metadata.cartId }
+          });
+        }
 
         break;
       }

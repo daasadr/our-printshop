@@ -2,15 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import Cart from '../Cart';
+import { useCart } from '@/hooks/useCart';
 import { FiMenu, FiX, FiUser, FiHeart } from 'react-icons/fi';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
+  const { items } = useCart();
 
   // Sledování scrollu pro změnu stylu headeru
   useEffect(() => {
@@ -39,7 +39,7 @@ const Header: React.FC = () => {
           <Link href="/" className="flex-shrink-0">
             <div className="h-10 w-32 relative">
               {/* Zde by bylo vaše logo */}
-              <div className="font-bold text-xl">VášBrand</div>
+              <div className="font-bold text-xl">HappyWilderness</div>
             </div>
           </Link>
 
@@ -72,9 +72,9 @@ const Header: React.FC = () => {
               O nás
             </Link>
             <Link
-              href="/contact"
+              href="/kontakt"
               className={`text-sm font-medium ${
-                isActive('/contact') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
+                isActive('/kontakt') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
               }`}
             >
               Kontakt
@@ -89,7 +89,12 @@ const Header: React.FC = () => {
             <Link href="/wishlist" className="hidden sm:block p-2 text-gray-700 hover:text-blue-600">
               <FiHeart className="w-5 h-5" />
             </Link>
-            <Cart />
+            <Link
+              href="/cart"
+              className="text-gray-700 hover:text-blue-600"
+            >
+              Košík ({items.length})
+            </Link>
 
             {/* Mobilní menu toggle */}
             <button
@@ -136,9 +141,9 @@ const Header: React.FC = () => {
                 O nás
               </Link>
               <Link
-                href="/contact"
-                className={`text-base ${
-                  isActive('/contact') ? 'text-blue-600 font-medium' : 'text-gray-700'
+                href="/kontakt"
+                className={`block px-3 py-2 rounded-md text-base font-medium ${
+                  isActive('/kontakt') ? 'text-blue-600 font-medium' : 'text-gray-700'
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >

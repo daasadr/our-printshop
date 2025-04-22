@@ -38,7 +38,7 @@ const Footer: React.FC = () => {
               <nav className="flex flex-col space-y-2">
                 <Link href="/products" className="text-gray-600 hover:text-blue-600">Produkty</Link>
                 <Link href="/about" className="text-gray-600 hover:text-blue-600">O nás</Link>
-                <Link href="/contact" className="text-gray-600 hover:text-blue-600">Kontakt</Link>
+                <Link href="/kontakt" className="text-gray-600 hover:text-blue-600">Kontakt</Link>
                 <Link href="/terms" className="text-gray-600 hover:text-blue-600">Obchodní podmínky</Link>
                 <Link href="/privacy" className="text-gray-600 hover:text-blue-600">Ochrana soukromí</Link>
               </nav>

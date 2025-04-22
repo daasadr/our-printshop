@@ -1,36 +1,121 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HappyWilderness Print Shop
 
-## Getting Started
+Modern e-commerce platform for custom printed products.
 
-First, run the development server:
+## Features
+
+- Product catalog with categories
+- Shopping cart functionality
+- Secure checkout with Stripe
+- Printful integration for product fulfillment
+- Responsive design
+- Newsletter signup
+- Order management
+
+## Prerequisites
+
+- Node.js 18.x or later
+- PostgreSQL database
+- Stripe account
+- Printful account
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and fill in the required values:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Required environment variables:
+- `DATABASE_URL`: PostgreSQL connection string
+- `STRIPE_SECRET_KEY`: Your Stripe secret key
+- `STRIPE_PUBLISHABLE_KEY`: Your Stripe publishable key
+- `STRIPE_WEBHOOK_SECRET`: Your Stripe webhook secret
+- `PRINTFUL_API_KEY`: Your Printful API key
+- `NEXT_PUBLIC_BASE_URL`: Your application's base URL
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Development
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Install dependencies:
+```bash
+npm install
+```
 
-## Learn More
+2. Set up the database:
+```bash
+npx prisma migrate dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+3. Sync products with Printful:
+```bash
+npm run sync-printful
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. Start the development server:
+```bash
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Production Deployment
 
-## Deploy on Vercel
+### Vercel Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Push your code to a Git repository (GitHub, GitLab, or Bitbucket)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2. Create a new project on Vercel and connect your repository
+
+3. Configure environment variables in Vercel:
+   - Add all variables from `.env.example`
+   - Set `NODE_ENV=production`
+   - Update `NEXT_PUBLIC_BASE_URL` to your production URL
+
+4. Configure build settings:
+   - Build Command: `npm run build`
+   - Output Directory: `.next`
+   - Install Command: `npm install`
+
+5. Deploy your application
+
+### Database Setup
+
+1. Create a PostgreSQL database (e.g., using Supabase, Railway, or your preferred provider)
+
+2. Update the `DATABASE_URL` in your environment variables
+
+3. Run migrations:
+```bash
+npx prisma migrate deploy
+```
+
+### Stripe Setup
+
+1. Create a Stripe account and get your API keys
+
+2. Set up webhook endpoints:
+   - Go to Stripe Dashboard > Developers > Webhooks
+   - Add endpoint: `https://your-domain.com/api/webhook`
+   - Select events: `checkout.session.completed`
+   - Copy the webhook secret to `STRIPE_WEBHOOK_SECRET`
+
+### Printful Setup
+
+1. Create a Printful account and get your API key
+
+2. Update `PRINTFUL_API_KEY` in your environment variables
+
+3. Sync products:
+```bash
+npm run sync-printful
+```
+
+## Maintenance
+
+- Regularly sync products with Printful to keep inventory up to date
+- Monitor Stripe webhook events for order processing
+- Keep dependencies updated
+- Monitor error logs and application performance
+
+## Support
+
+For support, please contact support@happywilderness.cz

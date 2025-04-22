@@ -4,60 +4,40 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
-import { Product, Variant, Design } from '@/types/prisma';
-
-
-// Typ pro produkt s variantami a designy
-interface ProductWithDetails extends Product {
-  variants: Variant[];
-  designs: Design[];
-}
-
-
+import { FormattedProduct } from '@/types/prisma';
+import { formatPriceCZK } from '@/utils/currency';
 
 const FeaturedProducts: React.FC = () => {
-  const [products, setProducts] = useState<ProductWithDetails[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [products, setProducts] = useState<FormattedProduct[]>([]);
   const { addToCart } = useCart();
 
   useEffect(() => {
-    const fetchFeaturedProducts = async () => {
+    const fetchProducts = async () => {
       try {
         const response = await fetch('/api/products/featured');
-        if (!response.ok) {
-          throw new Error('Failed to fetch featured products');
-        }
         const data = await response.json();
         setProducts(data);
       } catch (error) {
         console.error('Error fetching featured products:', error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
-    fetchFeaturedProducts();
+    fetchProducts();
   }, []);
 
-  const handleAddToCart = (product: ProductWithDetails) => {
-    // Vybereme první variantu produktu pro přidání do košíku
-    const variant = product.variants[0];
-    if (!variant) return;
+  const handleAddToCart = async (product: FormattedProduct) => {
+    if (!product.variants || product.variants.length === 0) return;
 
+    const variant = product.variants[0];
     addToCart({
       variantId: variant.id,
       quantity: 1,
-      name: `${product.title} - ${variant.name}`,
+      name: product.title,
       price: variant.price,
-      image: product.designs[0]?.previewUrl || ''
+      image: product.designs && product.designs.length > 0 ? product.designs[0].previewUrl : ''
     });
   };
 
-  if (isLoading) {
-    return <ProductsLoading />;
-  }
-
-  // Pokud nemáme žádné produkty, zobrazíme placeholdery
   if (products.length === 0) {
     return <ProductPlaceholders />;
   }
@@ -96,7 +76,7 @@ const FeaturedProducts: React.FC = () => {
               {product.variants.length > 0 && `${product.variants.length} variant${product.variants.length > 1 ? 'y' : 'a'}`}
             </p>
             <p className="mt-2 text-sm font-medium text-gray-900">
-              {product.variants[0]?.price.toFixed(2)} Kč
+              {product.variants[0] && formatPriceCZK(product.variants[0].price)}
             </p>
           </div>
           
@@ -108,23 +88,6 @@ const FeaturedProducts: React.FC = () => {
               Do košíku
             </button>
           </div>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-// Komponenta pro načítání produktů
-const ProductsLoading: React.FC = () => {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {[1, 2, 3, 4].map((index) => (
-        <div key={index} className="animate-pulse">
-          <div className="aspect-square bg-gray-200 rounded-lg mb-4"></div>
-          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
-          <div className="h-10 bg-gray-200 rounded"></div>
         </div>
       ))}
     </div>
@@ -170,7 +133,7 @@ const ProductPlaceholders: React.FC = () => {
           <div className="mt-4">
             <h3 className="text-sm font-medium text-gray-900">{product.title}</h3>
             <p className="mt-1 text-sm text-gray-500">Více variant</p>
-            <p className="mt-2 text-sm font-medium text-gray-900">{product.price.toFixed(2)} Kč</p>
+            <p className="mt-2 text-sm font-medium text-gray-900">{formatPriceCZK(product.price)}</p>
           </div>
           
           <div className="mt-4">

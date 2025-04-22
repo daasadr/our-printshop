@@ -44,7 +44,7 @@ const Cart: React.FC<CartProps> = ({ className = '' }) => {
           />
 
           {/* Panel košíku */}
-          <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-xl z-50 overflow-hidden">
+          <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-xl z-50">
             <div className="p-4 border-b border-gray-200">
               <div className="flex justify-between items-center">
                 <h2 className="text-lg font-semibold">Košík</h2>
@@ -57,13 +57,13 @@ const Cart: React.FC<CartProps> = ({ className = '' }) => {
               </div>
             </div>
 
-            <div className="max-h-96 overflow-y-auto p-4">
+            <div className="max-h-96 overflow-y-auto">
               {items.length === 0 ? (
                 <p className="text-center text-gray-500 py-6">Váš košík je prázdný</p>
               ) : (
-                <ul className="space-y-4">
+                <ul className="divide-y divide-gray-200">
                   {items.map((item) => (
-                    <li key={item.variantId} className="flex space-x-4">
+                    <li key={item.variantId} className="p-4 flex items-center space-x-4">
                       {/* Obrázek produktu */}
                       <div className="w-16 h-16 bg-gray-100 rounded overflow-hidden flex-shrink-0">
                         {item.image ? (
@@ -123,13 +123,22 @@ const Cart: React.FC<CartProps> = ({ className = '' }) => {
                   <span>Celkem:</span>
                   <span>{totalPrice.toFixed(2)} Kč</span>
                 </div>
-                <Link
-                  href="/checkout"
-                  onClick={() => setIsOpen(false)}
-                  className="block w-full py-2 text-center bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                >
-                  Pokračovat k pokladně
-                </Link>
+                <div className="space-y-2">
+                  <Link
+                    href="/cart"
+                    onClick={() => setIsOpen(false)}
+                    className="block w-full py-2 text-center bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200 transition-colors"
+                  >
+                    Zobrazit košík
+                  </Link>
+                  <Link
+                    href="/checkout"
+                    onClick={() => setIsOpen(false)}
+                    className="block w-full py-2 text-center bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  >
+                    Pokračovat k pokladně
+                  </Link>
+                </div>
               </div>
             )}
           </div>

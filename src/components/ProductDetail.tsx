@@ -1,157 +1,286 @@
-"use client";
-
+'use client';
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Product, Variant, Design } from '@/types/prisma';;
 import { useCart } from '@/hooks/useCart';
+import { formatPriceCZK } from '@/utils/currency';
+
+interface Variant {
+  id: string;
+  name: string;
+  size?: string | null;
+  color?: string | null;
+  price: number;
+}
+
+interface Design {
+  id: string;
+  name: string;
+  previewUrl: string;
+}
+
+interface Product {
+  id: string;
+  title: string;
+  description: string;
+  variants: Variant[];
+  designs: Design[];
+  category?: string;
+}
 
 interface ProductDetailProps {
-  product: Product & {
-    variants: Variant[];
-    designs: Design[];
-  };
+  product: Product;
 }
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
-  const [selectedVariant, setSelectedVariant] = useState(product.variants[0]?.id || '');
-  const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
+  const [selectedVariant, setSelectedVariant] = useState<Variant | null>(
+    product.variants && product.variants.length > 0 ? product.variants[0] : null
+  );
+  const [selectedSize, setSelectedSize] = useState<string | null>(
+    product.variants && product.variants.length > 0 && product.variants[0].size 
+      ? product.variants[0].size 
+      : null
+  );
+  const [selectedColor, setSelectedColor] = useState<string | null>(
+    product.variants && product.variants.length > 0 && product.variants[0].color 
+      ? product.variants[0].color 
+      : null
+  );
+  const [quantity, setQuantity] = useState(1);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
   
-  const currentVariant = product.variants.find(v => v.id === selectedVariant);
-  
-  const handleAddToCart = () => {
-    if (!selectedVariant || !currentVariant) return;
+  // Funkce pro získání dostupných velikostí
+  const getAvailableSizes = () => {
+    if (!product.variants || product.variants.length === 0) return [];
     
-    addToCart({
-      variantId: selectedVariant,
-      quantity,
-      name: `${product.title} - ${currentVariant.name}`,
-      price: currentVariant.price,
-      image: product.designs[0]?.previewUrl || ''
-    });
+    const sizes = product.variants
+      .filter(v => v.size)
+      .map(v => v.size)
+      .filter((size, index, self) => size && self.indexOf(size) === index);
+    
+    return sizes as string[];
   };
   
-  // Grupování variant podle barvy pro barevný výběr
-  const colorVariants = product.variants.reduce<Record<string, Variant[]>>((acc, variant) => {
-    const color = variant.color || 'default';
-    if (!acc[color]) {
-      acc[color] = [];
+  // Funkce pro získání dostupných barev
+  const getAvailableColors = () => {
+    if (!product.variants || product.variants.length === 0) return [];
+    
+    const colors = product.variants
+      .filter(v => v.color)
+      .map(v => v.color)
+      .filter((color, index, self) => color && self.indexOf(color) === index);
+    
+    return colors as string[];
+  };
+  
+  // Funkce pro změnu množství
+  const handleQuantityChange = (newQuantity: number) => {
+    if (newQuantity < 1) newQuantity = 1;
+    setQuantity(newQuantity);
+  };
+  
+  // Funkce pro změnu velikosti
+  const handleSizeChange = (size: string) => {
+    setSelectedSize(size);
+    
+    // Najdeme variantu, která odpovídá vybrané velikosti a barvě
+    const variant = product.variants.find(v => 
+      v.size === size && 
+      (!selectedColor || v.color === selectedColor)
+    );
+    
+    if (variant) {
+      setSelectedVariant(variant);
+      if (variant.color) setSelectedColor(variant.color);
     }
-    acc[color].push(variant);
-    return acc;
-  }, {});
+  };
+  
+  // Funkce pro změnu barvy
+  const handleColorChange = (color: string) => {
+    setSelectedColor(color);
+    
+    // Najdeme variantu, která odpovídá vybrané barvě a velikosti
+    const variant = product.variants.find(v => 
+      v.color === color && 
+      (!selectedSize || v.size === selectedSize)
+    );
+    
+    if (variant) {
+      setSelectedVariant(variant);
+      if (variant.size) setSelectedSize(variant.size);
+    }
+  };
+  
+  // Funkce pro přidání do košíku
+  const handleAddToCart = () => {
+    if (!selectedVariant) return;
+    
+    setIsAddingToCart(true);
+    
+    try {
+      addToCart({
+        variantId: selectedVariant.id,
+        quantity,
+        name: `${product.title} ${selectedSize ? `- ${selectedSize}` : ''} ${selectedColor ? `- ${selectedColor}` : ''}`,
+        price: selectedVariant.price,
+        image: product.designs && product.designs.length > 0 ? product.designs[0].previewUrl : ''
+      });
+      
+      // Zobrazíme potvrzení
+      alert('Produkt byl přidán do košíku!');
+    } catch (error) {
+      console.error('Chyba při přidávání do košíku:', error);
+      alert('Došlo k chybě při přidávání do košíku. Zkuste to prosím znovu.');
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
+  
+  // Zobrazení náhledu produktu
+  const previewImage = product.designs && product.designs.length > 0 
+    ? product.designs[0].previewUrl 
+    : null;
+  
+  // Dostupné velikosti a barvy
+  const availableSizes = getAvailableSizes();
+  const availableColors = getAvailableColors();
+  
+  // Zkontrolujeme, zda máme varianty
+  const hasVariants = product.variants && product.variants.length > 0;
   
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div className="rounded-lg overflow-hidden bg-gray-100 p-4">
-        {product.designs.length > 0 && (
-          <Image 
-            src={product.designs[0].previewUrl}
-            alt={product.title}
-            width={600}
-            height={600}
-            className="w-full h-auto object-contain"
-            priority
-          />
+      {/* Obrázek produktu */}
+      <div className="rounded-lg overflow-hidden">
+        {previewImage ? (
+          <div className="relative aspect-square bg-white">
+            <Image 
+              src={previewImage} 
+              alt={product.title} 
+              fill
+              className="object-contain"
+            />
+          </div>
+        ) : (
+          <div className="aspect-square bg-gray-200 flex items-center justify-center">
+            <span className="text-gray-400">Obrázek není k dispozici</span>
+          </div>
         )}
       </div>
       
+      {/* Informace o produktu */}
       <div>
-        <h1 className="text-3xl font-bold mb-3">{product.title}</h1>
+        <h1 className="text-2xl font-bold mb-4">{product.title}</h1>
         <p className="text-gray-600 mb-6">{product.description}</p>
         
+        {/* Cena */}
         <div className="mb-6">
-          <h2 className="text-lg font-semibold mb-2">Barva</h2>
-          <div className="flex flex-wrap gap-2">
-            {Object.entries(colorVariants).map(([color, variants]) => (
-              <button
-                key={color}
-                onClick={() => setSelectedVariant(variants[0].id)}
-                className={`w-8 h-8 rounded-full ${
-                  variants.some(v => v.id === selectedVariant)
-                    ? 'ring-2 ring-offset-2 ring-blue-500'
-                    : 'ring-1 ring-gray-300'
-                }`}
-                style={{ 
-                  backgroundColor: color === 'default' ? '#e5e7eb' : color,
-                  border: color === 'white' ? '1px solid #e5e7eb' : 'none'
-                }}
-                title={color}
-              />
-            ))}
-          </div>
+          <h2 className="text-lg font-medium mb-2">Cena</h2>
+          <p className="text-2xl font-bold text-blue-600">
+            {selectedVariant ? formatPriceCZK(selectedVariant.price) : 'Není k dispozici'}
+          </p>
         </div>
         
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold mb-2">Velikost</h2>
-          <div className="flex flex-wrap gap-2">
-            {product.variants
-              .filter(v => v.color === currentVariant?.color)
-              .map(variant => (
+        {/* Velikosti */}
+        {availableSizes.length > 0 && (
+          <div className="mb-6">
+            <h2 className="text-lg font-medium mb-2">Velikost</h2>
+            <div className="flex flex-wrap gap-2">
+              {availableSizes.map(size => (
                 <button
-                  key={variant.id}
-                  onClick={() => setSelectedVariant(variant.id)}
-                  className={`px-4 py-2 border ${
-                    selectedVariant === variant.id
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-300 text-gray-700'
-                  } rounded-md`}
+                  key={size}
+                  onClick={() => handleSizeChange(size)}
+                  className={`px-4 py-2 border rounded-md ${
+                    selectedSize === size
+                      ? 'border-blue-600 bg-blue-600 text-white'
+                      : 'border-gray-300 hover:border-blue-600'
+                  }`}
                 >
-                  {variant.size}
+                  {size}
                 </button>
               ))}
+            </div>
           </div>
-        </div>
+        )}
         
+        {/* Barvy */}
+        {availableColors.length > 0 && (
+          <div className="mb-6">
+            <h2 className="text-lg font-medium mb-2">Barva</h2>
+            <div className="flex flex-wrap gap-2">
+              {availableColors.map(color => (
+                <button
+                  key={color}
+                  onClick={() => handleColorChange(color)}
+                  className={`px-4 py-2 border rounded-md ${
+                    selectedColor === color
+                      ? 'border-blue-600 bg-blue-600 text-white'
+                      : 'border-gray-300 hover:border-blue-600'
+                  }`}
+                >
+                  {color}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {/* Množství */}
         <div className="mb-6">
-          <h2 className="text-lg font-semibold mb-2">Množství</h2>
-          <div className="flex items-center">
+          <h2 className="text-lg font-medium mb-2">Množství</h2>
+          <div className="flex items-center border border-gray-300 rounded-md w-32">
             <button
-              onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
-              className="px-3 py-1 border border-gray-300 rounded-l-md"
+              onClick={() => handleQuantityChange(quantity - 1)}
+              className="w-10 h-10 flex items-center justify-center border-r border-gray-300"
             >
               -
             </button>
             <input
               type="number"
-              min="1"
               value={quantity}
-              onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-              className="w-16 text-center border-y border-gray-300 py-1"
+              onChange={e => handleQuantityChange(parseInt(e.target.value) || 1)}
+              className="w-12 h-10 text-center focus:outline-none"
+              min="1"
             />
             <button
-              onClick={() => setQuantity(prev => prev + 1)}
-              className="px-3 py-1 border border-gray-300 rounded-r-md"
+              onClick={() => handleQuantityChange(quantity + 1)}
+              className="w-10 h-10 flex items-center justify-center border-l border-gray-300"
             >
               +
             </button>
           </div>
         </div>
         
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <span className="text-2xl font-bold">
-              {currentVariant ? `${currentVariant.price.toFixed(2)} Kč` : ''}
-            </span>
-            <span className="text-sm text-gray-500 ml-2">Včetně DPH</span>
-          </div>
+        {/* Tlačítko pro přidání do košíku */}
+        <div className="mb-8">
           <button
             onClick={handleAddToCart}
-            disabled={!selectedVariant}
-            className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
+            disabled={!selectedVariant || isAddingToCart}
+            className={`w-full py-3 rounded-md font-medium ${
+              selectedVariant && !isAddingToCart
+                ? 'bg-blue-600 text-white hover:bg-blue-700'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
           >
-            Přidat do košíku
+            {isAddingToCart ? 'Přidávám...' : 'Přidat do košíku'}
           </button>
+          
+          {!hasVariants && (
+            <p className="text-red-500 text-sm mt-2">
+              Tento produkt nemá žádné varianty. Kontaktujte prosím správce obchodu.
+            </p>
+          )}
         </div>
         
+        {/* Detaily produktu */}
         <div className="border-t border-gray-200 pt-6">
-          <h2 className="text-lg font-semibold mb-2">Detaily produktu</h2>
-          <ul className="list-disc list-inside text-gray-600 space-y-1">
-            <li>Materiál: 100% bavlna</li>
-            <li>Potisk: Digitální tisk vysoké kvality</li>
-            <li>Výroba: Potisk na vyžádání, každý kus je originál</li>
-            <li>Expedice: 2-5 pracovních dnů</li>
-            <li>Doručení: 3-10 pracovních dnů</li>
+          <h2 className="text-lg font-medium mb-4">Detaily produktu</h2>
+          <ul className="space-y-2 text-gray-600">
+            <li><strong>Materiál:</strong> 100% bavlna</li>
+            <li><strong>Potisk:</strong> Digitální tisk vysoké kvality</li>
+            <li><strong>Výroba:</strong> Potisk na vyžádání, každý kus je originál</li>
+            <li><strong>Expedice:</strong> 2-5 pracovních dnů</li>
+            <li><strong>Doručení:</strong> 3-10 pracovních dnů</li>
           </ul>
         </div>
       </div>

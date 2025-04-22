@@ -3,7 +3,11 @@ import { PrismaClient } from '@prisma/client';
 import { uploadDesign } from '@/services/printful';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+<<<<<<< HEAD
 import { PrintfulApiResponse, PrintfulFile } from '@/types/printful';
+=======
+import { PrintfulFileResponse } from '@/types/printful';
+>>>>>>> e449c3b44f6253a2868e63056d129262234349f8
 
 const prisma = new PrismaClient();
 
@@ -53,14 +57,23 @@ export async function POST(req: NextRequest) {
     }
 
     // Nahrání designu do Printful
+<<<<<<< HEAD
     const printfulResponse = await uploadDesign(file) as PrintfulApiResponse<PrintfulFile>;
+=======
+    const printfulResponse = await uploadDesign(file) as { result: PrintfulFileResponse };
+>>>>>>> e449c3b44f6253a2868e63056d129262234349f8
 
     // Uložení designu do databáze
     const design = await prisma.design.create({
       data: {
         name,
+<<<<<<< HEAD
         printfulFileId: printfulResponse.result.id,
         previewUrl: printfulResponse.result.preview_url
+=======
+        printfulFileId: String(printfulResponse.result.id),
+        previewUrl: printfulResponse.result.url,
+>>>>>>> e449c3b44f6253a2868e63056d129262234349f8
       }
     });
 
@@ -72,14 +85,16 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Error uploading design:', error);
     return NextResponse.json(
-      { message: 'Chyba při nahrávání designu' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
 // src/app/api/designs/route.ts
-export async function GET(req: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     // Volitelně: Kontrola autentizace
     const session = await getServerSession(authOptions);

@@ -1,40 +1,32 @@
-import { Prisma } from '@prisma/client';
+import { Product, Design, Variant } from '@prisma/client';
 
-// Použití generického typu Record místo nenalezených GetPayload typů
-export type Product = {
-  id: string;
-  title: string;
-  description: string;
-  printfulId: string;
-  printfulSync: boolean;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
-export type Variant = {
+export type ProductVariant = {
   id: string;
   productId: string;
-  printfulVariantId: string;
-  name: string;
-  size?: string | null;
-  color?: string | null;
   price: number;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
 };
 
-export type Design = {
-  id: string;
-  name: string;
-  printfulFileId: string;
-  previewUrl: string;
-  createdAt: Date;
-  updatedAt: Date;
+export type ProductWithRelations = Product & {
+  variants: (Variant & { price: number })[];
+  designs: Design[];
 };
 
-export interface ProductWithDetails extends Product {
-  variants: Variant[];
+export type FormattedProduct = {
+  id: string;
+  title: string;
+  description: string;
+  previewUrl: string;
+  price: number;
+  variants: (Variant & { price: number })[];
   designs: Design[];
-}
+  category?: string | null;
+  isActive?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+  categoryId?: string | null;
+  printfulId?: string | null;
+  printfulSync?: boolean;
+};
