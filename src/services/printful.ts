@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import { PrintfulProductData, PrintfulOrderData, PrintfulApiResponse, PrintfulFile, PrintfulOrderResponse } from '@/types/printful';
 
 
 const PRINTFUL_API_URL = 'https://api.printful.com';
@@ -11,7 +12,7 @@ const getHeaders = () => ({
 });
 
 // Získání seznamu všech produktů z Printful
-export async function getProducts() {
+export async function getProducts(): Promise<PrintfulApiResponse<PrintfulProductData[]>> {
   const response = await fetch(`${PRINTFUL_API_URL}/store/products`, {
     headers: getHeaders()
   });
@@ -20,11 +21,12 @@ export async function getProducts() {
     throw new Error(`Error fetching products: ${response.statusText}`);
   }
   
-  return response.json();
+  const data = await response.json() as PrintfulApiResponse<PrintfulProductData[]>;
+  return data;
 }
 
 // Vytvoření nového produktu s designem
-export async function createProduct(productData : PrintfulProductData) {
+export async function createProduct(productData: PrintfulProductData): Promise<PrintfulApiResponse<PrintfulProductData>> {
   const response = await fetch(`${PRINTFUL_API_URL}/store/products`, {
     method: 'POST',
     headers: getHeaders(),
@@ -35,31 +37,34 @@ export async function createProduct(productData : PrintfulProductData) {
     throw new Error(`Error creating product: ${response.statusText}`);
   }
   
-  return response.json();
+  const data = await response.json() as PrintfulApiResponse<PrintfulProductData>;
+  return data;
 }
 
-// Nahrání designu
-export async function uploadDesign(file : File) {
+// Upload designu
+export async function uploadDesign(file: File): Promise<PrintfulApiResponse<PrintfulFile>> {
   const formData = new FormData();
   formData.append('file', file);
-  
+
   const response = await fetch(`${PRINTFUL_API_URL}/files`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${PRINTFUL_API_KEY}`
+      // Nepřidáváme Content-Type, nechť jej nastaví browser pro FormData
     },
     body: formData
   });
-  
+
   if (!response.ok) {
     throw new Error(`Error uploading design: ${response.statusText}`);
   }
-  
-  return response.json();
+
+  const data = await response.json() as PrintfulApiResponse<PrintfulFile>;
+  return data;
 }
 
 // Vytvoření objednávky
-export async function createOrder(orderData : PrinfulOrderData) {
+export async function createOrder(orderData: PrintfulOrderData): Promise<PrintfulApiResponse<PrintfulOrderResponse>> {
   const response = await fetch(`${PRINTFUL_API_URL}/orders`, {
     method: 'POST',
     headers: getHeaders(),
@@ -70,11 +75,12 @@ export async function createOrder(orderData : PrinfulOrderData) {
     throw new Error(`Error creating order: ${response.statusText}`);
   }
   
-  return response.json();
+  const data = await response.json() as PrintfulApiResponse<PrintfulOrderResponse>;
+  return data;
 }
 
 // Získání informací o objednávce
-export async function getOrder(orderId : string) {
+export async function getOrder(orderId: string): Promise<PrintfulApiResponse<PrintfulOrderData>> {
   const response = await fetch(`${PRINTFUL_API_URL}/orders/${orderId}`, {
     headers: getHeaders()
   });
@@ -83,11 +89,12 @@ export async function getOrder(orderId : string) {
     throw new Error(`Error fetching order: ${response.statusText}`);
   }
   
-  return response.json();
+  const data = await response.json() as PrintfulApiResponse<PrintfulOrderData>;
+  return data;
 }
 
 // Sledování stavu zásob
-export async function getProductVariantStock(variantId : number | string) {
+export async function getProductVariantStock(variantId: number | string): Promise<PrintfulApiResponse<{in_stock: boolean}>> {
   const response = await fetch(`${PRINTFUL_API_URL}/store/variants/${variantId}`, {
     headers: getHeaders()
   });
@@ -96,5 +103,6 @@ export async function getProductVariantStock(variantId : number | string) {
     throw new Error(`Error fetching variant: ${response.statusText}`);
   }
   
-  return response.json();
+  const data = await response.json() as PrintfulApiResponse<{in_stock: boolean}>;
+  return data;
 }

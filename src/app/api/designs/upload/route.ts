@@ -3,8 +3,14 @@ import { PrismaClient } from '@prisma/client';
 import { uploadDesign } from '@/services/printful';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { PrintfulApiResponse, PrintfulFile } from '@/types/printful';
 
 const prisma = new PrismaClient();
+
+interface UploadDesignResponse {
+  id: string;
+  url: string;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -47,14 +53,14 @@ export async function POST(req: NextRequest) {
     }
 
     // Nahrání designu do Printful
-    const printfulResponse = await uploadDesign(file);
+    const printfulResponse = await uploadDesign(file) as PrintfulApiResponse<PrintfulFile>;
 
     // Uložení designu do databáze
     const design = await prisma.design.create({
       data: {
         name,
-        printfulFileId: String(printfulResponse.id),
-        previewUrl: printfulResponse.url
+        printfulFileId: printfulResponse.result.id,
+        previewUrl: printfulResponse.result.preview_url
       }
     });
 
@@ -62,6 +68,7 @@ export async function POST(req: NextRequest) {
       success: true,
       design
     });
+
   } catch (error) {
     console.error('Error uploading design:', error);
     return NextResponse.json(

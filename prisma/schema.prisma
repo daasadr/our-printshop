@@ -61,11 +61,12 @@ model Order {
   user              User?     @relation(fields: [userId], references: [id])
   printfulOrderId   String?   @unique
   stripePaymentIntentId String?
-  stripeClientSecret String?
-  status            String    @default("draft")
+  stripeSessionId   String?
+  status            OrderStatus @default(pending)
   total             Float
   items             OrderItem[]
   shippingInfo      ShippingInfo?
+  notes             String?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 }
@@ -97,4 +98,15 @@ model ShippingInfo {
   phone           String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+}
+
+enum OrderStatus {
+  pending      // Čeká na platbu
+  paid         // Zaplaceno, čeká na zpracování
+  processing   // Zpracovává se v Printful
+  shipped      // Odesláno
+  delivered    // Doručeno
+  failed       // Platba selhala
+  error        // Chyba při zpracování
+  cancelled    // Zrušeno
 }
