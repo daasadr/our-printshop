@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { uploadDesign } from '@/services/printful';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { PrintfulApiResponse, PrintfulFile } from '@/types/printful';
+import { PrintfulFile, PrintfulApiResponse } from '@/types/printful';
 
 const prisma = new PrismaClient();
 
@@ -14,9 +14,8 @@ interface UploadDesignResponse {
 
 export async function POST(req: NextRequest) {
   try {
+    // Ověření přihlášení
     const session = await getServerSession(authOptions);
-
-    // Kontrola autorizace
     if (!session) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -24,7 +23,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Získání dat z FormData
+    // Získání dat z požadavku
     const formData = await req.formData();
     const file = formData.get('file') as File;
     const name = formData.get('name') as string;
@@ -37,15 +36,16 @@ export async function POST(req: NextRequest) {
     }
 
     // Kontrola typu souboru
-    if (!file.type.startsWith('image/')) {
+    const allowedTypes = ['image/jpeg', 'image/png'];
+    if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: 'Neplatný typ souboru' },
+        { error: 'Nepodporovaný typ souboru' },
         { status: 400 }
       );
     }
 
-    // Kontrola velikosti souboru (max 100MB)
-    const maxSize = 100 * 1024 * 1024; // 100MB v bytech
+    // Kontrola velikosti souboru (max 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB v bytech
     if (file.size > maxSize) {
       return NextResponse.json(
         { error: 'Soubor je příliš velký' },
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
       data: {
         name,
         printfulFileId: String(printfulResponse.result.id),
-        previewUrl: printfulResponse.result.preview_url || printfulResponse.result.url,
+        previewUrl: printfulResponse.result.url
       }
     });
 
@@ -72,8 +72,6 @@ export async function POST(req: NextRequest) {
       { error: 'Chyba při nahrávání designu' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 

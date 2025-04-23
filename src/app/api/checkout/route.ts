@@ -9,15 +9,14 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { items, shippingInfo } = body;
+    const { variantIds, quantities } = await req.json();
 
-    // 1. Ověřit dostupnost produktů a získat jejich ceny
-    const variantIds = items.map((item: any) => item.variantId);
-    const variants = await prisma.variant.findMany({
+    // 1. Ověřit, že všechny produkty existují
+    const variants = await prisma.productVariant.findMany({
       where: {
-        id: { in: variantIds },
-        isActive: true
+        id: {
+          in: variantIds
+        }
       },
       include: {
         product: true
@@ -31,94 +30,68 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 2. Vytvořit objednávku v databázi
-    const total = items.reduce((sum: number, item: any) => {
-      const variant = variants.find(v => v.id === item.variantId);
-      return sum + (variant?.price || 0) * item.quantity;
+    // 2. Vypočítat celkovou cenu
+    const total = variants.reduce((sum, variant, index) => {
+      return sum + variant.price * quantities[index];
     }, 0);
 
+    // 3. Vytvořit order v databázi
     const order = await prisma.order.create({
       data: {
         status: 'pending',
         total,
         items: {
-          create: items.map((item: any) => {
-            const variant = variants.find(v => v.id === item.variantId)!;
-            return {
-              variantId: item.variantId,
-              quantity: item.quantity,
-              price: variant.price
-            };
-          })
-        },
-        shippingInfo: {
-          create: shippingInfo
+          create: variants.map((variant, index) => ({
+            quantity: quantities[index],
+            price: variant.price,
+            productVariantId: variant.id,
+            productId: variant.productId
+          }))
         }
       }
     });
 
-    // 3. Vytvořit Stripe Checkout Session
-    const lineItems = items.map((item: any) => {
-      const variant = variants.find(v => v.id === item.variantId)!;
-      return {
+    // 4. Vytvořit Stripe Checkout Session
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: variants.map((variant, index) => ({
         price_data: {
           currency: 'czk',
           product_data: {
-            name: `${variant.product.title} - ${variant.name}`,
-            images: variant.product.designs?.[0]?.previewUrl ? [variant.product.designs[0].previewUrl] : [],
+            name: `${variant.product.name} - ${variant.name}`,
+            images: [variant.product.imageUrl]
           },
-          unit_amount: Math.round(variant.price * 100), // Stripe používá centy
+          unit_amount: variant.price * 100 // Stripe používá nejmenší jednotku měny (haléře)
         },
-        quantity: item.quantity,
-      };
-    });
-
-    // Přidat poštovné
-    const shippingCost = 129; // 129 Kč za dopravu
-    lineItems.push({
-      price_data: {
-        currency: 'czk',
-        product_data: {
-          name: 'Poštovné',
-        },
-        unit_amount: shippingCost * 100,
-      },
-      quantity: 1,
-    });
-
-    const session = await stripe.checkout.sessions.create({
-      line_items: lineItems,
+        quantity: quantities[index]
+      })),
       mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/order/success?orderId=${order.id}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/cart`,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/order/${order.id}?success=true`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/cart?canceled=true`,
       metadata: {
         orderId: order.id
       },
       shipping_address_collection: {
-        allowed_countries: ['CZ', 'SK'], // Povolené země pro doručení
+        allowed_countries: ['CZ', 'SK'],
       },
-      payment_method_types: ['card'],
-      billing_address_collection: 'required',
-      customer_email: shippingInfo.email,
     });
 
-    // 4. Aktualizovat objednávku s Stripe Session ID
+    // 5. Aktualizovat order o Stripe Session ID
     await prisma.order.update({
       where: { id: order.id },
-      data: {
-        stripeSessionId: session.id
-      }
+      data: { stripeSessionId: session.id }
     });
 
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({ 
+      sessionId: session.id,
+      orderId: order.id
+    });
 
   } catch (error) {
-    console.error('Error creating checkout session:', error);
+    console.error('Error in checkout:', error);
     return NextResponse.json(
-      { error: 'Chyba při vytváření platební session' },
+      { error: 'Došlo k chybě při zpracování objednávky' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 } 
