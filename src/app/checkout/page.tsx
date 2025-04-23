@@ -1,113 +1,18 @@
 import { Metadata } from 'next';
-<<<<<<< HEAD
 import CheckoutForm from '@/components/CheckoutForm';
 
 export const metadata: Metadata = {
-  title: 'Checkout | Our Printshop',
-  description: 'Dokončete svoji objednávku',
+  title: 'Dokončení objednávky | Our Print Shop',
+  description: 'Dokončete svou objednávku v Our Print Shop',
 };
 
 export default function CheckoutPage() {
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Dokončení objednávky</h1>
-      <CheckoutForm />
-    </div>
-=======
-import { redirect } from 'next/navigation';
-import { cookies } from 'next/headers';
-import prisma from '@/lib/prisma';
-import { CartItem } from '@/types/cart';
-import CheckoutForm from '@/components/CheckoutForm';
-
-export const metadata: Metadata = {
-  title: 'Pokladna | HappyWilderness',
-  description: 'Dokončit objednávku a zadat doručovací údaje',
-};
-
-async function getCartItems(): Promise<CartItem[]> {
-  const cartId = cookies().get('cartId')?.value;
-  if (!cartId) return [];
-
-  const cart = await prisma.cart.findUnique({
-    where: { id: cartId },
-    include: {
-      items: {
-        include: {
-          variant: {
-            include: {
-              product: {
-                include: {
-                  designs: true
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  });
-
-  if (!cart) return [];
-
-  return cart.items.map(item => ({
-    variantId: item.variantId,
-    quantity: item.quantity,
-    name: item.variant.product.title,
-    price: item.variant.price,
-    image: item.variant.product.designs[0]?.previewUrl || ''
-  }));
-}
-
-export default async function CheckoutPage() {
-  const cartItems = await getCartItems();
-  
-  if (cartItems.length === 0) {
-    redirect('/cart');
-  }
-
-  const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-  return (
-    <main className="min-h-screen bg-gradient-to-b from-green-900 to-green-800 text-white py-12">
-      <div className="max-w-7xl mx-auto px-4">
-        <h1 className="text-3xl font-bold mb-8 text-center">Pokladna</h1>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Shipping Form */}
-          <div className="bg-white/10 backdrop-blur-lg rounded-lg p-6 shadow-xl">
-            <h2 className="text-2xl font-semibold mb-6">Doručovací údaje</h2>
-            <CheckoutForm cartItems={cartItems} total={total} />
-          </div>
-
-          {/* Order Summary */}
-          <div className="bg-white/10 backdrop-blur-lg rounded-lg p-6 shadow-xl">
-            <h2 className="text-2xl font-semibold mb-6">Shrnutí objednávky</h2>
-            
-            <div className="space-y-4 mb-6">
-              {cartItems.map((item) => (
-                <div key={item.variantId} className="flex justify-between items-center">
-                  <div>
-                    <p className="font-medium">{item.name}</p>
-                    <p className="text-sm text-gray-300">Množství: {item.quantity}</p>
-                  </div>
-                  <p className="font-medium">
-                    {(item.price * item.quantity).toLocaleString('cs-CZ')} Kč
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <div className="border-t border-white/20 pt-4">
-              <div className="flex justify-between items-center text-xl font-bold">
-                <span>Celkem</span>
-                <span>{total.toLocaleString('cs-CZ')} Kč</span>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-3xl font-bold mb-8">Dokončení objednávky</h1>
+        <CheckoutForm />
       </div>
-    </main>
->>>>>>> e449c3b44f6253a2868e63056d129262234349f8
+    </div>
   );
 } 

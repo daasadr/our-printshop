@@ -2,22 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import Stripe from 'stripe';
 
-<<<<<<< HEAD
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2023-10-16',
+  apiVersion: '2025-02-24.acacia',
 });
-=======
-// Dočasně zakomentovaná Stripe implementace
-// import Stripe from 'stripe';
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-//   apiVersion: '2025-02-24.acacia',
-// });
->>>>>>> e449c3b44f6253a2868e63056d129262234349f8
 
 const prisma = new PrismaClient();
-
-// Opraveno: odstranění nepoužívaných typů
 
 export async function POST(req: NextRequest) {
   try {
@@ -34,7 +25,11 @@ export async function POST(req: NextRequest) {
         isActive: true
       },
       include: {
-        product: true
+        product: {
+          include: {
+            designs: true
+          }
+        }
       }
     });
     
@@ -64,11 +59,7 @@ export async function POST(req: NextRequest) {
     // 3. Vytvořit order v databázi
     const order = await prisma.order.create({
       data: {
-<<<<<<< HEAD
         status: 'pending',
-=======
-        status: 'pending', // Změněno z 'draft' na 'pending', protože nemáme Stripe
->>>>>>> e449c3b44f6253a2868e63056d129262234349f8
         total,
         items: {
           create: orderItems
@@ -89,15 +80,48 @@ export async function POST(req: NextRequest) {
       include: {
         items: {
           include: {
-            variant: true
+            variant: {
+              include: {
+                product: {
+                  include: {
+                    designs: true
+                  }
+                }
+              }
+            }
           }
         }
       }
     });
-<<<<<<< HEAD
     
     // 4. Vytvořit Stripe Checkout Session
-    const session = await stripe.checkout.sessions.create({
+    const lineItems = order.items.map(item => ({
+      price_data: {
+        currency: 'czk',
+        product_data: {
+          name: `${item.variant.product.title} - ${item.variant.name}`,
+          images: item.variant.product.designs?.[0]?.previewUrl ? [item.variant.product.designs[0].previewUrl] : [],
+        },
+        unit_amount: Math.round(item.price * 100), // Stripe používá nejmenší jednotku měny (haléře)
+      },
+      quantity: item.quantity,
+    }));
+
+    // Přidat poštovné
+    const shippingCost = 129; // 129 Kč za dopravu
+    lineItems.push({
+      price_data: {
+        currency: 'czk',
+        product_data: {
+          name: 'Poštovné',
+          images: [], // Prázdné pole pro poštovné
+        },
+        unit_amount: shippingCost * 100,
+      },
+      quantity: 1,
+    });
+
+    const checkoutSession = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment',
       metadata: {
@@ -105,50 +129,23 @@ export async function POST(req: NextRequest) {
       },
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/order/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/order/cancelled`,
-      line_items: order.items.map(item => ({
-        price_data: {
-          currency: 'czk',
-          product_data: {
-            name: item.variant.name || 'Product',
-            // Můžete přidat obrázek produktu
-            // images: [item.variant.imageUrl]
-          },
-          unit_amount: Math.round(item.price * 100), // Stripe používá nejmenší jednotku měny (haléře)
-        },
-        quantity: item.quantity,
-      })),
+      line_items: lineItems,
       shipping_address_collection: {
         allowed_countries: ['CZ', 'SK'],
       },
-=======
-
-    // Dočasně zakomentovaná Stripe implementace
-    // 4. Vytvořit platební záměr Stripe
-    // const paymentIntent = await stripe.paymentIntents.create({
-    //   amount: Math.round(total * 100),
-    //   currency: 'czk',
-    //   metadata: {
-    //     orderId: order.id
-    //   }
-    // });
-    
-    // 5. Aktualizovat objednávku s klientským tajemstvím
-    // await prisma.order.update({
-    //   where: { id: order.id },
-    //   data: {
-    //     stripePaymentIntentId: paymentIntent.id,
-    //     stripeClientSecret: paymentIntent.client_secret
-    //   }
-    // });
-    
-    // Vrátit ID objednávky (bez Stripe client secret)
-    return NextResponse.json({
-      orderId: order.id,
-      message: 'Objednávka byla úspěšně vytvořena'
->>>>>>> e449c3b44f6253a2868e63056d129262234349f8
+      billing_address_collection: 'required',
+      customer_email: shippingInfo.email,
     });
     
-    return NextResponse.json({ sessionUrl: session.url });
+    // 5. Aktualizovat objednávku s Stripe Session ID
+    await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        stripeSessionId: checkoutSession.id
+      }
+    });
+    
+    return NextResponse.json({ url: checkoutSession.url });
   } catch (error) {
     console.error('Order creation error:', error);
     return NextResponse.json(
@@ -160,10 +157,18 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   try {
-    // Oprava: Změna z 'shippingAddress' na 'shippingInfo' v souladu s vaším schématem
     const orders = await prisma.order.findMany({
       include: {
         shippingInfo: true,
+        items: {
+          include: {
+            variant: {
+              include: {
+                product: true
+              }
+            }
+          }
+        }
       },
       orderBy: {
         createdAt: 'desc',

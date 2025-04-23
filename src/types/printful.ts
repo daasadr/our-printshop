@@ -1,16 +1,55 @@
-<<<<<<< HEAD
+// Základní typy pro API odpovědi
+export interface PrintfulApiResponse<T> {
+    code: number;
+    result: T;
+    extra: any[];
+    paging?: {
+        total: number;
+        offset: number;
+        limit: number;
+    };
+}
+
+// Základní typy pro soubory
+export interface PrintfulFile {
+    id: string | number;
+    type: string;
+    url: string;
+    options?: string[];
+    filename?: string;
+    mime_type?: string;
+    size?: number;
+    width?: number;
+    height?: number;
+    dpi?: number;
+    status?: string;
+    created?: string;
+    thumbnail_url?: string;
+    preview_url?: string;
+    visible?: boolean;
+    position?: string;
+}
+
 // Základní typy pro produkty
 export interface PrintfulProductData {
-    id: string;
+    id?: string | number;
+    external_id?: string;
     name: string;
-    variants: PrintfulVariant[];
+    variants?: PrintfulVariant[];
     sync_product: {
-        id: number;
+        id?: number;
         name: string;
-        thumbnail_url: string;
+        thumbnail_url?: string;
+        external_id?: string;
     };
-    thumbnail_url: string;
-    is_ignored: boolean;
+    sync_variants?: Array<{
+        variant_id: number;
+        retail_price: number;
+        external_id?: string;
+        files?: PrintfulFile[];
+    }>;
+    thumbnail_url?: string;
+    is_ignored?: boolean;
 }
 
 export interface PrintfulVariant {
@@ -27,50 +66,57 @@ export interface PrintfulVariant {
     files: PrintfulFile[];
 }
 
-export interface PrintfulFile {
-    id: string;
-    type: string;
-    url: string;
-    options: string[];
-    filename: string;
-    mime_type: string;
-    size: number;
-    width: number;
-    height: number;
-    dpi: number;
-    status: string;
-    created: string;
-    thumbnail_url: string;
-    preview_url: string;
-    visible: boolean;
+// Typy pro objednávky
+export interface PrintfulRecipient {
+    name: string;
+    company?: string;
+    address1: string;
+    address2?: string;
+    city: string;
+    state_code?: string;
+    state_name?: string;
+    country_code: string;
+    country_name?: string;
+    zip: string;
+    phone?: string;
+    email: string;
 }
 
-// Typy pro objednávky
-export interface PrintfulResponse {
-    id: number;
-    external_id: string;
-    status: string;
-    shipping: string;
-    created: string;
-    updated: string;
-    recipient: PrintfulRecipient;
-    items: PrintfulOrderItem[];
+export interface PrintfulOrderItem {
+    id?: number;
+    external_id?: string;
+    variant_id: number;
+    quantity: number;
+    price?: string;
+    retail_price?: string;
+    name?: string;
+    product?: {
+        variant_id: number;
+        product_id: number;
+        image: string;
+        name: string;
+    };
+    sync_variant_id?: number;
+    files?: PrintfulFile[];
+    options?: PrintfulItemOption[];
+}
+
+export interface PrintfulItemOption {
+    id: string;
+    value: string;
 }
 
 export interface PrintfulOrderData {
     external_id?: string;
     recipient: PrintfulRecipient;
-    items: Array<{
-        variant_id: number;
-        quantity: number;
-        retail_price?: string;
-    }>;
+    items: PrintfulOrderItem[];
     retail_costs?: {
-        subtotal: number;
-        discount: number;
-        shipping: number;
-        tax: number;
-        total: number;
+        subtotal?: string | number;
+        discount?: string | number;
+        shipping?: string | number;
+        tax?: string | number;
+        total?: number;
+        currency?: string;
     };
     gift?: {
         subject?: string;
@@ -84,34 +130,23 @@ export interface PrintfulOrderData {
     };
 }
 
-export interface PrintfulRecipient {
-    name: string;
-    company?: string;
-    address1: string;
-    address2?: string;
-    city: string;
-    state_code: string;
-    state_name: string;
-    country_code: string;
-    country_name: string;
-    zip: string;
-    phone?: string;
-    email: string;
-}
-
-export interface PrintfulOrderItem {
-    variant_id: string;
-    quantity: number;
-    retail_price: string;
-    name: string;
-    sync_variant_id?: number;
-    files?: PrintfulFile[];
-    options?: PrintfulItemOption[];
-}
-
-export interface PrintfulItemOption {
-    id: string;
-    value: string;
+export interface PrintfulOrderResponse {
+    id: number;
+    external_id: string;
+    status: string;
+    shipping: string;
+    created: string;
+    updated: string;
+    recipient: PrintfulRecipient;
+    items: PrintfulOrderItem[];
+    costs: {
+        subtotal: string;
+        discount: string;
+        shipping: string;
+        tax: string;
+        total: string;
+        currency: string;
+    };
 }
 
 // Typy pro shipping
@@ -143,116 +178,3 @@ export interface PrintfulError {
         [key: string]: string[];
     };
 }
-
-// Typy pro odpovědi API
-export interface PrintfulApiResponse<T> {
-    code: number;
-    result: T;
-    extra: any[];
-    paging?: {
-        total: number;
-        offset: number;
-        limit: number;
-    };
-}
-
-export interface PrintfulOrderResponse {
-    id: number;
-    external_id: string;
-    status: string;
-    shipping: string;
-    created: string;
-    updated: string;
-    recipient: PrintfulRecipient;
-    items: Array<{
-        id: number;
-        external_id: string;
-        variant_id: number;
-        quantity: number;
-        price: string;
-        retail_price: string;
-        name: string;
-        product: {
-            variant_id: number;
-            product_id: number;
-            image: string;
-            name: string;
-        };
-    }>;
-    costs: {
-        subtotal: string;
-        discount: string;
-        shipping: string;
-        tax: string;
-        total: string;
-        currency: string;
-    };
-}
-=======
-export interface PrintfulFileResponse {
-    id: number;
-    url: string;
-  }
-  
-  export interface PrintfulProductResponse {
-    id: number;
-    external_id: string;
-    name: string;
-    // další vlastnosti...
-  }
-  
-  export interface PrintfulOrderResponse {
-    id: number;
-    external_id: string;
-    status: string;
-    // další vlastnosti...
-  }
-  
-  // Pro createProduct
-  export interface PrintfulProductData {
-    sync_product: {
-      name: string;
-      thumbnail_url?: string;
-      external_id?: string;
-    };
-    sync_variants: Array<{
-      variant_id: number;
-      retail_price: number;
-      external_id?: string;
-      files?: Array<{
-        type: string;
-        url?: string;
-        file_id?: number;
-        position?: string;
-      }>;
-    }>;
-  }
-  
-  // Pro createOrder
-  export interface PrintfulOrderData {
-    recipient: {
-      name: string;
-      address1: string;
-      address2?: string;
-      city: string;
-      state_code?: string;
-      country_code: string;
-      zip: string;
-      phone?: string;
-      email: string;
-    };
-    items: Array<{
-      variant_id: number;
-      quantity: number;
-      external_variant_id?: string;
-    }>;
-    retail_costs?: {
-      subtotal?: string;
-      discount?: string;
-      shipping?: string;
-      tax?: string;
-    };
-  }
-
-  
->>>>>>> e449c3b44f6253a2868e63056d129262234349f8

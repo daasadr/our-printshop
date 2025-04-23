@@ -1,21 +1,18 @@
 import fetch from 'node-fetch';
-<<<<<<< HEAD
-import { PrintfulProductData, PrintfulOrderData, PrintfulApiResponse, PrintfulFile, PrintfulOrderResponse } from '@/types/printful';
-
-=======
-import { PrintfulFileResponse, PrintfulProductResponse, PrintfulProductData, PrintfulOrderData } from '@/types/printful';
->>>>>>> e449c3b44f6253a2868e63056d129262234349f8
+import { PrintfulApiResponse, PrintfulFile, PrintfulProductData, PrintfulOrderData, PrintfulOrderResponse } from '@/types/printful';
 
 const PRINTFUL_API_URL = 'https://api.printful.com';
 const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY;
 
-// Základní hlavičky pro autentizaci
-const getHeaders = () => ({
-  'Authorization': `Bearer ${PRINTFUL_API_KEY}`,
-  'Content-Type': 'application/json'
-});
+// Pomocná funkce pro hlavičky
+function getHeaders() {
+  return {
+    'Authorization': `Bearer ${PRINTFUL_API_KEY}`,
+    'Content-Type': 'application/json'
+  };
+}
 
-// Získání seznamu všech produktů z Printful
+// Získání všech produktů
 export async function getProducts(): Promise<PrintfulApiResponse<PrintfulProductData[]>> {
   const response = await fetch(`${PRINTFUL_API_URL}/store/products`, {
     headers: getHeaders()
@@ -24,22 +21,12 @@ export async function getProducts(): Promise<PrintfulApiResponse<PrintfulProduct
   if (!response.ok) {
     throw new Error(`Error fetching products: ${response.statusText}`);
   }
-<<<<<<< HEAD
-  
-  const data = await response.json() as PrintfulApiResponse<PrintfulProductData[]>;
-  return data;
+
+  return response.json() as Promise<PrintfulApiResponse<PrintfulProductData[]>>;
 }
 
 // Vytvoření nového produktu s designem
 export async function createProduct(productData: PrintfulProductData): Promise<PrintfulApiResponse<PrintfulProductData>> {
-=======
-
-  return response.json();
-}
-
-// Vytvoření nového produktu s designem
-export async function createProduct(productData: PrintfulProductData) {
->>>>>>> e449c3b44f6253a2868e63056d129262234349f8
   const response = await fetch(`${PRINTFUL_API_URL}/store/products`, {
     method: 'POST',
     headers: getHeaders(),
@@ -49,40 +36,20 @@ export async function createProduct(productData: PrintfulProductData) {
   if (!response.ok) {
     throw new Error(`Error creating product: ${response.statusText}`);
   }
-<<<<<<< HEAD
-  
-  const data = await response.json() as PrintfulApiResponse<PrintfulProductData>;
-  return data;
+
+  return response.json() as Promise<PrintfulApiResponse<PrintfulProductData>>;
 }
 
-// Upload designu
+// Nahrání designu
 export async function uploadDesign(file: File): Promise<PrintfulApiResponse<PrintfulFile>> {
   const formData = new FormData();
   formData.append('file', file);
 
-  const response = await fetch(`${PRINTFUL_API_URL}/files`, {
+  const response = await fetch(`${PRINTFUL_API_URL}/files/designs`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${PRINTFUL_API_KEY}`
       // Nepřidáváme Content-Type, nechť jej nastaví browser pro FormData
-=======
-
-  return response.json();
-}
-
-// Nahrání designu
-export async function uploadDesign(file: File) {
-  // Oprava: Vytvořit FormData s Node.js kompatibilním způsobem
-  const formData = new FormData();
-  formData.append('file', file);
-
-  // Použití TypeScriptu pro převod na správný typ pro fetch
-  const response = await fetch(`${PRINTFUL_API_URL}/files`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${PRINTFUL_API_KEY}`,
-      // Nebudeme nastavovat Content-Type, to udělá FormData automaticky
->>>>>>> e449c3b44f6253a2868e63056d129262234349f8
     },
     body: formData
   });
@@ -91,20 +58,11 @@ export async function uploadDesign(file: File) {
     throw new Error(`Error uploading design: ${response.statusText}`);
   }
 
-<<<<<<< HEAD
-  const data = await response.json() as PrintfulApiResponse<PrintfulFile>;
-  return data;
+  return response.json() as Promise<PrintfulApiResponse<PrintfulFile>>;
 }
 
-// Vytvoření objednávky
+// Vytvoření objednávky v Printful
 export async function createOrder(orderData: PrintfulOrderData): Promise<PrintfulApiResponse<PrintfulOrderResponse>> {
-=======
-  return response.json();
-}
-
-// Vytvoření objednávky
-export async function createOrder(orderData: PrintfulOrderData) {
->>>>>>> e449c3b44f6253a2868e63056d129262234349f8
   const response = await fetch(`${PRINTFUL_API_URL}/orders`, {
     method: 'POST',
     headers: getHeaders(),
@@ -114,22 +72,12 @@ export async function createOrder(orderData: PrintfulOrderData) {
   if (!response.ok) {
     throw new Error(`Error creating order: ${response.statusText}`);
   }
-<<<<<<< HEAD
-  
-  const data = await response.json() as PrintfulApiResponse<PrintfulOrderResponse>;
-  return data;
+
+  return response.json() as Promise<PrintfulApiResponse<PrintfulOrderResponse>>;
 }
 
 // Získání informací o objednávce
-export async function getOrder(orderId: string): Promise<PrintfulApiResponse<PrintfulOrderData>> {
-=======
-
-  return response.json();
-}
-
-// Získání informací o objednávce
-export async function getOrder(orderId: string) {
->>>>>>> e449c3b44f6253a2868e63056d129262234349f8
+export async function getOrder(orderId: number): Promise<PrintfulApiResponse<PrintfulOrderResponse>> {
   const response = await fetch(`${PRINTFUL_API_URL}/orders/${orderId}`, {
     headers: getHeaders()
   });
@@ -137,35 +85,48 @@ export async function getOrder(orderId: string) {
   if (!response.ok) {
     throw new Error(`Error fetching order: ${response.statusText}`);
   }
-<<<<<<< HEAD
-  
-  const data = await response.json() as PrintfulApiResponse<PrintfulOrderData>;
-  return data;
+
+  return response.json() as Promise<PrintfulApiResponse<PrintfulOrderResponse>>;
 }
 
-// Sledování stavu zásob
-export async function getProductVariantStock(variantId: number | string): Promise<PrintfulApiResponse<{in_stock: boolean}>> {
-=======
-
-  return response.json();
-}
-
-// Sledování stavu zásob
-export async function getProductVariantStock(variantId: number | string) {
->>>>>>> e449c3b44f6253a2868e63056d129262234349f8
-  const response = await fetch(`${PRINTFUL_API_URL}/store/variants/${variantId}`, {
+// Získání informací o produktu
+export async function getProduct(productId: number): Promise<PrintfulApiResponse<PrintfulProductData>> {
+  const response = await fetch(`${PRINTFUL_API_URL}/store/products/${productId}`, {
     headers: getHeaders()
   });
 
   if (!response.ok) {
-    throw new Error(`Error fetching variant: ${response.statusText}`);
+    throw new Error(`Error fetching product: ${response.statusText}`);
   }
-<<<<<<< HEAD
-  
-  const data = await response.json() as PrintfulApiResponse<{in_stock: boolean}>;
-  return data;
-=======
 
-  return response.json();
->>>>>>> e449c3b44f6253a2868e63056d129262234349f8
+  return response.json() as Promise<PrintfulApiResponse<PrintfulProductData>>;
+}
+
+// Aktualizace produktu
+export async function updateProduct(productId: number, productData: Partial<PrintfulProductData>): Promise<PrintfulApiResponse<PrintfulProductData>> {
+  const response = await fetch(`${PRINTFUL_API_URL}/store/products/${productId}`, {
+    method: 'PUT',
+    headers: getHeaders(),
+    body: JSON.stringify(productData)
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error updating product: ${response.statusText}`);
+  }
+
+  return response.json() as Promise<PrintfulApiResponse<PrintfulProductData>>;
+}
+
+// Smazání produktu
+export async function deleteProduct(productId: number): Promise<PrintfulApiResponse<void>> {
+  const response = await fetch(`${PRINTFUL_API_URL}/store/products/${productId}`, {
+    method: 'DELETE',
+    headers: getHeaders()
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error deleting product: ${response.statusText}`);
+  }
+
+  return response.json() as Promise<PrintfulApiResponse<void>>;
 }

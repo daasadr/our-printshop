@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 
-<<<<<<< HEAD
 // Inicializace Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -11,6 +10,9 @@ interface CheckoutButtonProps {
   items: Array<{
     variantId: string;
     quantity: number;
+    name: string;
+    price: number;
+    image?: string;
   }>;
   shippingInfo: {
     name: string;
@@ -23,41 +25,19 @@ interface CheckoutButtonProps {
     zip: string;
     phone?: string;
   };
-}
-
-export default function CheckoutButton({ items, shippingInfo }: CheckoutButtonProps) {
-=======
-// Inicializace Stripe s vaším veřejným klíčem
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
-
-interface CheckoutButtonProps {
-  items: any[];
-  shippingInfo: {
-    name: string;
-    email: string;
-    phone: string;
-    address: string;
-    city: string;
-    postalCode: string;
-  };
   disabled?: boolean;
+  className?: string;
 }
 
-export default function CheckoutButton({ items, shippingInfo, disabled = false }: CheckoutButtonProps) {
->>>>>>> e449c3b44f6253a2868e63056d129262234349f8
+export default function CheckoutButton({ items, shippingInfo, disabled = false, className = '' }: CheckoutButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCheckout = async () => {
     try {
       setIsLoading(true);
 
-<<<<<<< HEAD
-      // 1. Vytvořit Checkout Session
+      // Vytvoříme checkout session
       const response = await fetch('/api/checkout', {
-=======
-      // Vytvoříme Checkout Session
-      const response = await fetch('/api/create-payment-intent', {
->>>>>>> e449c3b44f6253a2868e63056d129262234349f8
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -68,51 +48,20 @@ export default function CheckoutButton({ items, shippingInfo, disabled = false }
         }),
       });
 
-<<<<<<< HEAD
-      const { sessionId } = await response.json();
-
-      // 2. Přesměrovat na Stripe Checkout
-      const stripe = await stripePromise;
-      if (!stripe) throw new Error('Stripe failed to initialize');
-
-      const { error } = await stripe.redirectToCheckout({
-        sessionId,
-      });
-
-      if (error) {
-        throw error;
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Došlo k chybě při zpracování platby. Zkuste to prosím znovu.');
-=======
-      const { sessionId, error } = await response.json();
-
-      if (error) {
-        console.error('Error creating checkout session:', error);
-        alert('Nepodařilo se vytvořit platební session. Zkuste to prosím později.');
-        return;
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Chyba při vytváření platební session');
       }
 
-      // Získáme Stripe instanci
-      const stripe = await stripePromise;
-      if (!stripe) {
-        throw new Error('Stripe failed to initialize');
-      }
-
-      // Přesměrujeme na Checkout
-      const result = await stripe.redirectToCheckout({
-        sessionId,
-      });
-
-      if (result.error) {
-        console.error('Error redirecting to checkout:', result.error);
-        alert('Nepodařilo se přesměrovat na platební bránu. Zkuste to prosím později.');
+      const { url } = await response.json();
+      if (url) {
+        window.location.href = url;
+      } else {
+        throw new Error('Chybí URL pro přesměrování na platební bránu');
       }
     } catch (error) {
       console.error('Error in checkout process:', error);
       alert('Nastala chyba při zpracování platby. Zkuste to prosím později.');
->>>>>>> e449c3b44f6253a2868e63056d129262234349f8
     } finally {
       setIsLoading(false);
     }
@@ -121,17 +70,12 @@ export default function CheckoutButton({ items, shippingInfo, disabled = false }
   return (
     <button
       onClick={handleCheckout}
-<<<<<<< HEAD
-      disabled={isLoading}
-      className="w-full px-6 py-3 text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:bg-blue-300"
-=======
-      disabled={disabled || isLoading}
+      disabled={disabled || isLoading || items.length === 0}
       className={`w-full py-3 px-4 rounded-lg text-white font-medium transition-colors ${
-        disabled || isLoading
+        disabled || isLoading || items.length === 0
           ? 'bg-gray-400 cursor-not-allowed'
           : 'bg-green-600 hover:bg-green-700'
-      }`}
->>>>>>> e449c3b44f6253a2868e63056d129262234349f8
+      } ${className}`}
     >
       {isLoading ? 'Zpracovávám...' : 'Zaplatit'}
     </button>
