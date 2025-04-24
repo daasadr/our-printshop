@@ -19,7 +19,13 @@ export async function POST(req: NextRequest) {
         }
       },
       include: {
-        product: true
+        product: {
+          select: {
+            id: true,
+            title: true,
+            previewUrl: true
+          }
+        }
       }
     });
 
