@@ -4,6 +4,15 @@ import { PrintfulApiResponse, PrintfulFile, PrintfulProductData, PrintfulOrderDa
 const PRINTFUL_API_URL = 'https://api.printful.com';
 const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY;
 
+if (!PRINTFUL_API_KEY) {
+  throw new Error('PRINTFUL_API_KEY is not defined');
+}
+
+interface PrintfulError {
+  code: number;
+  message: string;
+}
+
 // Pomocná funkce pro hlavičky
 function getHeaders() {
   return {
@@ -45,17 +54,17 @@ export async function uploadDesign(file: File): Promise<PrintfulApiResponse<Prin
   const formData = new FormData();
   formData.append('file', file);
 
-  const response = await fetch(`${PRINTFUL_API_URL}/files/designs`, {
+  const response = await fetch(`${PRINTFUL_API_URL}/files`, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${PRINTFUL_API_KEY}`
-      // Nepřidáváme Content-Type, nechť jej nastaví browser pro FormData
+      'Authorization': `Bearer ${PRINTFUL_API_KEY}`,
     },
     body: formData
   });
 
   if (!response.ok) {
-    throw new Error(`Error uploading design: ${response.statusText}`);
+    const error = await response.json() as PrintfulError;
+    throw new Error(error.message || 'Failed to upload design to Printful');
   }
 
   return response.json() as Promise<PrintfulApiResponse<PrintfulFile>>;
