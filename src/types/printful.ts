@@ -2,15 +2,10 @@
 export interface PrintfulApiResponse<T> {
     code: number;
     result: T;
-    extra: Array<{
+    extra?: Array<{
         code: string;
         message: string;
     }>;
-    paging?: {
-        total: number;
-        offset: number;
-        limit: number;
-    };
 }
 
 // Základní typy pro soubory
@@ -126,7 +121,6 @@ export interface PrintfulItemOption {
 
 export interface PrintfulOrderData {
     external_id: string;
-    shipping: string;
     recipient: {
         name: string;
         address1: string;
@@ -138,6 +132,7 @@ export interface PrintfulOrderData {
     items: Array<{
         variant_id: number;
         quantity: number;
+        retail_price: string;
     }>;
 }
 
@@ -145,6 +140,7 @@ export interface PrintfulOrderResponse {
     code: number;
     result: {
         id: number;
+        external_id: string;
         status: string;
         shipping: string;
         created: number;
@@ -154,15 +150,15 @@ export interface PrintfulOrderResponse {
             address1: string;
             city: string;
             state_code: string;
-            state_name: string;
             country_code: string;
             zip: string;
         };
         items: Array<{
             id: number;
-            quantity: number;
+            external_id: string;
             variant_id: number;
-            retail_price: string;
+            quantity: number;
+            price: string;
         }>;
     };
 }

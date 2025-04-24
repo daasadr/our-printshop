@@ -89,4 +89,29 @@ export async function getCurrentRate(): Promise<number> {
   } finally {
     await prisma.$disconnect();
   }
+}
+
+export async function convertEurToCzk(eurAmount: number): Promise<number> {
+  try {
+    // Najít aktuální kurz v databázi
+    const rate = await prisma.exchangeRate.findUnique({
+      where: {
+        fromCurrency_toCurrency: {
+          fromCurrency: 'EUR',
+          toCurrency: 'CZK'
+        }
+      }
+    });
+
+    if (!rate) {
+      // Pokud kurz neexistuje, použít defaultní hodnotu
+      return eurAmount * 25;
+    }
+
+    return eurAmount * rate.rate;
+  } catch (error) {
+    console.error('Error converting currency:', error);
+    // V případě chyby použít defaultní hodnotu
+    return eurAmount * 25;
+  }
 } 

@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
@@ -25,13 +26,14 @@ model Product {
   printfulId      String    @unique
   printfulSync    Boolean   @default(false)
   isActive        Boolean   @default(true)
-  category        String    @default("other")
   categoryId      String?
-  categoryRelation Category? @relation(fields: [categoryId], references: [id])
+  category        Category? @relation(fields: [categoryId], references: [id])
   variants        Variant[]
   designs         Design[]
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+
+  @@index([categoryId])
 }
 
 model Category {
@@ -58,6 +60,8 @@ model Variant {
   product           Product  @relation(fields: [productId], references: [id])
   orderItems        OrderItem[]
   cartItems         CartItem[]
+
+  @@index([productId])
 }
 
 model Design {
@@ -69,22 +73,26 @@ model Design {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   product       Product?  @relation(fields: [productId], references: [id])
+
+  @@index([productId])
 }
 
 model Order {
-  id                String    @id @default(cuid())
-  userId            String?
-  user              User?     @relation(fields: [userId], references: [id])
-  printfulOrderId   String?   @unique
+  id                    String      @id @default(cuid())
+  userId                String?
+  user                  User?       @relation(fields: [userId], references: [id])
+  printfulOrderId       String?     @unique
   stripePaymentIntentId String?
-  stripeSessionId   String?   @unique
-  status            OrderStatus @default(pending)
-  total             Float
-  items             OrderItem[]
-  shippingInfo      ShippingInfo?
-  notes             String?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  stripeSessionId       String?     @unique
+  status               OrderStatus  @default(pending)
+  total                Float
+  items                OrderItem[]
+  shippingInfo         ShippingInfo?
+  notes                String?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+
+  @@index([userId])
 }
 
 model OrderItem {
@@ -97,6 +105,9 @@ model OrderItem {
   price           Float
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+
+  @@index([orderId])
+  @@index([variantId])
 }
 
 model ShippingInfo {
@@ -114,6 +125,8 @@ model ShippingInfo {
   phone           String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+
+  @@index([orderId])
 }
 
 enum OrderStatus {
@@ -128,12 +141,12 @@ enum OrderStatus {
 }
 
 model ExchangeRate {
-  id        String   @id @default(cuid())
-  fromCurrency String
-  toCurrency   String
-  rate      Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(cuid())
+  fromCurrency  String
+  toCurrency    String
+  rate          Float
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@unique([fromCurrency, toCurrency])
 }
@@ -145,6 +158,8 @@ model Cart {
   items     CartItem[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+
+  @@index([userId])
 }
 
 model CartItem {
@@ -158,4 +173,6 @@ model CartItem {
   updatedAt DateTime @updatedAt
 
   @@unique([cartId, variantId])
+  @@index([cartId])
+  @@index([variantId])
 }

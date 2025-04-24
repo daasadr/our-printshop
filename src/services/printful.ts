@@ -1,8 +1,10 @@
 import fetch from 'node-fetch';
 import { PrintfulApiResponse, PrintfulFile, PrintfulProductData, PrintfulOrderData, PrintfulOrderResponse } from '@/types/printful';
+import { PrismaClient } from '@prisma/client';
 
 const PRINTFUL_API_URL = 'https://api.printful.com';
 const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY;
+const prisma = new PrismaClient();
 
 if (!PRINTFUL_API_KEY) {
   throw new Error('PRINTFUL_API_KEY is not defined');
@@ -138,4 +140,81 @@ export async function deleteProduct(productId: number): Promise<PrintfulApiRespo
   }
 
   return response.json() as Promise<PrintfulApiResponse<void>>;
+}
+
+export async function fulfillOrder(orderId: string) {
+  try {
+    // 1. Načíst objednávku z databáze
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        items: {
+          include: {
+            variant: true
+          }
+        },
+        shippingInfo: true
+      }
+    });
+
+    if (!order || !order.shippingInfo) {
+      throw new Error('Order not found or missing shipping info');
+    }
+
+    // 2. Vytvořit data pro Printful API
+    const printfulOrderData: PrintfulOrderData = {
+      external_id: order.id,
+      recipient: {
+        name: order.shippingInfo.name,
+        address1: order.shippingInfo.address1,
+        city: order.shippingInfo.city,
+        state_code: order.shippingInfo.state || '',
+        country_code: order.shippingInfo.country,
+        zip: order.shippingInfo.zip
+      },
+      items: order.items.map((item) => ({
+        variant_id: parseInt(item.variant.printfulVariantId),
+        quantity: item.quantity,
+        retail_price: item.price.toString()
+      }))
+    };
+
+    // 3. Odeslat objednávku do Printful
+    const response = await fetch('https://api.printful.com/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.PRINTFUL_API_KEY}`
+      },
+      body: JSON.stringify(printfulOrderData)
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(`Printful API error: ${JSON.stringify(error)}`);
+    }
+
+    const printfulResponse = await response.json() as PrintfulOrderResponse;
+
+    // 4. Aktualizovat objednávku v databázi
+    await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        printfulOrderId: printfulResponse.result.id.toString(),
+        status: 'processing'
+      }
+    });
+
+    return true;
+  } catch (error) {
+    console.error('Error fulfilling order with Printful:', error);
+    // Aktualizovat stav objednávky na error
+    await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        status: 'error'
+      }
+    });
+    throw error;
+  }
 }

@@ -5,10 +5,9 @@ import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
 import { formatPriceCZK } from '@/utils/currency';
 import { FormattedProduct } from '@/types/prisma';
-import { Product } from '@/types/product';
 
 interface ProductListProps {
-  products: Product[];
+  products: FormattedProduct[];
 }
 
 export default function ProductList({ products }: ProductListProps) {
@@ -40,30 +39,29 @@ export default function ProductList({ products }: ProductListProps) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredProducts.map(product => (
-          <Link
-            key={product.id}
-            href={`/products/${product.id}`}
-            className="group"
-          >
-            <div className="aspect-square relative overflow-hidden rounded-lg bg-gray-100">
-              <Image
-                src={product.image}
-                alt={product.name}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-            <div className="mt-4">
-              <h3 className="text-lg font-medium text-gray-900">{product.name}</h3>
+          <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+            <Link href={`/products/${product.id}`}>
+              <div className="aspect-square relative">
+                <Image
+                  src={product.previewUrl}
+                  alt={product.title}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </Link>
+            <div className="p-4">
+              <Link href={`/products/${product.id}`}>
+                <h3 className="text-lg font-semibold text-gray-900 hover:text-indigo-600">
+                  {product.title}
+                </h3>
+              </Link>
               <p className="mt-1 text-sm text-gray-500">{product.category}</p>
               <p className="mt-2 text-lg font-medium text-gray-900">
-                {product.price.toLocaleString('cs-CZ', {
-                  style: 'currency',
-                  currency: 'CZK'
-                })}
+                {formatPriceCZK(product.price)}
               </p>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
     </div>

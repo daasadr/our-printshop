@@ -1,10 +1,10 @@
 import React from 'react';
-import { PrismaClient } from '@prisma/client';
+import type { FormattedProduct, ProductWhereInput, ProductInclude } from '@/types/prisma';
+import type { Prisma } from '@prisma/client';
 import ProductList from '@/components/ProductList';
 import Link from 'next/link';
-import { FormattedProduct } from '@/types/prisma';
 import { convertEurToCzk } from '@/utils/currency';
-import { Product } from '@/types/product';
+import prisma from '@/lib/prisma';
 
 // Metadata stránky
 export const metadata = {
@@ -12,36 +12,101 @@ export const metadata = {
   description: 'Prohlédněte si naši kompletní nabídku originálních produktů'
 };
 
+// Funkce pro získání kategorií
+async function getCategories() {
+  try {
+    const categories = await prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+        displayName: true
+      },
+      orderBy: { displayName: 'asc' }
+    });
+    return categories;
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+type PrismaProduct = {
+  id: string;
+  title: string;
+  description: string;
+  printfulId: string;
+  printfulSync: boolean;
+  isActive: boolean;
+  categoryId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  variants: Array<{
+    id: string;
+    name: string;
+    price: number;
+    isActive: boolean;
+    productId: string;
+    printfulVariantId: string;
+    size: string | null;
+    color: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  }>;
+  designs: Array<{
+    id: string;
+    name: string;
+    previewUrl: string;
+    printfulFileId: string;
+    productId: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  }>;
+  category: {
+    id: string;
+    name: string;
+    displayName: string;
+    printfulCategory: string;
+    createdAt: Date;
+    updatedAt: Date;
+  } | null;
+};
+
 // Funkce pro získání produktů z databáze
-async function getProducts(category: string | null = null): Promise<Product[]> {
-  const prisma = new PrismaClient();
-  
+async function getProducts(categoryName: string | null = null): Promise<FormattedProduct[]> {
   try {
     // Základní filtrovací podmínky
-    const where: any = {
+    const where: ProductWhereInput = {
       isActive: true
     };
     
     // Přidáme filtr podle kategorie, pokud je specifikována
-    if (category && category !== 'all') {
-      where.category = category;
+    if (categoryName && categoryName !== 'all') {
+      const foundCategory = await prisma.category.findUnique({
+        where: { name: categoryName }
+      });
+      
+      if (foundCategory) {
+        where.categoryId = foundCategory.id;
+      }
     }
     
     // Získání produktů s variantami a designy
-    const products = await prisma.product.findMany({
-      where,
-      include: {
-        variants: {
-          where: { isActive: true },
-          orderBy: { price: 'asc' }
-        },
-        designs: true
+    const include: ProductInclude = {
+      variants: {
+        where: { isActive: true },
+        orderBy: { price: 'asc' }
       },
+      designs: true,
+      category: true
+    };
+    
+    const products = (await prisma.product.findMany({
+      where,
+      include,
       orderBy: { createdAt: 'desc' }
-    });
+    })) as unknown as PrismaProduct[];
     
     // Formátování produktů pro klienta
-    const formattedProducts = await Promise.all(products.map(async product => {
+    const formattedProducts = await Promise.all(products.map(async (product) => {
       // Najdeme nejnižší cenu ze všech variant a převedeme ji na CZK
       const lowestPrice = product.variants.length > 0
         ? await convertEurToCzk(Math.min(...product.variants.map(v => v.price)))
@@ -61,10 +126,13 @@ async function getProducts(category: string | null = null): Promise<Product[]> {
       }
       
       // Převedeme ceny všech variant na CZK
-      const convertedVariants = await Promise.all(product.variants.map(async variant => ({
+      const convertedVariants = await Promise.all(product.variants.map(async (variant) => ({
         ...variant,
         price: await convertEurToCzk(variant.price)
       })));
+
+      const categoryName = product.category ? product.category.name : 'other';
+      const categoryId = product.category ? product.category.id : null;
       
       return {
         id: product.id,
@@ -74,11 +142,11 @@ async function getProducts(category: string | null = null): Promise<Product[]> {
         previewUrl,
         variants: convertedVariants,
         designs: product.designs,
-        category: product.category,
+        category: categoryName,
+        categoryId: categoryId,
         isActive: product.isActive,
         createdAt: product.createdAt,
         updatedAt: product.updatedAt,
-        categoryId: product.categoryId,
         printfulId: product.printfulId,
         printfulSync: product.printfulSync
       };
@@ -93,28 +161,15 @@ async function getProducts(category: string | null = null): Promise<Product[]> {
   }
 }
 
-// Získání kategorií
-async function getCategories() {
-  const prisma = new PrismaClient();
-  
-  try {
-    const categories = await prisma.category.findMany({
-      orderBy: {
-        displayName: 'asc'
-      }
-    });
-    return categories;
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-    return [];
-  } finally {
-    await prisma.$disconnect();
-  }
-}
-
 type ProductsPageProps = {
   searchParams: { [key: string]: string | string[] | undefined };
 };
+
+interface CategoryType {
+  id: string;
+  name: string;
+  displayName: string;
+}
 
 // Hlavní komponenta stránky
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
@@ -135,51 +190,47 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           <div className="relative">
             <h1 className="text-4xl font-bold mb-8 text-center text-white">Naše produkty</h1>
             
-            <div className="flex flex-col md:flex-row gap-8">
-              <div className="md:w-1/4">
-                <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-6 mb-4">
-                  <h2 className="text-lg font-semibold mb-3 text-gray-900">Kategorie</h2>
-                  <ul className="space-y-2">
-                    <li>
+            <div className="md:w-1/4">
+              <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-6 mb-4">
+                <h2 className="text-lg font-semibold mb-3 text-gray-900">Kategorie</h2>
+                <ul className="space-y-2">
+                  <li>
+                    <Link 
+                      href="/products"
+                      className={category === 'all' ? 'text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600'}
+                    >
+                      Všechny produkty
+                    </Link>
+                  </li>
+                  {categories.map((cat: CategoryType) => (
+                    <li key={cat.id}>
                       <Link 
-                        href="/products"
-                        className={category === 'all' ? 'text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600'}
+                        href={`/products?category=${cat.name}`}
+                        className={category === cat.name ? 'text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600'}
                       >
-                        Všechny produkty
+                        {cat.displayName}
                       </Link>
                     </li>
-                    {categories.map((cat) => (
-                      <li key={cat.id}>
-                        <Link 
-                          href={`/products?category=${cat.name}`}
-                          className={category === cat.name ? 'text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600'}
-                        >
-                          {cat.displayName}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              
-              <div className="md:w-3/4">
-                {products && products.length > 0 ? (
-                  <>
-                    <p className="mb-4 text-white">
-                      Zobrazeno {products.length} výsledků
-                    </p>
-                    <ProductList products={products} />
-                  </>
-                ) : (
-                  <div className="text-center py-16 bg-white/90 backdrop-blur-sm rounded-lg">
-                    <h2 className="text-2xl font-semibold mb-4">Žádné produkty nenalezeny</h2>
-                    <p className="text-gray-600 mb-8">
-                      Zkuste vybrat jinou kategorii nebo se vraťte později.
-                    </p>
-                  </div>
-                )}
+                  ))}
+                </ul>
               </div>
             </div>
+            
+            {products && products.length > 0 ? (
+              <>
+                <p className="mb-4 text-white">
+                  Zobrazeno {products.length} výsledků
+                </p>
+                <ProductList products={products} />
+              </>
+            ) : (
+              <div className="text-center py-16 bg-white/90 backdrop-blur-sm rounded-lg">
+                <h2 className="text-2xl font-semibold mb-4">Žádné produkty nenalezeny</h2>
+                <p className="text-gray-600 mb-8">
+                  Zkuste vybrat jinou kategorii nebo se vraťte později.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </main>
@@ -203,4 +254,4 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       </div>
     );
   }
-} 
+}
