@@ -13,6 +13,20 @@ const prisma = new PrismaClient();
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
+interface StripeWebhookEvent {
+  type: string;
+  data: {
+    object: {
+      id: string;
+      metadata: {
+        orderId: string;
+        [key: string]: string;
+      };
+      [key: string]: unknown;
+    };
+  };
+}
+
 async function fulfillOrder(orderId: string) {
   try {
     // 1. Načíst objednávku z databáze
@@ -89,22 +103,24 @@ async function fulfillOrder(orderId: string) {
   }
 }
 
-export async function POST(req: Request) {
-  const body = await req.text();
-  const headersList = headers();
-  const sig = headersList.get('stripe-signature')!;
+export async function POST(request: Request) {
+  const body = await request.text();
+  const signature = headers().get('stripe-signature');
 
-  let event: Stripe.Event;
-
-  try {
-    event = stripe.webhooks.constructEvent(body, sig, endpointSecret);
-  } catch (err: any) {
-    console.error('Webhook signature verification failed:', err.message);
-    return NextResponse.json({ error: err.message }, { status: 400 });
+  if (!signature) {
+    return NextResponse.json(
+      { error: 'Missing stripe-signature header' },
+      { status: 400 }
+    );
   }
 
   try {
-    // Zpracování různých typů událostí
+    const event = stripe.webhooks.constructEvent(
+      body,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET!
+    ) as StripeWebhookEvent;
+
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
@@ -138,30 +154,24 @@ export async function POST(req: Request) {
       }
 
       case 'payment_intent.succeeded': {
-        const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        console.log('Payment succeeded:', paymentIntent.id);
+        const orderId = event.data.object.metadata.orderId;
+        if (orderId) {
+          await prisma.order.update({
+            where: { id: orderId },
+            data: { status: 'paid' },
+          });
+        }
         break;
       }
 
       case 'payment_intent.payment_failed': {
-        const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        console.log('Payment failed:', paymentIntent.id);
-        
-        // Najít a označit objednávku jako selhanou
-        const order = await prisma.order.findFirst({
-          where: { stripePaymentIntentId: paymentIntent.id }
-        });
-
-        if (order) {
+        const failedOrderId = event.data.object.metadata.orderId;
+        if (failedOrderId) {
           await prisma.order.update({
-            where: { id: order.id },
-            data: { 
-              status: 'failed',
-              notes: 'Payment failed'
-            }
+            where: { id: failedOrderId },
+            data: { status: 'failed' },
           });
         }
-        
         break;
       }
 
@@ -173,8 +183,8 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error('Error processing webhook:', error);
     return NextResponse.json(
-      { error: 'Webhook handler failed' },
-      { status: 500 }
+      { error: 'Webhook error' },
+      { status: 400 }
     );
   }
 } 

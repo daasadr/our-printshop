@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { CartItem } from '@/types/cart';
 
 interface CheckoutFormProps {
@@ -20,7 +19,6 @@ interface ShippingDetails {
 }
 
 export default function CheckoutForm({ cartItems, total }: CheckoutFormProps) {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<ShippingDetails>({
     name: '',

@@ -2,7 +2,10 @@
 export interface PrintfulApiResponse<T> {
     code: number;
     result: T;
-    extra: any[];
+    extra: Array<{
+        code: string;
+        message: string;
+    }>;
     paging?: {
         total: number;
         offset: number;
@@ -12,44 +15,59 @@ export interface PrintfulApiResponse<T> {
 
 // Základní typy pro soubory
 export interface PrintfulFile {
-    id: string | number;
+    id: number;
     type: string;
+    hash: string;
     url: string;
-    options?: string[];
-    filename?: string;
-    mime_type?: string;
-    size?: number;
-    width?: number;
-    height?: number;
-    dpi?: number;
-    status?: string;
-    created?: string;
-    thumbnail_url?: string;
-    preview_url?: string;
-    visible?: boolean;
-    position?: string;
+    filename: string;
+    mime_type: string;
+    size: number;
+    width: number;
+    height: number;
+    dpi: number;
+    created: number;
+    thumbnail_url: string;
+    preview_url: string;
+    visible: boolean;
 }
 
 // Základní typy pro produkty
 export interface PrintfulProductData {
-    id?: string | number;
-    external_id?: string;
+    id: number;
     name: string;
-    variants?: PrintfulVariant[];
-    sync_product: {
-        id?: number;
+    variants: Array<{
+        id: number;
+        product_id: number;
         name: string;
-        thumbnail_url?: string;
-        external_id?: string;
-    };
-    sync_variants?: Array<{
-        variant_id: number;
-        retail_price: number;
-        external_id?: string;
-        files?: PrintfulFile[];
+        size: string;
+        color: string;
+        price: string;
+        in_stock: boolean;
     }>;
-    thumbnail_url?: string;
-    is_ignored?: boolean;
+    files: Array<{
+        id: number;
+        type: string;
+        hash: string;
+        url: string;
+        filename: string;
+        mime_type: string;
+        size: number;
+        width: number;
+        height: number;
+        dpi: number;
+        created: number;
+        thumbnail_url: string;
+        preview_url: string;
+        visible: boolean;
+    }>;
+    options: Array<{
+        id: string;
+        name: string;
+        values: Array<{
+            id: string;
+            name: string;
+        }>;
+    }>;
 }
 
 export interface PrintfulVariant {
@@ -107,27 +125,20 @@ export interface PrintfulItemOption {
 }
 
 export interface PrintfulOrderData {
-    external_id?: string;
-    recipient: PrintfulRecipient;
-    items: PrintfulOrderItem[];
-    retail_costs?: {
-        subtotal?: string | number;
-        discount?: string | number;
-        shipping?: string | number;
-        tax?: string | number;
-        total?: number;
-        currency?: string;
+    external_id: string;
+    shipping: string;
+    recipient: {
+        name: string;
+        address1: string;
+        city: string;
+        state_code: string;
+        country_code: string;
+        zip: string;
     };
-    gift?: {
-        subject?: string;
-        message?: string;
-    };
-    packing_slip?: {
-        email?: string;
-        phone?: string;
-        message?: string;
-        logo_url?: string;
-    };
+    items: Array<{
+        variant_id: number;
+        quantity: number;
+    }>;
 }
 
 export interface PrintfulOrderResponse {
@@ -135,18 +146,25 @@ export interface PrintfulOrderResponse {
     external_id: string;
     status: string;
     shipping: string;
-    created: string;
-    updated: string;
-    recipient: PrintfulRecipient;
-    items: PrintfulOrderItem[];
-    costs: {
-        subtotal: string;
-        discount: string;
-        shipping: string;
-        tax: string;
-        total: string;
-        currency: string;
+    created: number;
+    updated: number;
+    recipient: {
+        name: string;
+        address1: string;
+        city: string;
+        state_code: string;
+        country_code: string;
+        zip: string;
     };
+    items: Array<{
+        id: number;
+        quantity: number;
+        variant_id: number;
+        name: string;
+        product_id: number;
+        sku: string;
+        retail_price: string;
+    }>;
 }
 
 // Typy pro shipping

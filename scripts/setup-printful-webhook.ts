@@ -1,5 +1,11 @@
 import fetch from 'node-fetch';
 
+interface PrintfulWebhookResponse {
+  result: {
+    secret: string;
+  };
+}
+
 const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY;
 const WEBHOOK_URL = process.env.NEXT_PUBLIC_BASE_URL + '/api/printful-webhook';
 
@@ -13,21 +19,16 @@ async function setupPrintfulWebhook() {
       },
       body: JSON.stringify({
         url: WEBHOOK_URL,
-        types: [
-          'package_shipped',
-          'package_delivered',
-          'order_failed',
-          'order_canceled'
-        ]
-      })
+        secret: process.env.PRINTFUL_WEBHOOK_SECRET,
+      }),
     });
 
-    const data = await response.json();
-    
     if (!response.ok) {
-      throw new Error(`Failed to setup webhook: ${JSON.stringify(data)}`);
+      throw new Error(`Failed to setup webhook: ${response.statusText}`);
     }
 
+    const data = await response.json() as PrintfulWebhookResponse;
+    
     console.log('Printful webhook setup successful:', data);
     // Uložte si secret z odpovědi do .env jako PRINTFUL_WEBHOOK_SECRET
     console.log('Add this to your .env file:');

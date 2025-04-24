@@ -4,6 +4,7 @@ import ProductList from '@/components/ProductList';
 import Link from 'next/link';
 import { FormattedProduct } from '@/types/prisma';
 import { convertEurToCzk } from '@/utils/currency';
+import { Product } from '@/types/product';
 
 // Metadata stránky
 export const metadata = {
@@ -12,7 +13,7 @@ export const metadata = {
 };
 
 // Funkce pro získání produktů z databáze
-async function getProducts(category: string | null = null): Promise<FormattedProduct[]> {
+async function getProducts(category: string | null = null): Promise<Product[]> {
   const prisma = new PrismaClient();
   
   try {

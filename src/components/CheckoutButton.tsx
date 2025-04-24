@@ -1,67 +1,39 @@
 'use client';
 
 import { useState } from 'react';
-import { loadStripe } from '@stripe/stripe-js';
-
-// Inicializace Stripe
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+import { CartItem } from '@/types/cart';
 
 interface CheckoutButtonProps {
-  items: Array<{
-    variantId: string;
-    quantity: number;
-    name: string;
-    price: number;
-    image?: string;
-  }>;
-  shippingInfo: {
-    name: string;
-    email: string;
-    address1: string;
-    address2?: string;
-    city: string;
-    state?: string;
-    country: string;
-    zip: string;
-    phone?: string;
-  };
-  disabled?: boolean;
-  className?: string;
+  cartItems: CartItem[];
+  total: number;
 }
 
-export default function CheckoutButton({ items, shippingInfo, disabled = false, className = '' }: CheckoutButtonProps) {
+export default function CheckoutButton({ cartItems, total }: CheckoutButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCheckout = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-
-      // Vytvoříme checkout session
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          items,
-          shippingInfo,
+          items: cartItems,
+          total,
         }),
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Chyba při vytváření platební session');
+        throw new Error('Chyba při vytváření objednávky');
       }
 
       const { url } = await response.json();
-      if (url) {
-        window.location.href = url;
-      } else {
-        throw new Error('Chybí URL pro přesměrování na platební bránu');
-      }
+      window.location.href = url;
     } catch (error) {
-      console.error('Error in checkout process:', error);
-      alert('Nastala chyba při zpracování platby. Zkuste to prosím později.');
+      console.error('Checkout error:', error);
+      alert('Došlo k chybě při zpracování objednávky. Zkuste to prosím znovu.');
     } finally {
       setIsLoading(false);
     }
@@ -70,14 +42,10 @@ export default function CheckoutButton({ items, shippingInfo, disabled = false, 
   return (
     <button
       onClick={handleCheckout}
-      disabled={disabled || isLoading || items.length === 0}
-      className={`w-full py-3 px-4 rounded-lg text-white font-medium transition-colors ${
-        disabled || isLoading || items.length === 0
-          ? 'bg-gray-400 cursor-not-allowed'
-          : 'bg-green-600 hover:bg-green-700'
-      } ${className}`}
+      disabled={isLoading}
+      className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
     >
-      {isLoading ? 'Zpracovávám...' : 'Zaplatit'}
+      {isLoading ? 'Zpracování...' : 'Pokračovat k platbě'}
     </button>
   );
 } 

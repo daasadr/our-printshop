@@ -1,42 +1,71 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
 import { formatPriceCZK } from '@/utils/currency';
 import { FormattedProduct } from '@/types/prisma';
+import { Product } from '@/types/product';
 
 interface ProductListProps {
-  products: FormattedProduct[];
-  className?: string;
+  products: Product[];
 }
 
-export default function ProductList({ products, className = '' }: ProductListProps) {
+export default function ProductList({ products }: ProductListProps) {
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  const filteredProducts = selectedCategory === 'all'
+    ? products
+    : products.filter(product => product.category === selectedCategory);
+
+  const categories = ['all', ...new Set(products.map(product => product.category))];
+
   return (
-    <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ${className}`}>
-      {products.map((product) => (
-        <Link
-          key={product.id}
-          href={`/products/${product.id}`}
-          className="bg-white/80 backdrop-blur-sm rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
-        >
-          <div className="relative h-64">
-            <Image
-              src={product.previewUrl}
-              alt={product.title}
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="p-4">
-            <h3 className="text-lg font-semibold mb-2">{product.title}</h3>
-            <p className="text-gray-600 mb-4 line-clamp-2">{product.description}</p>
-            <p className="text-lg font-bold text-green-600">
-              {product.price.toLocaleString('cs-CZ')} Kč
-            </p>
-          </div>
-        </Link>
-      ))}
+    <div className="space-y-8">
+      <div className="flex flex-wrap gap-2">
+        {categories.map(category => (
+          <button
+            key={category}
+            onClick={() => setSelectedCategory(category)}
+            className={`px-4 py-2 rounded-full text-sm font-medium ${
+              selectedCategory === category
+                ? 'bg-indigo-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            {category === 'all' ? 'Vše' : category}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {filteredProducts.map(product => (
+          <Link
+            key={product.id}
+            href={`/products/${product.id}`}
+            className="group"
+          >
+            <div className="aspect-square relative overflow-hidden rounded-lg bg-gray-100">
+              <Image
+                src={product.image}
+                alt={product.name}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+            <div className="mt-4">
+              <h3 className="text-lg font-medium text-gray-900">{product.name}</h3>
+              <p className="mt-1 text-sm text-gray-500">{product.category}</p>
+              <p className="mt-2 text-lg font-medium text-gray-900">
+                {product.price.toLocaleString('cs-CZ', {
+                  style: 'currency',
+                  currency: 'CZK'
+                })}
+              </p>
+            </div>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

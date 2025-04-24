@@ -7,11 +7,6 @@ import { PrintfulFile, PrintfulApiResponse } from '@/types/printful';
 
 const prisma = new PrismaClient();
 
-interface UploadDesignResponse {
-  id: string;
-  url: string;
-}
-
 export async function POST(req: NextRequest) {
   try {
     // Ověření přihlášení
@@ -76,7 +71,7 @@ export async function POST(req: NextRequest) {
 }
 
 // src/app/api/designs/route.ts
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Volitelně: Kontrola autentizace
     const session = await getServerSession(authOptions);
