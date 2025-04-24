@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     const { variantIds, quantities } = await req.json();
 
     // 1. Ověřit, že všechny produkty existují
-    const variants = await prisma.productVariant.findMany({
+    const variants = await prisma.variant.findMany({
       where: {
         id: {
           in: variantIds
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
           create: variants.map((variant, index) => ({
             quantity: quantities[index],
             price: variant.price,
-            productVariantId: variant.id,
+            variantId: variant.id,
             productId: variant.productId
           }))
         }
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
         price_data: {
           currency: 'czk',
           product_data: {
-            name: `${variant.product.name} - ${variant.name}`,
+            name: `${variant.product.title} - ${variant.name}`,
             images: [variant.product.imageUrl]
           },
           unit_amount: variant.price * 100 // Stripe používá nejmenší jednotku měny (haléře)

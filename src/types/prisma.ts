@@ -1,5 +1,7 @@
 import { Product, Design, Variant } from '@prisma/client';
 
+export type { Product, Design, Variant };
+
 export type ProductVariant = {
   id: string;
   productId: string;
