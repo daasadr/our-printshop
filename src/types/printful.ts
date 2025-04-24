@@ -142,29 +142,29 @@ export interface PrintfulOrderData {
 }
 
 export interface PrintfulOrderResponse {
-    id: number;
-    external_id: string;
-    status: string;
-    shipping: string;
-    created: number;
-    updated: number;
-    recipient: {
-        name: string;
-        address1: string;
-        city: string;
-        state_code: string;
-        country_code: string;
-        zip: string;
-    };
-    items: Array<{
+    code: number;
+    result: {
         id: number;
-        quantity: number;
-        variant_id: number;
-        name: string;
-        product_id: number;
-        sku: string;
-        retail_price: string;
-    }>;
+        status: string;
+        shipping: string;
+        created: number;
+        updated: number;
+        recipient: {
+            name: string;
+            address1: string;
+            city: string;
+            state_code: string;
+            state_name: string;
+            country_code: string;
+            zip: string;
+        };
+        items: Array<{
+            id: number;
+            quantity: number;
+            variant_id: number;
+            retail_price: string;
+        }>;
+    };
 }
 
 // Typy pro shipping
