@@ -2,14 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Metadata } from 'next';
 import CheckoutForm from '@/components/CheckoutForm';
 import { CartWithItems } from '@/types/prisma';
-
-export const metadata: Metadata = {
-  title: 'Dokončení objednávky | Our Print Shop',
-  description: 'Dokončete svou objednávku v Our Print Shop',
-};
+import { CartItem as SimpleCartItem } from '@/types/cart';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -37,11 +32,20 @@ export default function CheckoutPage() {
     return <div>Načítání...</div>;
   }
 
+  // Transformace položek košíku do jednodušší struktury pro CheckoutForm
+  const simpleCartItems: SimpleCartItem[] = cart.items.map(item => ({
+    variantId: item.variant.id,
+    quantity: item.quantity,
+    name: item.variant.name,
+    price: item.variant.price,
+    image: item.variant.product.previewUrl
+  }));
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold mb-8">Dokončení objednávky</h1>
-        <CheckoutForm cartItems={cart.items} total={total} />
+        <CheckoutForm cartItems={simpleCartItems} total={total} />
       </div>
     </div>
   );

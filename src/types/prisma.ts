@@ -111,3 +111,38 @@ export type ProductInclude = {
   designs?: boolean;
   category?: boolean;
 };
+
+export type CartItem = {
+  id: string;
+  cartId: string;
+  variantId: string;
+  quantity: number;
+  createdAt: Date;
+  updatedAt: Date;
+  variant: {
+    id: string;
+    name: string;
+    price: number;
+    productId: string;
+    printfulVariantId: string;
+    size: string | null;
+    color: string | null;
+    isActive: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+    product: {
+      id: string;
+      title: string;
+      description: string;
+      previewUrl?: string;
+    };
+  };
+};
+
+export type CartWithItems = {
+  id: string;
+  userId: string | null;
+  items: CartItem[];
+  createdAt: Date;
+  updatedAt: Date;
+};
