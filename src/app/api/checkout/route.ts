@@ -20,10 +20,10 @@ export async function POST(req: NextRequest) {
       },
       include: {
         product: {
-          select: {
-            id: true,
-            title: true,
-            previewUrl: true
+          include: {
+            designs: {
+              take: 1
+            }
           }
         }
       }
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
           currency: 'czk',
           product_data: {
             name: `${variant.product.title} - ${variant.name}`,
-            images: [variant.product.previewUrl]
+            images: variant.product.designs[0]?.previewUrl ? [variant.product.designs[0].previewUrl] : []
           },
           unit_amount: variant.price * 100 // Stripe používá nejmenší jednotku měny (haléře)
         },
