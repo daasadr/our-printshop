@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
           currency: 'czk',
           product_data: {
             name: `${variant.product.title} - ${variant.name}`,
-            images: [variant.product.imageUrl]
+            images: [variant.product.previewUrl]
           },
           unit_amount: variant.price * 100 // Stripe používá nejmenší jednotku měny (haléře)
         },
