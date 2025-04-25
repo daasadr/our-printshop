@@ -1,8 +1,7 @@
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { PrismaClient, OrderStatus } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '@/lib/prisma';
 
 // Printful webhook secret from environment variables
 const PRINTFUL_WEBHOOK_SECRET = process.env.PRINTFUL_WEBHOOK_SECRET!;
