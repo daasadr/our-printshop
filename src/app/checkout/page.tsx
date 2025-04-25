@@ -9,21 +9,29 @@ import { CartItem as SimpleCartItem } from '@/types/cart';
 import { useCart } from '@/hooks/useCart';
 
 export default function CheckoutPage() {
-  const { data: session } = useSession();
+  const router = useRouter();
   const { items: localCartItems, totalPrice: localTotalPrice } = useCart();
   const [serverCart, setServerCart] = useState<CartWithItems | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const { status, data: session } = useSession({
+    required: false,
+    onUnauthenticated() {
+      // Pro nepřihlášené uživatele pokračujeme s lokálním košíkem
+      setIsLoading(false);
+    },
+  });
 
   useEffect(() => {
     const fetchServerCart = async () => {
+      if (status !== 'authenticated') {
+        setIsLoading(false);
+        return;
+      }
+
       try {
         const response = await fetch('/api/cart');
         if (!response.ok) {
-          if (response.status === 401) {
-            // Pro nepřihlášené uživatele použijeme lokální košík
-            return;
-          }
           throw new Error('Nepodařilo se načíst košík');
         }
         const data: CartWithItems = await response.json();
@@ -36,16 +44,16 @@ export default function CheckoutPage() {
         setServerCart(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Něco se pokazilo');
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    if (session) {
-      fetchServerCart();
-    }
-  }, [router, session]);
+    fetchServerCart();
+  }, [router, status]);
 
   // Pro nepřihlášené uživatele zkontrolujeme lokální košík
-  if (!session && localCartItems.length === 0) {
+  if (!session && localCartItems.length === 0 && !isLoading) {
     router.push('/cart');
     return null;
   }
@@ -67,8 +75,7 @@ export default function CheckoutPage() {
     );
   }
 
-  // Zobrazíme loading stav pouze když čekáme na serverový košík
-  if (session && !serverCart) {
+  if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto text-center">
