@@ -1,32 +1,30 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { ProductWithRelations, FormattedProduct } from '@/types/prisma';
+import { PrismaProduct, FormattedProduct, ProductInclude } from '@/types/prisma';
 import { convertEurToCzk } from '@/utils/currency';
-
-const prisma = new PrismaClient();
+import prisma from '@/lib/prisma';
 
 export async function GET() {
   try {
+    const include: ProductInclude = {
+      variants: {
+        where: { isActive: true },
+        orderBy: { price: 'asc' },
+      },
+      designs: true,
+      category: true,
+    };
+
     const products = await prisma.product.findMany({
       where: {
         isActive: true,
       },
-      include: {
-        variants: {
-          where: {
-            isActive: true,
-          },
-          orderBy: {
-            price: 'asc',
-          },
-        },
-        designs: true,
-      },
+      include,
       orderBy: {
         createdAt: 'desc',
       },
       take: 4,
-    }) as ProductWithRelations[];
+    }) as unknown as PrismaProduct[];
 
     const formattedProducts: FormattedProduct[] = await Promise.all(products.map(async product => {
       const convertedVariants = await Promise.all(product.variants.map(async variant => ({
@@ -51,11 +49,11 @@ export async function GET() {
         previewUrl: processedPreviewUrl,
         price: product.variants[0]?.price ? await convertEurToCzk(product.variants[0].price) : 0,
         variants: convertedVariants,
-        designs: product.designs,
+        designs: product.designs.map(({ productId, ...design }) => design),
         isActive: product.isActive,
         createdAt: product.createdAt,
         updatedAt: product.updatedAt,
-        category: product.category,
+        category: product.category?.displayName || '',
         categoryId: product.categoryId,
         printfulId: product.printfulId,
         printfulSync: product.printfulSync
@@ -69,7 +67,5 @@ export async function GET() {
       { error: 'Internal server error' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

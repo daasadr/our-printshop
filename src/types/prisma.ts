@@ -107,7 +107,7 @@ export type ProductInclude = {
   variants?: {
     where?: { isActive?: boolean };
     orderBy?: { price?: 'asc' | 'desc' };
-  };
+  } | boolean;
   designs?: boolean;
   category?: boolean;
 };
