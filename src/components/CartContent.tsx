@@ -76,16 +76,10 @@ export default function CartContent() {
             {formatPriceCZK(totalPrice)}
           </span>
         </div>
-        <div className="mt-4 space-y-2">
-          <Link 
-            href="/cart" 
-            className="block w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors text-center"
-          >
-            Zobrazit košík
-          </Link>
+        <div className="mt-4">
           <Link
             href="/checkout"
-            className="block w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors text-center"
+            className="block w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors text-center font-semibold"
           >
             Pokračovat k objednávce
           </Link>

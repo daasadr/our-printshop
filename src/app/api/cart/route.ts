@@ -159,9 +159,8 @@ export async function DELETE(req: NextRequest) {
 export async function PATCH(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    const userId = session?.user?.id;
-
-    if (!userId) {
+    
+    if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -175,7 +174,7 @@ export async function PATCH(request: Request) {
     }
 
     const cart = await prisma.cart.findUnique({
-      where: { userId },
+      where: { userId: session.user.email },
       include: {
         items: true,
       },
@@ -194,30 +193,19 @@ export async function PATCH(request: Request) {
       );
     }
 
-    const updatedCart = await prisma.cart.update({
-      where: { id: cart.id },
+    const updatedCartItem = await prisma.cartItem.update({
+      where: {
+        cartId_variantId: {
+          cartId: cart.id,
+          variantId
+        }
+      },
       data: {
-        items: {
-          update: {
-            where: { id: cartItem.id },
-            data: { quantity },
-          },
-        },
-      },
-      include: {
-        items: {
-          include: {
-            variant: {
-              include: {
-                product: true,
-              },
-            },
-          },
-        },
-      },
+        quantity
+      }
     });
 
-    return NextResponse.json(updatedCart);
+    return NextResponse.json(updatedCartItem);
   } catch (error) {
     console.error('Error updating cart item:', error);
     return NextResponse.json(
