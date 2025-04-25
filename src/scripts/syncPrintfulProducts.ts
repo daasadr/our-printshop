@@ -211,7 +211,11 @@ async function syncPrintfulProducts() {
               printfulId: syncProduct.id.toString(),
               printfulSync: true,
               isActive: true,
-              category
+              category: {
+                connect: {
+                  name: category
+                }
+              }
             }
           });
           
@@ -273,7 +277,11 @@ async function syncPrintfulProducts() {
               description: `Originální produkt: ${productName}`,
               printfulSync: true,
               isActive: true,
-              category
+              category: {
+                connect: {
+                  name: category
+                }
+              }
             }
           });
           
