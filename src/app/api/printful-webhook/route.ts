@@ -1,6 +1,6 @@
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, OrderStatus } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -29,19 +29,19 @@ export async function POST(req: Request) {
     }
 
     // Aktualizovat status objednávky podle události z Printful
-    let newStatus;
+    let newStatus: OrderStatus;
     switch (type) {
       case 'package_shipped':
-        newStatus = 'shipped';
+        newStatus = OrderStatus.shipped;
         break;
       case 'package_delivered':
-        newStatus = 'delivered';
+        newStatus = OrderStatus.delivered;
         break;
       case 'order_failed':
-        newStatus = 'error';
+        newStatus = OrderStatus.error;
         break;
       case 'order_canceled':
-        newStatus = 'cancelled';
+        newStatus = OrderStatus.cancelled;
         break;
       default:
         console.log(`Unhandled Printful event type: ${type}`);
