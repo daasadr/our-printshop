@@ -1,13 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import CheckoutForm from '@/components/CheckoutForm';
 import { CartWithItems } from '@/types/prisma';
 import { CartItem as SimpleCartItem } from '@/types/cart';
 
 export default function CheckoutPage() {
-  const router = useRouter();
   const [cart, setCart] = useState<CartWithItems | null>(null);
   const [total, setTotal] = useState(0);
 
@@ -18,7 +16,7 @@ export default function CheckoutPage() {
         const data = await response.json();
         setCart(data);
         // Vypočítat celkovou cenu
-        const cartTotal = data.items.reduce((sum: number, item: any) => {
+        const cartTotal = data.items.reduce((sum: number, item: CartWithItems['items'][0]) => {
           return sum + (item.variant.price * item.quantity);
         }, 0);
         setTotal(cartTotal);

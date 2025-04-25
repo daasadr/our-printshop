@@ -6,13 +6,11 @@ declare module '@prisma/client' {
     product: Prisma.ProductDelegate<Prisma.RejectOnNotFound | Prisma.RejectPerOperation>;
   }
 
-  export namespace Prisma {
-    export interface ProductWhereInput {
-      categoryId?: string;
-    }
+  export interface ProductWhereInput {
+    categoryId?: string;
+  }
 
-    export interface ProductInclude {
-      category?: boolean;
-    }
+  export interface ProductInclude {
+    category?: boolean;
   }
 } 

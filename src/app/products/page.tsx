@@ -1,6 +1,5 @@
 import React from 'react';
 import type { FormattedProduct, ProductWhereInput, ProductInclude } from '@/types/prisma';
-import type { Prisma } from '@prisma/client';
 import ProductList from '@/components/ProductList';
 import Link from 'next/link';
 import { convertEurToCzk } from '@/utils/currency';
