@@ -2,24 +2,26 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import CheckoutForm from '@/components/CheckoutForm';
 import { CartWithItems } from '@/types/prisma';
 import { CartItem as SimpleCartItem } from '@/types/cart';
+import { useCart } from '@/hooks/useCart';
 
 export default function CheckoutPage() {
-  const [cart, setCart] = useState<CartWithItems | null>(null);
-  const [total, setTotal] = useState(0);
+  const { data: session } = useSession();
+  const { items: localCartItems, totalPrice: localTotalPrice } = useCart();
+  const [serverCart, setServerCart] = useState<CartWithItems | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchCart = async () => {
+    const fetchServerCart = async () => {
       try {
         const response = await fetch('/api/cart');
         if (!response.ok) {
           if (response.status === 401) {
-            // Pokud není uživatel přihlášen, přesměrujeme ho na přihlášení
-            router.push('/auth/signin');
+            // Pro nepřihlášené uživatele použijeme lokální košík
             return;
           }
           throw new Error('Nepodařilo se načíst košík');
@@ -31,19 +33,22 @@ export default function CheckoutPage() {
           return;
         }
 
-        setCart(data);
-        // Vypočítat celkovou cenu
-        const cartTotal = data.items.reduce((sum, item) => {
-          return sum + (item.variant.price * item.quantity);
-        }, 0);
-        setTotal(cartTotal);
+        setServerCart(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Něco se pokazilo');
       }
     };
 
-    fetchCart();
-  }, [router]);
+    if (session) {
+      fetchServerCart();
+    }
+  }, [router, session]);
+
+  // Pro nepřihlášené uživatele zkontrolujeme lokální košík
+  if (!session && localCartItems.length === 0) {
+    router.push('/cart');
+    return null;
+  }
 
   if (error) {
     return (
@@ -62,7 +67,8 @@ export default function CheckoutPage() {
     );
   }
 
-  if (!cart) {
+  // Zobrazíme loading stav pouze když čekáme na serverový košík
+  if (session && !serverCart) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto text-center">
@@ -78,20 +84,26 @@ export default function CheckoutPage() {
     );
   }
 
-  // Transformace položek košíku do jednodušší struktury pro CheckoutForm
-  const simpleCartItems: SimpleCartItem[] = cart.items.map(item => ({
-    variantId: item.variant.id,
-    quantity: item.quantity,
-    name: item.variant.name,
-    price: item.variant.price,
-    image: item.variant.product.previewUrl
-  }));
+  // Použijeme buď serverový košík pro přihlášené uživatele, nebo lokální košík pro nepřihlášené
+  const cartItems = session && serverCart ? 
+    serverCart.items.map(item => ({
+      variantId: item.variant.id,
+      quantity: item.quantity,
+      name: item.variant.name,
+      price: item.variant.price,
+      image: item.variant.product.previewUrl
+    })) : 
+    localCartItems;
+
+  const total = session && serverCart ? 
+    serverCart.items.reduce((sum, item) => sum + (item.variant.price * item.quantity), 0) :
+    localTotalPrice;
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold mb-8">Dokončení objednávky</h1>
-        <CheckoutForm cartItems={simpleCartItems} total={total} />
+        <CheckoutForm cartItems={cartItems} total={total} />
       </div>
     </div>
   );
