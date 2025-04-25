@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient, Prisma } from '@prisma/client';
-import { ProductWithRelations, FormattedProduct } from '@/types/prisma';
+import { Prisma } from '@prisma/client';
+import { PrismaProduct, FormattedProduct, ProductInclude } from '@/types/prisma';
 import { convertEurToCzk } from '@/utils/currency';
-
-const prisma = new PrismaClient();
+import prisma from '@/lib/prisma';
 
 export async function GET(req: NextRequest) {
   try {
@@ -13,24 +12,23 @@ export async function GET(req: NextRequest) {
     // Definujeme where podmínku
     const whereCondition: Prisma.ProductWhereInput = {
       isActive: true,
-      ...(category ? { category } : {})
+      ...(category ? { categoryId: category } : {})
+    };
+    
+    const include: ProductInclude = {
+      variants: {
+        where: { isActive: true },
+        orderBy: { price: 'asc' },
+      },
+      designs: true,
+      category: true,
     };
     
     // Získáme produkty z databáze
     const products = await prisma.product.findMany({
       where: whereCondition,
-      include: {
-        variants: {
-          where: {
-            isActive: true,
-          },
-          orderBy: {
-            price: 'asc' as const,
-          },
-        },
-        designs: true,
-      },
-    }) as ProductWithRelations[];
+      include,
+    }) as unknown as PrismaProduct[];
     
     // Transformace dat pro klienta s ověřením, že existují potřebná data
     const formattedProducts: FormattedProduct[] = await Promise.all(products.map(async product => {
@@ -74,7 +72,14 @@ export async function GET(req: NextRequest) {
         previewUrl: processedPreviewUrl,
         price: priceInCzk,
         variants: convertedVariants,
-        designs: product.designs
+        designs: product.designs.map(({ productId, ...design }) => design),
+        isActive: product.isActive,
+        createdAt: product.createdAt,
+        updatedAt: product.updatedAt,
+        category: product.category?.displayName || '',
+        categoryId: product.categoryId,
+        printfulId: product.printfulId,
+        printfulSync: product.printfulSync
       };
     }));
    
@@ -86,7 +91,5 @@ export async function GET(req: NextRequest) {
       { message: 'Chyba při načítání produktů' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
