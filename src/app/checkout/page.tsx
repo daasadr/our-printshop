@@ -13,10 +13,10 @@ export default function CheckoutPage() {
     const fetchCart = async () => {
       const response = await fetch('/api/cart');
       if (response.ok) {
-        const data = await response.json();
+        const data: CartWithItems = await response.json();
         setCart(data);
         // Vypočítat celkovou cenu
-        const cartTotal = data.items.reduce((sum: number, item: CartWithItems['items'][0]) => {
+        const cartTotal = data.items.reduce((sum, item) => {
           return sum + (item.variant.price * item.quantity);
         }, 0);
         setTotal(cartTotal);

@@ -1,16 +1,21 @@
 import { Prisma } from '@prisma/client';
 
 declare module '@prisma/client' {
-  export interface PrismaClient {
-    category: Prisma.CategoryDelegate<Prisma.RejectOnNotFound | Prisma.RejectPerOperation>;
-    product: Prisma.ProductDelegate<Prisma.RejectOnNotFound | Prisma.RejectPerOperation>;
+  interface PrismaClient {
+    category: {
+      findMany: () => Promise<any[]>;
+      findUnique: (args: { where: { name: string } }) => Promise<any>;
+    };
+    product: {
+      findMany: (args: any) => Promise<any[]>;
+    };
   }
 
-  export interface ProductWhereInput {
+  interface ProductWhereInput {
     categoryId?: string;
   }
 
-  export interface ProductInclude {
+  interface ProductInclude {
     category?: boolean;
   }
 } 
