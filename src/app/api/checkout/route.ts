@@ -13,7 +13,7 @@ const prisma = new PrismaClient();
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { items, shippingInfo } = body;
+    const { items, shippingDetails } = body;
     
     const session = await getServerSession(authOptions);
     
@@ -66,7 +66,13 @@ export async function POST(req: NextRequest) {
         },
         shippingInfo: {
           create: {
-            ...shippingInfo
+            name: shippingDetails.name,
+            email: shippingDetails.email,
+            phone: shippingDetails.phone || '',
+            address1: shippingDetails.address,
+            city: shippingDetails.city,
+            zip: shippingDetails.zip,
+            country: shippingDetails.country || 'CZ'
           }
         },
         ...(session?.user?.email ? {
@@ -76,7 +82,12 @@ export async function POST(req: NextRequest) {
             }
           }
         } : {})
-      },
+      }
+    });
+
+    // Načteme order s potřebnými daty pro Stripe
+    const orderWithItems = await prisma.order.findUnique({
+      where: { id: order.id },
       include: {
         items: {
           include: {
@@ -93,9 +104,13 @@ export async function POST(req: NextRequest) {
         }
       }
     });
+
+    if (!orderWithItems) {
+      throw new Error('Order not found after creation');
+    }
     
     // 4. Vytvořit Stripe Checkout Session
-    const lineItems = order.items.map(item => ({
+    const lineItems = orderWithItems.items.map(item => ({
       price_data: {
         currency: 'czk',
         product_data: {
@@ -134,7 +149,7 @@ export async function POST(req: NextRequest) {
         allowed_countries: ['CZ', 'SK'],
       },
       billing_address_collection: 'required',
-      customer_email: shippingInfo.email,
+      customer_email: shippingDetails.email,
     });
     
     // 5. Aktualizovat objednávku s Stripe Session ID
