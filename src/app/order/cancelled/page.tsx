@@ -8,28 +8,28 @@ export const metadata: Metadata = {
 
 export default function OrderCancelledPage() {
   return (
-    <div className="container mx-auto px-4 py-16 text-center">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
         <h1 className="text-3xl font-bold text-red-600 mb-4">
           Objednávka byla zrušena
         </h1>
-        <p className="text-lg mb-8">
+        <p className="text-gray-600 mb-8">
           Platba nebyla dokončena a objednávka byla zrušena.
-          Pokud chcete, můžete to zkusit znovu nebo nás kontaktovat v případě problémů.
+          Pokud chcete, můžete se vrátit do košíku a zkusit to znovu.
         </p>
-        <div className="space-x-4">
-          <Link
-            href="/checkout"
-            className="inline-block bg-indigo-600 text-white py-3 px-8 rounded-md hover:bg-indigo-700"
+        <div className="space-y-4">
+          <a
+            href="/cart"
+            className="block text-blue-600 hover:text-blue-800 underline"
           >
-            Zkusit znovu
-          </Link>
-          <Link
+            Zpět do košíku
+          </a>
+          <a
             href="/"
-            className="inline-block bg-gray-600 text-white py-3 px-8 rounded-md hover:bg-gray-700"
+            className="block text-gray-600 hover:text-gray-800 underline"
           >
             Zpět na hlavní stránku
-          </Link>
+          </a>
         </div>
       </div>
     </div>

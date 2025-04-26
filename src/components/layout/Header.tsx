@@ -5,12 +5,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCart } from '@/hooks/useCart';
 import { FiMenu, FiX, FiUser, FiHeart } from 'react-icons/fi';
+import { signOut, useSession } from 'next-auth/react';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
   const { items } = useCart();
+  const session = useSession();
 
   // Sledování scrollu pro změnu stylu headeru
   useEffect(() => {
@@ -44,56 +46,36 @@ const Header: React.FC = () => {
           </Link>
 
           {/* Desktopová navigace */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link
-              href="/"
-              className={`text-sm font-medium ${
-                isActive('/') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
-              }`}
-            >
-              Domů
-            </Link>
-            <Link
-              href="/products"
-              className={`text-sm font-medium ${
-                isActive('/products') || pathname.startsWith('/products/')
-                  ? 'text-blue-600'
-                  : 'text-gray-700 hover:text-blue-600'
-              }`}
-            >
-              Produkty
-            </Link>
-            <Link
-              href="/about"
-              className={`text-sm font-medium ${
-                isActive('/about') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
-              }`}
-            >
-              O nás
-            </Link>
-            <Link
-              href="/kontakt"
-              className={`text-sm font-medium ${
-                isActive('/kontakt') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
-              }`}
-            >
-              Kontakt
-            </Link>
-          </nav>
-
-          {/* Akce uživatele */}
-          <div className="flex items-center space-x-4">
-            <Link href="/account" className="hidden sm:block p-2 text-gray-700 hover:text-blue-600">
-              <FiUser className="w-5 h-5" />
-            </Link>
-            <Link href="/wishlist" className="hidden sm:block p-2 text-gray-700 hover:text-blue-600">
-              <FiHeart className="w-5 h-5" />
-            </Link>
-            <Link
-              href="/cart"
-              className="text-gray-700 hover:text-blue-600"
-            >
-              Košík ({items.length})
+          <nav className="hidden md:flex items-center space-x-4">
+            {session?.data ? (
+              <>
+                <span className="text-gray-700">
+                  Vítejte, {session.data.user?.name || session.data.user?.email}
+                </span>
+                <button
+                  onClick={() => signOut()}
+                  className="p-2 text-gray-700 hover:text-blue-600"
+                >
+                  Odhlásit
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="p-2 text-gray-700 hover:text-blue-600">
+                  Přihlásit
+                </Link>
+                <Link href="/register" className="p-2 text-gray-700 hover:text-blue-600">
+                  Registrovat
+                </Link>
+              </>
+            )}
+            <Link href="/cart" className="p-2 text-gray-700 hover:text-blue-600 relative">
+              Košík
+              {items.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {items.length}
+                </span>
+              )}
             </Link>
 
             {/* Mobilní menu toggle */}
@@ -104,6 +86,16 @@ const Header: React.FC = () => {
             >
               {isMenuOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
             </button>
+          </nav>
+
+          {/* Akce uživatele */}
+          <div className="flex items-center space-x-4">
+            <Link href="/account" className="hidden sm:block p-2 text-gray-700 hover:text-blue-600">
+              <FiUser className="w-5 h-5" />
+            </Link>
+            <Link href="/wishlist" className="hidden sm:block p-2 text-gray-700 hover:text-blue-600">
+              <FiHeart className="w-5 h-5" />
+            </Link>
           </div>
         </div>
 
