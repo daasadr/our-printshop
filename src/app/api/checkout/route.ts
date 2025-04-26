@@ -110,7 +110,7 @@ export async function POST(req: NextRequest) {
     console.log('Created order:', order.id);
 
     // 4. Vytvořit Stripe Checkout Session
-    const lineItems = orderItems.map(item => {
+    const lineItems = orderItems.map((item: { variantId: string; quantity: number; price: number }) => {
       const variant = variants.find(v => v.id === item.variantId);
       if (!variant) throw new Error('Varianta nenalezena při vytváření line items');
       
