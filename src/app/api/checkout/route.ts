@@ -14,6 +14,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 
 const prisma = new PrismaClient();
 
+// Přidáme export pro Next.js, aby věděl, že tato route je dynamická
+export const dynamic = 'force-dynamic';
+export const runtime = 'edge';
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
