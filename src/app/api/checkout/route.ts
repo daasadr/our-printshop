@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import Stripe from 'stripe';
+import { convertEurToCzkSync } from '@/utils/currency';
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing STRIPE_SECRET_KEY');
@@ -71,13 +72,14 @@ export async function POST(req: NextRequest) {
       const variant = variants.find((v) => v.id === item.variantId);
       if (!variant) throw new Error('Varianta nenalezena');
       
-      const itemTotal = variant.price * item.quantity;
+      const priceInCzk = convertEurToCzkSync(variant.price);
+      const itemTotal = priceInCzk * item.quantity;
       total += itemTotal;
       
       return {
         variantId: item.variantId,
         quantity: item.quantity,
-        price: variant.price
+        price: priceInCzk
       };
     });
     console.log('Total price:', total);
@@ -117,6 +119,8 @@ export async function POST(req: NextRequest) {
       const variant = variants.find(v => v.id === item.variantId);
       if (!variant) throw new Error('Varianta nenalezena při vytváření line items');
       
+      const priceInCzk = convertEurToCzkSync(variant.price);
+      
       return {
         price_data: {
           currency: 'czk',
@@ -124,7 +128,7 @@ export async function POST(req: NextRequest) {
             name: `${variant.product.title} - ${variant.name}`,
             images: variant.product.designs?.[0]?.previewUrl ? [variant.product.designs[0].previewUrl] : [],
           },
-          unit_amount: Math.round(variant.price * 100),
+          unit_amount: Math.round(priceInCzk * 100),
         },
         quantity: item.quantity,
       };

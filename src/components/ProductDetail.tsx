@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
-import { formatPriceCZK } from '@/utils/currency';
+import { formatPriceCZK, convertEurToCzkSync } from '@/utils/currency';
 
 interface Variant {
   id: string;
@@ -112,17 +112,20 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   };
   
   // Funkce pro přidání do košíku
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!selectedVariant) return;
     
     setIsAddingToCart(true);
     
     try {
+      // Převedeme cenu na CZK
+      const priceInCzk = convertEurToCzkSync(selectedVariant.price);
+      
       addToCart({
         variantId: selectedVariant.id,
         quantity,
         name: `${product.title} ${selectedSize ? `- ${selectedSize}` : ''} ${selectedColor ? `- ${selectedColor}` : ''}`,
-        price: selectedVariant.price,
+        price: priceInCzk,
         image: product.designs && product.designs.length > 0 ? product.designs[0].previewUrl : ''
       });
       
