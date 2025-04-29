@@ -1,4 +1,4 @@
-import { getCurrentRate } from './exchangeRate';
+import { getCurrentRate, getCurrentRateSync } from './exchangeRate';
 
 // Formátování ceny v CZK
 export function formatPriceCZK(price: number): string {
@@ -26,8 +26,7 @@ export async function convertEurToCzk(priceEur: number): Promise<number> {
 
 // Synchronní verze převodu pro případy, kdy nemůžeme použít async funkci
 export function convertEurToCzkSync(priceEur: number): number {
-  // Použijeme výchozí kurz 25.21 pro synchronní převod
-  const rate = 25.21;
+  const rate = getCurrentRateSync();
   const exactPrice = priceEur * rate;
   if (exactPrice < 1000) {
     return Math.round(exactPrice);
