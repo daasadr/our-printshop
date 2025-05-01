@@ -1,14 +1,16 @@
 'use client';
 
-import { Inter } from 'next/font/google';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
-import { CartProvider } from '@/hooks/useCart';
-import { SessionProvider } from 'next-auth/react';
 import './globals.css';
+import { Inter } from 'next/font/google';
+import { Providers } from './providers';
 
 // Nastavení písma
-const inter = Inter({ subsets: ['latin', 'latin-ext'] });
+const inter = Inter({ subsets: ['latin'] });
+
+export const metadata = {
+  title: 'Our Printshop',
+  description: 'Váš oblíbený e-shop s potiskem',
+};
 
 export default function RootLayout({
   children
@@ -18,15 +20,7 @@ export default function RootLayout({
   return (
     <html lang="cs">
       <body className={inter.className}>
-        <SessionProvider>
-          <CartProvider>
-            <div className="flex flex-col min-h-screen">
-              <Header />
-              <main className="flex-grow">{children}</main>
-              <Footer />
-            </div>
-          </CartProvider>
-        </SessionProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

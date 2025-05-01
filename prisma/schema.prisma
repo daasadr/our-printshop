@@ -1,11 +1,52 @@
-generator client {
-  provider = "prisma-client-js"
-  previewFeatures = ["relationJoins"]
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Product {
+  id              String    @id @default(cuid())
+  name            String
+  description     String
+  printfulId      String    @unique
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  variants        Variant[]
+  categoryId      String?
+  category        Category? @relation(fields: [categoryId], references: [id])
+
+  @@index([categoryId])
+}
+
+model Variant {
+  id                String    @id @default(cuid())
+  name              String
+  price             Float
+  isActive          Boolean   @default(true)
+  productId         String
+  printfulVariantId String
+  size              String?
+  color             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  product           Product   @relation(fields: [productId], references: [id])
+  orderItems        OrderItem[]
+  cartItems         CartItem[]
+
+  @@index([productId])
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model User {
@@ -17,64 +58,6 @@ model User {
   cart      Cart?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-}
-
-model Product {
-  id              String    @id @default(cuid())
-  title           String
-  description     String
-  printfulId      String    @unique
-  printfulSync    Boolean   @default(false)
-  isActive        Boolean   @default(true)
-  categoryId      String?
-  category        Category? @relation(fields: [categoryId], references: [id])
-  variants        Variant[]
-  designs         Design[]
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  @@index([categoryId])
-}
-
-model Category {
-  id              String    @id @default(cuid())
-  name            String    @unique
-  displayName     String
-  printfulCategory String
-  products        Product[]
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-}
-
-model Variant {
-  id                String   @id @default(cuid())
-  name              String
-  price             Float
-  isActive          Boolean  @default(true)
-  productId         String
-  printfulVariantId String
-  size              String?
-  color             String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  product           Product  @relation(fields: [productId], references: [id])
-  orderItems        OrderItem[]
-  cartItems         CartItem[]
-
-  @@index([productId])
-}
-
-model Design {
-  id            String   @id @default(cuid())
-  name          String
-  previewUrl    String
-  printfulFileId String
-  productId     String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  product       Product?  @relation(fields: [productId], references: [id])
-
-  @@index([productId])
 }
 
 model Order {
@@ -129,28 +112,6 @@ model ShippingInfo {
   @@index([orderId])
 }
 
-enum OrderStatus {
-  pending      // Čeká na platbu
-  paid         // Zaplaceno, čeká na zpracování
-  processing   // Zpracovává se v Printful
-  shipped      // Odesláno
-  delivered    // Doručeno
-  failed       // Platba selhala
-  error        // Chyba při zpracování
-  cancelled    // Zrušeno
-}
-
-model ExchangeRate {
-  id            String   @id @default(cuid())
-  fromCurrency  String
-  toCurrency    String
-  rate          Float
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  @@unique([fromCurrency, toCurrency])
-}
-
 model Cart {
   id        String     @id @default(cuid())
   userId    String?    @unique
@@ -158,8 +119,6 @@ model Cart {
   items     CartItem[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-
-  @@index([userId])
 }
 
 model CartItem {
@@ -170,9 +129,20 @@ model CartItem {
   variant   Variant  @relation(fields: [variantId], references: [id])
   quantity  Int
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now())
 
   @@unique([cartId, variantId])
   @@index([cartId])
   @@index([variantId])
+}
+
+enum OrderStatus {
+  pending      // Čeká na platbu
+  paid         // Zaplaceno, čeká na zpracování
+  processing   // Zpracovává se v Printful
+  shipped      // Odesláno
+  delivered    // Doručeno
+  failed       // Platba selhala
+  error        // Chyba při zpracování
+  cancelled    // Zrušeno
 }
