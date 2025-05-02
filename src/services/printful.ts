@@ -1,10 +1,9 @@
 import fetch from 'node-fetch';
 import { PrintfulApiResponse, PrintfulFile, PrintfulProductData, PrintfulOrderData, PrintfulOrderResponse } from '@/types/printful';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 
 const PRINTFUL_API_URL = 'https://api.printful.com';
 const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY;
-const prisma = new PrismaClient();
 
 if (!PRINTFUL_API_KEY) {
   throw new Error('PRINTFUL_API_KEY is not defined');
@@ -172,7 +171,7 @@ export async function fulfillOrder(orderId: string) {
         country_code: order.shippingInfo.country,
         zip: order.shippingInfo.zip
       },
-      items: order.items.map((item) => ({
+      items: order.items.map((item: { variant: { printfulVariantId: string }, quantity: number, price: number }) => ({
         variant_id: parseInt(item.variant.printfulVariantId),
         quantity: item.quantity,
         retail_price: item.price.toString()
