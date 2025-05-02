@@ -10,7 +10,7 @@ export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session?.user?.email) {
+    if (!session?.user?.id) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -18,19 +18,13 @@ export async function GET() {
     }
 
     const cart = await prisma.cart.findUnique({
-      where: {
-        userId: session.user.email
-      },
+      where: { userId: session.user.id },
       include: {
         items: {
           include: {
             variant: {
               include: {
-                product: {
-                  include: {
-                    designs: true
-                  }
-                }
+                product: true
               }
             }
           }
@@ -42,114 +36,159 @@ export async function GET() {
   } catch (error) {
     console.error('Error fetching cart:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to fetch cart' },
       { status: 500 }
     );
   }
 }
 
 // POST /api/cart - Add item to cart
-export async function POST(req: NextRequest) {
+export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session?.user?.email) {
+    if (!session?.user?.id) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       );
     }
 
-    const { variantId, quantity } = await req.json();
+    const { variantId, quantity } = await request.json();
 
-    // Najít nebo vytvořit košík pro uživatele
+    if (!variantId || !quantity) {
+      return NextResponse.json(
+        { error: 'Variant ID and quantity are required' },
+        { status: 400 }
+      );
+    }
+
     let cart = await prisma.cart.findUnique({
-      where: {
-        userId: session.user.email
-      }
+      where: { userId: session.user.id }
     });
 
     if (!cart) {
       cart = await prisma.cart.create({
         data: {
-          user: {
-            connect: {
-              email: session.user.email
-            }
-          }
+          userId: session.user.id
         }
       });
     }
 
-    // Přidat položku do košíku
-    const cartItem = await prisma.cartItem.upsert({
+    const existingItem = await prisma.cartItem.findFirst({
       where: {
-        cartId_variantId: {
-          cartId: cart.id,
-          variantId
-        }
-      },
-      update: {
-        quantity
-      },
-      create: {
         cartId: cart.id,
-        variantId,
-        quantity
+        variantId
       }
     });
 
-    return NextResponse.json(cartItem);
+    if (existingItem) {
+      await prisma.cartItem.update({
+        where: { id: existingItem.id },
+        data: { quantity: existingItem.quantity + quantity }
+      });
+    } else {
+      await prisma.cartItem.create({
+        data: {
+          cartId: cart.id,
+          variantId,
+          quantity
+        }
+      });
+    }
+
+    const updatedCart = await prisma.cart.findUnique({
+      where: { id: cart.id },
+      include: {
+        items: {
+          include: {
+            variant: {
+              include: {
+                product: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    return NextResponse.json(updatedCart);
   } catch (error) {
-    console.error('Error adding to cart:', error);
+    console.error('Error updating cart:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to update cart' },
       { status: 500 }
     );
   }
 }
 
 // DELETE /api/cart - Remove item from cart
-export async function DELETE(req: NextRequest) {
+export async function DELETE(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session?.user?.email) {
+    if (!session?.user?.id) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       );
     }
 
-    const { variantId } = await req.json();
+    const { variantId } = await request.json();
+
+    if (!variantId) {
+      return NextResponse.json(
+        { error: 'Variant ID is required' },
+        { status: 400 }
+      );
+    }
 
     const cart = await prisma.cart.findUnique({
-      where: {
-        userId: session.user.email
-      }
+      where: { userId: session.user.id }
     });
 
     if (!cart) {
+      return NextResponse.json({ error: 'Cart not found' }, { status: 404 });
+    }
+
+    const cartItem = await prisma.cartItem.findFirst({
+      where: {
+        cartId: cart.id,
+        variantId
+      }
+    });
+
+    if (!cartItem) {
       return NextResponse.json(
-        { error: 'Cart not found' },
+        { error: 'Item not found in cart' },
         { status: 404 }
       );
     }
 
     await prisma.cartItem.delete({
-      where: {
-        cartId_variantId: {
-          cartId: cart.id,
-          variantId
+      where: { id: cartItem.id }
+    });
+
+    const updatedCart = await prisma.cart.findUnique({
+      where: { id: cart.id },
+      include: {
+        items: {
+          include: {
+            variant: {
+              include: {
+                product: true
+              }
+            }
+          }
         }
       }
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json(updatedCart);
   } catch (error) {
-    console.error('Error removing from cart:', error);
+    console.error('Error deleting cart item:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to delete cart item' },
       { status: 500 }
     );
   }
