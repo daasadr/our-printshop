@@ -15,7 +15,7 @@ interface Variant {
 interface Design {
   id: string;
   name: string;
-  previewUrl: string;
+  previewUrl: string | null;
 }
 
 interface Product {
