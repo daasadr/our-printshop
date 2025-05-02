@@ -50,11 +50,7 @@ export async function POST(req: NextRequest) {
         isActive: true
       },
       include: {
-        product: {
-          include: {
-            designs: true
-          }
-        }
+        product: true
       }
     });
     console.log('Found variants:', variants.length);
@@ -98,9 +94,11 @@ export async function POST(req: NextRequest) {
             email: shippingDetails.email,
             phone: shippingDetails.phone || '',
             address1: shippingDetails.address,
+            address2: shippingDetails.address2 || '',
             city: shippingDetails.city,
-            zip: shippingDetails.zip,
-            country: shippingDetails.country || 'CZ'
+            state: shippingDetails.state || '',
+            country: shippingDetails.country,
+            zip: shippingDetails.zip
           }
         },
         ...(session?.user?.email ? {
@@ -114,77 +112,46 @@ export async function POST(req: NextRequest) {
     });
     console.log('Created order:', order.id);
 
-    // 4. Vytvořit Stripe Checkout Session
-    const lineItems = orderItems.map((item: { variantId: string; quantity: number; price: number }) => {
-      const variant = variants.find(v => v.id === item.variantId);
-      if (!variant) throw new Error('Varianta nenalezena při vytváření line items');
-      
-      const priceInCzk = convertEurToCzkSync(variant.price);
-      
-      return {
-        price_data: {
-          currency: 'czk',
-          product_data: {
-            name: `${variant.product.title} - ${variant.name}`,
-            images: variant.product.designs?.[0]?.previewUrl ? [variant.product.designs[0].previewUrl] : [],
-          },
-          unit_amount: Math.round(priceInCzk * 100),
-        },
-        quantity: item.quantity,
-      };
-    });
-
-    // Přidat poštovné
-    const shippingCost = 129;
-    lineItems.push({
-      price_data: {
-        currency: 'czk',
-        product_data: {
-          name: 'Poštovné',
-          images: [],
-        },
-        unit_amount: shippingCost * 100,
-      },
-      quantity: 1,
-    });
-
-    console.log('Creating Stripe session with line items:', lineItems);
-
-    const checkoutSession = await stripe.checkout.sessions.create({
+    // 4. Vytvořit Stripe checkout session
+    const stripeSession = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
+      line_items: items.map((item: { variantId: string; quantity: number }) => {
+        const variant = variants.find((v) => v.id === item.variantId);
+        if (!variant) throw new Error('Varianta nenalezena');
+        
+        return {
+          price_data: {
+            currency: 'czk',
+            product_data: {
+              name: `${variant.product.title} - ${variant.name}`,
+              images: []
+            },
+            unit_amount: Math.round(convertEurToCzkSync(variant.price) * 100)
+          },
+          quantity: item.quantity
+        };
+      }),
       mode: 'payment',
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/order/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cart`,
       metadata: {
         orderId: order.id
-      },
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/order/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/order/cancelled`,
-      line_items: lineItems,
-      shipping_address_collection: {
-        allowed_countries: ['CZ', 'SK'],
-      },
-      billing_address_collection: 'required',
-      customer_email: shippingDetails.email,
-    });
-    
-    console.log('Created Stripe session:', checkoutSession.id);
-
-    // 5. Aktualizovat objednávku s Stripe Session ID
-    await prisma.order.update({
-      where: { id: order.id },
-      data: {
-        stripeSessionId: checkoutSession.id
       }
     });
-    
-    return NextResponse.json({ url: checkoutSession.url });
+
+    // 5. Aktualizovat order se session ID
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { stripeSessionId: stripeSession.id }
+    });
+
+    return NextResponse.json({ url: stripeSession.url });
   } catch (error) {
-    console.error('Order creation error:', error);
+    console.error('Error creating checkout session:', error);
     return NextResponse.json(
-      { error: 'Chyba při vytváření objednávky' },
+      { error: 'Nepodařilo se vytvořit platební relaci' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
