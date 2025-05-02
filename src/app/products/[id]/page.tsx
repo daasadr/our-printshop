@@ -62,10 +62,10 @@ export async function generateMetadata({ params }: GenerateMetadataProps) {
   }
  
   return {
-    title: `${product.title} | HappyWilderness`,
+    title: `${product.name} | HappyWilderness`,
     description: product.description,
     openGraph: {
-      title: `${product.title} | HappyWilderness`,
+      title: `${product.name} | HappyWilderness`,
       description: product.description,
       images: product.designs[0]?.previewUrl
         ? [product.designs[0].previewUrl]
