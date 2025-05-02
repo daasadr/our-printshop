@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
           price_data: {
             currency: 'czk',
             product_data: {
-              name: `${variant.product.title} - ${variant.name}`,
+              name: `${variant.product.name} - ${variant.name}`,
               images: []
             },
             unit_amount: Math.round(convertEurToCzkSync(variant.price) * 100)
