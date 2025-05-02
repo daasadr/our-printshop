@@ -8,6 +8,13 @@ import { convertEurToCzk } from '@/utils/currency';
 type ProductWithRelations = Product & {
   variants: (Variant & { price: number })[];
   designs: Design[];
+  name: string;
+  description: string;
+  printfulId: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  categoryId: string | null;
 };
 
 // Pro využití v app routeru je lepší načítat data přímo v komponentě stránky
