@@ -20,7 +20,7 @@ interface Design {
 
 interface Product {
   id: string;
-  title: string;
+  name: string;
   description: string;
   variants: Variant[];
   designs: Design[];
@@ -124,7 +124,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
       addToCart({
         variantId: selectedVariant.id,
         quantity,
-        name: `${product.title} ${selectedSize ? `- ${selectedSize}` : ''} ${selectedColor ? `- ${selectedColor}` : ''}`,
+        name: `${product.name} ${selectedSize ? `- ${selectedSize}` : ''} ${selectedColor ? `- ${selectedColor}` : ''}`,
         price: priceInCzk,
         image: product.designs && product.designs.length > 0 ? product.designs[0].previewUrl : ''
       });
@@ -159,7 +159,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
           <div className="relative aspect-square bg-white">
             <Image 
               src={previewImage} 
-              alt={product.title} 
+              alt={product.name} 
               fill
               className="object-contain"
             />
@@ -173,7 +173,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
       
       {/* Informace o produktu */}
       <div>
-        <h1 className="text-2xl font-bold mb-4">{product.title}</h1>
+        <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
         <p className="text-gray-600 mb-6">{product.description}</p>
         
         {/* Cena */}
