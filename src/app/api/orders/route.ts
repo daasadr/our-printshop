@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
       price_data: {
         currency: 'czk',
         product_data: {
-          name: `${item.variant.product.title} - ${item.variant.name}`,
+          name: `${item.variant.product.name} - ${item.variant.name}`,
           images: item.variant.product.designs?.[0]?.previewUrl ? [item.variant.product.designs[0].previewUrl] : [],
         },
         unit_amount: Math.round(item.price * 100), // Stripe používá nejmenší jednotku měny (haléře)
