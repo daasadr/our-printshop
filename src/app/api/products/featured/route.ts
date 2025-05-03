@@ -25,9 +25,9 @@ export async function GET() {
     const products = await prisma.product.findMany({
       where: {
         isActive: true,
-        isFeatured: true,
       },
       include,
+      take: 4, // Omezíme na 4 produkty jako featured
     }) as unknown as PrismaProduct[];
 
     const formattedProducts: FormattedProduct[] = await Promise.all(products.map(async product => {
