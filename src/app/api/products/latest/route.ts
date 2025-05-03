@@ -44,7 +44,7 @@ export async function GET() {
 
       return {
         id: product.id,
-        title: product.title,
+        name: product.name,
         description: product.description,
         previewUrl: processedPreviewUrl,
         price: product.variants[0]?.price ? await convertEurToCzk(product.variants[0].price) : 0,
@@ -53,7 +53,7 @@ export async function GET() {
         isActive: product.isActive,
         createdAt: product.createdAt,
         updatedAt: product.updatedAt,
-        category: product.category?.displayName || '',
+        category: product.category?.name || '',
         categoryId: product.categoryId,
         printfulId: product.printfulId,
         printfulSync: product.printfulSync

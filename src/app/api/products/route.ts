@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
       
       // Získáme URL adresu obrázku
       const originalPreviewUrl = firstDesign?.previewUrl || '';
-      console.log(`Původní URL obrázku pro produkt ${product.title}: ${originalPreviewUrl}`);
+      console.log(`Původní URL obrázku pro produkt ${product.name}: ${originalPreviewUrl}`);
       
       // Zajistíme, že URL adresa začíná na https://
       let processedPreviewUrl = '';
@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
           processedPreviewUrl = `https://${originalPreviewUrl}`;
         }
       }
-      console.log(`Zpracovaná URL obrázku pro produkt ${product.title}: ${processedPreviewUrl}`);
+      console.log(`Zpracovaná URL obrázku pro produkt ${product.name}: ${processedPreviewUrl}`);
 
       // Konvertujeme ceny z EUR na CZK
       const priceInCzk = firstVariant?.price ? await convertEurToCzk(firstVariant.price) : 0;
@@ -67,7 +67,7 @@ export async function GET(req: NextRequest) {
       // Vraťmeme formátovaný produkt
       return {
         id: product.id,
-        title: product.title,
+        name: product.name,
         description: product.description,
         previewUrl: processedPreviewUrl,
         price: priceInCzk,
@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
         isActive: product.isActive,
         createdAt: product.createdAt,
         updatedAt: product.updatedAt,
-        category: product.category?.displayName || '',
+        category: product.category?.name || '',
         categoryId: product.categoryId,
         printfulId: product.printfulId,
         printfulSync: product.printfulSync
