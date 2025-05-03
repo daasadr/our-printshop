@@ -17,7 +17,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="relative aspect-square">
           <Image
             src={previewUrl}
-            alt={product.title}
+            alt={product.name}
             fill
             className="object-cover"
           />
