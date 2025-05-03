@@ -27,14 +27,14 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
         
         // Kontrola a zpracování URL adres obrázků
         const processedData = data.map((product: FormattedProduct) => {
-          console.log(`Zpracovávám produkt: ${product.title}`);
+          console.log(`Zpracovávám produkt: ${product.name}`);
           console.log(`Původní URL obrázku: ${product.previewUrl}`);
           
           let processedUrl = product.previewUrl;
           
           // Pokud URL neexistuje nebo je prázdná
           if (!processedUrl) {
-            console.log(`Produkt ${product.title} nemá URL obrázku`);
+            console.log(`Produkt ${product.name} nemá URL obrázku`);
             return {
               ...product,
               previewUrl: '/images/placeholder.jpg'
@@ -78,7 +78,7 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
       addToCart({
         variantId: product.variants[0].id,
         quantity: 1,
-        name: `${product.title}`,
+        name: `${product.name}`,
         price: product.price,
         image: product.previewUrl || ''
       });
@@ -126,12 +126,12 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
           <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
             <Image
               src={processImageUrl(product.previewUrl)}
-              alt={product.title}
+              alt={product.name}
               width={500}
               height={500}
               className="h-full w-full object-cover object-center group-hover:opacity-75"
               onError={(e) => {
-                console.error(`Chyba při načítání obrázku pro produkt ${product.title}:`, e);
+                console.error(`Chyba při načítání obrázku pro produkt ${product.name}:`, e);
                 const target = e.target as HTMLImageElement;
                 target.src = '/images/placeholder.jpg';
               }}
@@ -141,7 +141,7 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
           <div className="p-4">
             <Link href={`/products/${product.id}`}>
               <h3 className="text-sm font-medium text-gray-900 hover:text-blue-600">
-                {product.title}
+                {product.name}
               </h3>
             </Link>
             
