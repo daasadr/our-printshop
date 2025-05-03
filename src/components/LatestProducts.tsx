@@ -202,22 +202,22 @@ const ProductPlaceholders: React.FC = () => {
   const placeholders = [
     {
       id: 'placeholder-1',
-      title: 'Tričko "Minimalistický design"',
+      name: 'Tričko "Minimalistický design"',
       price: 599,
     },
     {
       id: 'placeholder-2',
-      title: 'Mikina "Urban Style"',
+      name: 'Mikina "Urban Style"',
       price: 1299,
     },
     {
       id: 'placeholder-3',
-      title: 'Plakát "Geometric Art"',
+      name: 'Plakát "Geometric Art"',
       price: 349,
     },
     {
       id: 'placeholder-4',
-      title: 'Hrnek "Morning Coffee"',
+      name: 'Hrnek "Morning Coffee"',
       price: 299,
     },
   ];
@@ -233,7 +233,7 @@ const ProductPlaceholders: React.FC = () => {
           </div>
          
           <div className="p-4">
-            <h3 className="text-sm font-medium text-gray-900">{product.title}</h3>
+            <h3 className="text-sm font-medium text-gray-900">{product.name}</h3>
             <p className="mt-1 text-sm text-gray-500">Více variant</p>
             <div className="mt-4 flex justify-between items-center">
               <p className="text-lg font-medium text-gray-900">
