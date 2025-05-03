@@ -12,9 +12,17 @@ declare global {
   }
 }
 
+export interface Category {
+  id: string;
+  name: string;
+  description: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface FormattedProduct {
   id: string;
-  title: string;
+  name: string;
   description: string;
   price: number;
   previewUrl: string;
