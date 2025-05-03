@@ -38,7 +38,9 @@ export type Variant = {
 export type Category = {
   id: string;
   name: string;
-  displayName: string;
+  description: string | null;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 // Typ pro produkt jak ho vrací Prisma query
@@ -76,7 +78,9 @@ export type PrismaProduct = {
   category: {
     id: string;
     name: string;
-    displayName: string;
+    description: string | null;
+    createdAt: Date;
+    updatedAt: Date;
   } | null;
 };
 
