@@ -7,27 +7,15 @@ import { useCart } from '@/hooks/useCart';
 import { FormattedProduct } from '@/types/prisma';
 import { formatPriceCZK } from '@/utils/currency';
 
-const FeaturedProducts: React.FC = () => {
-  const [products, setProducts] = useState<FormattedProduct[]>([]);
+interface FeaturedProductsProps {
+  products: FormattedProduct[];
+}
+
+export default function FeaturedProducts({ products }: FeaturedProductsProps) {
   const { addToCart } = useCart();
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch('/api/products/featured');
-        const data = await response.json();
-        setProducts(data);
-      } catch (error) {
-        console.error('Error fetching featured products:', error);
-      }
-    };
-
-    fetchProducts();
-  }, []);
 
   const handleAddToCart = async (product: FormattedProduct, variant: any) => {
     await addToCart({
-      productId: product.id,
       variantId: variant.id,
       quantity: 1,
       name: product.name,
@@ -49,7 +37,7 @@ const FeaturedProducts: React.FC = () => {
             <Link href={`/products/${product.id}`}>
               <div className="aspect-square relative">
                 <img
-                  src={product.designs[0].previewUrl}
+                  src={product.previewUrl}
                   alt={product.name}
                   className="object-cover w-full h-full"
                 />
@@ -63,7 +51,7 @@ const FeaturedProducts: React.FC = () => {
               </Link>
               <p className="text-gray-600 mb-4">{product.description}</p>
               <div className="flex justify-between items-center">
-                <span className="text-lg font-bold">{formatPriceCZK(product.variants[0].price)}</span>
+                <span className="text-lg font-bold">{product.price} CZK</span>
                 <button
                   onClick={() => handleAddToCart(product, product.variants[0])}
                   className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -77,7 +65,7 @@ const FeaturedProducts: React.FC = () => {
       </div>
     </div>
   );
-};
+}
 
 // Placeholder pro produkt, když nemáme data
 const ProductPlaceholders: React.FC = () => {
@@ -133,5 +121,3 @@ const ProductPlaceholders: React.FC = () => {
     </div>
   );
 };
-
-export default FeaturedProducts;
