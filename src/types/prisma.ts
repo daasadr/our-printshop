@@ -1,6 +1,6 @@
 export type Product = {
   id: string;
-  title: string;
+  name: string;
   description: string;
   previewUrl: string;
   price: number;
@@ -44,7 +44,7 @@ export type Category = {
 // Typ pro produkt jak ho vrací Prisma query
 export type PrismaProduct = {
   id: string;
-  title: string;
+  name: string;
   description: string;
   isActive: boolean;
   createdAt: Date;
@@ -82,7 +82,7 @@ export type PrismaProduct = {
 
 export type FormattedProduct = {
   id: string;
-  title: string;
+  name: string;
   description: string;
   previewUrl: string;
   price: number;
@@ -132,7 +132,7 @@ export type CartItem = {
     updatedAt: Date;
     product: {
       id: string;
-      title: string;
+      name: string;
       description: string;
       previewUrl?: string;
     };

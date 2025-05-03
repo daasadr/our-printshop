@@ -12,7 +12,7 @@ export const metadata = {
 };
 
 // Funkce pro získání kategorií
-async function getCategories() {
+async function getCategories(): Promise<Category[]> {
   return prisma.category.findMany();
 }
 
@@ -54,7 +54,7 @@ async function getProducts(category?: string): Promise<FormattedProduct[]> {
         ...product,
         previewUrl: product.designs[0]?.previewUrl || '',
         price: convertedPrice,
-        category: product.category?.displayName || '',
+        category: product.category?.name || '',
         variants: convertedVariants,
         designs: product.designs.map(({ productId, ...design }) => design),
       } as FormattedProduct;
@@ -82,13 +82,13 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex gap-4 mb-8">
-          {categories.map((category) => (
+          {categories.map((category: Category) => (
             <Link
               key={category.id}
               href={`/products?category=${category.name}`}
               className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200"
             >
-              {category.displayName}
+              {category.name}
             </Link>
           ))}
         </div>
@@ -103,18 +103,18 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex gap-4 mb-8">
-        {categories.map((category) => (
+        {categories.map((category: Category) => (
           <Link
             key={category.id}
             href={`/products?category=${category.name}`}
             className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200"
           >
-            {category.displayName}
+            {category.name}
           </Link>
         ))}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {products.map((product) => (
+        {products.map((product: FormattedProduct) => (
           <Link
             key={product.id}
             href={`/products/${product.id}`}
@@ -123,12 +123,12 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             <div className="aspect-square relative mb-4">
               <img
                 src={product.previewUrl}
-                alt={product.title}
+                alt={product.name}
                 className="object-cover w-full h-full rounded-lg"
               />
             </div>
             <h3 className="text-lg font-semibold mb-2 group-hover:text-blue-600">
-              {product.title}
+              {product.name}
             </h3>
             <p className="text-gray-600">From {product.price} CZK</p>
           </Link>
