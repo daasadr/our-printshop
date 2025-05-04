@@ -44,7 +44,7 @@ export default function ProductList({ products }: ProductListProps) {
               <div className="aspect-square relative">
                 <Image
                   src={product.previewUrl}
-                  alt={product.title}
+                  alt={product.name}
                   fill
                   className="object-cover"
                 />
