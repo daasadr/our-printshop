@@ -53,7 +53,7 @@ export default function ProductList({ products }: ProductListProps) {
             <div className="p-4">
               <Link href={`/products/${product.id}`}>
                 <h3 className="text-lg font-semibold text-gray-900 hover:text-indigo-600">
-                  {product.title}
+                  {product.name}
                 </h3>
               </Link>
               <p className="mt-1 text-sm text-gray-500">{product.category}</p>
