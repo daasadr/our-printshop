@@ -126,7 +126,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         quantity,
         name: `${product.name} ${selectedSize ? `- ${selectedSize}` : ''} ${selectedColor ? `- ${selectedColor}` : ''}`,
         price: priceInCzk,
-        image: product.designs && product.designs.length > 0 ? product.designs[0].previewUrl : ''
+        image: product.designs && product.designs.length > 0 ? (product.designs[0].previewUrl ?? '') : ''
       });
       
       // Zobrazíme potvrzení
