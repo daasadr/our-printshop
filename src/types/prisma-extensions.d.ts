@@ -9,6 +9,10 @@ declare module '@prisma/client' {
     product: {
       findMany: (args: any) => Promise<any[]>;
     };
+    $transaction<T>(
+      callback: (prisma: PrismaClient) => Promise<T>,
+      options?: { maxWait?: number; timeout?: number }
+    ): Promise<T>;
   }
 
   interface ProductWhereInput {

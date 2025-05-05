@@ -1,9 +1,6 @@
 import prisma from '@/lib/prisma';
 import axios from 'axios';
 
-const CZK_CODE = 'CZK';
-const EUR_CODE = 'EUR';
-
 interface CNBResponse {
   rates: Array<{
     currencyCode: string;
