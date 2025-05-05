@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { uploadDesign } from '@/services/printful';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { PrintfulFile, PrintfulApiResponse } from '@/types/printful';
+import { v4 as uuidv4 } from 'uuid';
+import { writeFile } from 'fs/promises';
+import path from 'path';
+import { mkdir } from 'fs/promises';
+import { existsSync } from 'fs';
 
 export async function POST(req: NextRequest) {
   try {

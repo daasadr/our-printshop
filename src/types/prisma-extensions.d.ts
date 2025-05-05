@@ -1,13 +1,11 @@
-import { Prisma } from '@prisma/client';
-
 declare module '@prisma/client' {
   interface PrismaClient {
     category: {
-      findMany: () => Promise<any[]>;
-      findUnique: (args: { where: { name: string } }) => Promise<any>;
+      findMany: () => Promise<Category[]>;
+      findUnique: (args: { where: { name: string } }) => Promise<Category | null>;
     };
     product: {
-      findMany: (args: any) => Promise<any[]>;
+      findMany: (args: { where?: ProductWhereInput; include?: ProductInclude }) => Promise<Product[]>;
     };
     $transaction<T>(
       callback: (prisma: PrismaClient) => Promise<T>,

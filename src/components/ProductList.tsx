@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useCart } from '@/hooks/useCart';
 import { formatPriceCZK } from '@/utils/currency';
 import { FormattedProduct } from '@/types/prisma';
 
@@ -47,6 +46,7 @@ export default function ProductList({ products }: ProductListProps) {
                   alt={product.name}
                   fill
                   className="object-cover"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
               </div>
             </Link>
