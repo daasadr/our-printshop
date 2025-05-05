@@ -1,4 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('@/lib/prisma');
 // Použijeme fetch pro starší verze Node.js
 const fetch = require('node-fetch');
 const dotenv = require('dotenv');
@@ -6,7 +6,6 @@ const dotenv = require('dotenv');
 // Načtení proměnných prostředí z .env souboru
 dotenv.config();
 
-const prisma = new PrismaClient();
 const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY;
 
 if (!PRINTFUL_API_KEY) {

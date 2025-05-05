@@ -1,7 +1,7 @@
 import React from 'react';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
@@ -13,8 +13,6 @@ export const metadata = {
 
 // Funkce pro získání objednávky podle Stripe Session ID
 async function getOrderBySessionId(sessionId) {
-  const prisma = new PrismaClient();
-  
   try {
     // Hledáme objednávku podle Stripe session ID
     const order = await prisma.order.findFirst({
@@ -39,8 +37,6 @@ async function getOrderBySessionId(sessionId) {
   } catch (error) {
     console.error('Error fetching order by session ID:', error);
     return null;
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -114,57 +110,4 @@ export default async function OrderSuccessPage({ searchParams }) {
                     <div>
                       <p className="font-medium">{item.variant.product?.title}</p>
                       <p className="text-sm text-gray-600">
-                        {item.variant.name}{item.variant.size ? `, ${item.variant.size}` : ''}
-                        {item.variant.color ? `, ${item.variant.color}` : ''}
-                      </p>
-                      <p className="text-sm text-gray-500">Množství: {item.quantity}</p>
-                    </div>
-                    <p className="font-medium">
-                      {(item.price * item.quantity).toLocaleString('cs-CZ')} Kč
-                    </p>
-                  </li>
-                ))}
-              </ul>
-              
-              <div className="mt-4 pt-4 border-t flex justify-between">
-                <span className="font-semibold">Celkem:</span>
-                <span className="font-semibold text-lg">
-                  {order.total.toLocaleString('cs-CZ')} Kč
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {order.shippingInfo && (
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-3">Doručovací adresa</h2>
-            <div className="border rounded-md p-4">
-              <p className="font-medium">{order.shippingInfo.name}</p>
-              <p>{order.shippingInfo.address1}</p>
-              {order.shippingInfo.address2 && <p>{order.shippingInfo.address2}</p>}
-              <p>{order.shippingInfo.city}, {order.shippingInfo.zip}</p>
-              <p>{order.shippingInfo.country}</p>
-              {order.shippingInfo.phone && <p>Tel: {order.shippingInfo.phone}</p>}
-            </div>
-          </div>
-        )}
-        
-        <div className="text-center pt-6">
-          <Link href="/" className="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 inline-block">
-            Pokračovat v nákupu
-          </Link>
-          
-          {session && (
-            <Link 
-              href="/account/orders" 
-              className="ml-4 text-blue-600 hover:text-blue-800 inline-block"
-            >
-              Moje objednávky
-            </Link>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
+                        {item.variant.name}{item.variant.size ? `

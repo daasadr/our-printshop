@@ -1,10 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 
 dotenv.config();
-
-const prisma = new PrismaClient();
 
 async function checkVariants() {
   try {

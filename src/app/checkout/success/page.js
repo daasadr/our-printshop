@@ -1,7 +1,7 @@
 import React from 'react';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
@@ -13,8 +13,6 @@ export const metadata = {
 
 // Funkce pro získání objednávky podle ID
 async function getOrder(orderId) {
-  const prisma = new PrismaClient();
-  
   try {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
@@ -36,8 +34,6 @@ async function getOrder(orderId) {
   } catch (error) {
     console.error('Error fetching order:', error);
     return null;
-  } finally {
-    await prisma.$disconnect();
   }
 }
 

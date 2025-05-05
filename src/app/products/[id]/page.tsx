@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
-import { PrismaClient, Product, Variant, Design } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import ProductDetail from '@/components/ProductDetail';
 import ProductSkeleton from '@/components/ProductSkeleton';
 import { convertEurToCzk } from '@/utils/currency';
@@ -19,8 +19,6 @@ type ProductWithRelations = Product & {
 
 // Pro využití v app routeru je lepší načítat data přímo v komponentě stránky
 async function getProduct(id: string): Promise<ProductWithRelations | null> {
-  const prisma = new PrismaClient();
- 
   try {
     const product = await prisma.product.findUnique({
       where: { id },
@@ -48,8 +46,6 @@ async function getProduct(id: string): Promise<ProductWithRelations | null> {
   } catch (error) {
     console.error('Error fetching product:', error);
     return null;
-  } finally {
-    await prisma.$disconnect();
   }
 }
 

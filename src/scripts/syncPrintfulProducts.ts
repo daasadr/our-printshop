@@ -1,8 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import fetch from 'node-fetch';
 import { convertEurToCzkSync } from '../utils/currency';
 
-const prisma = new PrismaClient();
 const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY;
 
 if (!PRINTFUL_API_KEY) {
