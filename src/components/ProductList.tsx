@@ -3,67 +3,115 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { formatPriceCZK } from '@/utils/currency';
-import { FormattedProduct } from '@/types/prisma';
+import { Category, FormattedProduct, PrismaProduct } from '@/types/prisma';
+import prisma from '@/lib/prisma';
+import { convertEurToCzk } from '@/lib/currency';
 
 interface ProductListProps {
   products: FormattedProduct[];
 }
 
-export default function ProductList({ products }: ProductListProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+async function getCategories(): Promise<Category[]> {
+  return prisma.category.findMany();
+}
 
-  const filteredProducts = selectedCategory === 'all'
-    ? products
-    : products.filter(product => product.category === selectedCategory);
+async function getProducts(category?: string): Promise<FormattedProduct[]> {
+  const where = {
+    isActive: true,
+    ...(category && { categoryId: category }),
+  };
 
-  const categories = ['all', ...new Set(products.map(product => product.category))];
+  const include = {
+    variants: {
+      where: { isActive: true },
+      orderBy: { price: 'asc' },
+    },
+    designs: true,
+    category: true,
+  };
+
+  try {
+    const products = await prisma.product.findMany({
+      where,
+      include,
+    }) as unknown as PrismaProduct[];
+
+    const formattedProducts = await Promise.all(products.map(async (product) => {
+      const basePrice = product.variants[0]?.price || 0;
+      const convertedPrice = await convertEurToCzk(basePrice);
+
+      const convertedVariants = await Promise.all(product.variants.map(async (variant) => ({
+        ...variant,
+        price: await convertEurToCzk(variant.price),
+      })));
+
+      return {
+        ...product,
+        previewUrl: product.designs[0]?.previewUrl || '',
+        price: convertedPrice,
+        category: product.category?.name || '',
+        variants: convertedVariants,
+        designs: product.designs.map(({ productId, ...design }) => design),
+      } as FormattedProduct;
+    }));
+
+    return formattedProducts;
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    throw error;
+  }
+}
+
+export default async function ProductList() {
+  const [categories, products] = await Promise.all([
+    getCategories(),
+    getProducts(),
+  ]);
+
+  if (!products.length) {
+    return (
+      <div className="text-center mt-8">
+        <h2 className="text-2xl font-bold mb-4">Žádné produkty nenalezeny</h2>
+        <p>Zkuste vybrat jinou kategorii nebo se vraťte později.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-wrap gap-2">
-        {categories.map(category => (
-          <button
-            key={category}
-            onClick={() => setSelectedCategory(category)}
-            className={`px-4 py-2 rounded-full text-sm font-medium ${
-              selectedCategory === category
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+    <>
+      <div className="flex gap-4 mb-8">
+        {categories.map((category) => (
+          <Link
+            key={category.id}
+            href={`/products?category=${category.name}`}
+            className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200"
           >
-            {category === 'all' ? 'Vše' : category}
-          </button>
+            {category.name}
+          </Link>
         ))}
       </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredProducts.map(product => (
-          <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-            <Link href={`/products/${product.id}`}>
-              <div className="aspect-square relative">
-                <Image
-                  src={product.previewUrl}
-                  alt={product.name}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                />
-              </div>
-            </Link>
-            <div className="p-4">
-              <Link href={`/products/${product.id}`}>
-                <h3 className="text-lg font-semibold text-gray-900 hover:text-indigo-600">
-                  {product.name}
-                </h3>
-              </Link>
-              <p className="mt-1 text-sm text-gray-500">{product.category}</p>
-              <p className="mt-2 text-lg font-medium text-gray-900">
-                {formatPriceCZK(product.price)}
-              </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {products.map((product) => (
+          <Link
+            key={product.id}
+            href={`/products/${product.id}`}
+            className="block group"
+          >
+            <div className="aspect-square relative mb-4">
+              <Image
+                src={product.previewUrl}
+                alt={product.name}
+                fill
+                className="object-cover rounded-lg"
+              />
             </div>
-          </div>
+            <h3 className="text-lg font-semibold mb-2 group-hover:text-blue-600">
+              {product.name}
+            </h3>
+            <p className="text-gray-600">Od {product.price} CZK</p>
+          </Link>
         ))}
       </div>
-    </div>
+    </>
   );
 }

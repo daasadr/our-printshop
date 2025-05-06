@@ -7,20 +7,27 @@ import { useCart } from '@/hooks/useCart';
 import { FormattedProduct } from '@/types/prisma';
 import { formatPriceCZK } from '@/utils/currency';
 
-interface FeaturedProductsProps {
-  products: FormattedProduct[];
+interface Product {
+  id: string;
+  name: string;
+  previewUrl: string;
+  price: number;
 }
 
-export default function FeaturedProducts({ products }: FeaturedProductsProps) {
+interface FeaturedProductsProps {
+  products: Product[];
+}
+
+export function FeaturedProducts({ products }: FeaturedProductsProps) {
   const { addToCart } = useCart();
 
-  const handleAddToCart = async (product: FormattedProduct, variant: any) => {
+  const handleAddToCart = async (product: Product, variant: any) => {
     await addToCart({
       variantId: variant.id,
       quantity: 1,
       name: product.name,
       price: variant.price,
-      image: product.designs && product.designs.length > 0 ? product.designs[0].previewUrl : ''
+      image: product.previewUrl
     });
   };
 
@@ -33,34 +40,24 @@ export default function FeaturedProducts({ products }: FeaturedProductsProps) {
       <h2 className="text-2xl font-bold mb-8">Featured Products</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {products.map((product) => (
-          <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-            <Link href={`/products/${product.id}`}>
-              <div className="aspect-square relative">
-                <img
-                  src={product.previewUrl}
-                  alt={product.name}
-                  className="object-cover w-full h-full"
-                />
-              </div>
-            </Link>
-            <div className="p-4">
-              <Link href={`/products/${product.id}`}>
-                <h3 className="text-lg font-semibold mb-2 hover:text-blue-600">
-                  {product.name}
-                </h3>
-              </Link>
-              <p className="text-gray-600 mb-4">{product.description}</p>
-              <div className="flex justify-between items-center">
-                <span className="text-lg font-bold">{product.price} CZK</span>
-                <button
-                  onClick={() => handleAddToCart(product, product.variants[0])}
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                >
-                  Add to Cart
-                </button>
-              </div>
+          <Link
+            key={product.id}
+            href={`/products/${product.id}`}
+            className="block group"
+          >
+            <div className="aspect-square relative mb-4">
+              <Image
+                src={product.previewUrl}
+                alt={product.name}
+                fill
+                className="object-cover rounded-lg"
+              />
             </div>
-          </div>
+            <h3 className="text-lg font-semibold mb-2 group-hover:text-blue-600">
+              {product.name}
+            </h3>
+            <p className="text-gray-600">From {product.price} CZK</p>
+          </Link>
         ))}
       </div>
     </div>
