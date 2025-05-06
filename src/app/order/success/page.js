@@ -110,4 +110,33 @@ export default async function OrderSuccessPage({ searchParams }) {
                     <div>
                       <p className="font-medium">{item.variant.product?.title}</p>
                       <p className="text-sm text-gray-600">
-                        {item.variant.name}{item.variant.size ? `
+                        {item.variant.name}{item.variant.size ? ` - ${item.variant.size}` : ''}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium">{item.quantity} ks</p>
+                      <p className="text-sm text-gray-600">{item.price} CZK</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            
+            <div className="bg-gray-50 p-4 border-t">
+              <div className="flex justify-between font-medium">
+                <span>Celkem:</span>
+                <span>{order.total} CZK</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="text-center">
+          <Link href="/" className="inline-block bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700">
+            Zpět na hlavní stránku
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}

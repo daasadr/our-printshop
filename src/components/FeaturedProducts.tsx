@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
@@ -24,16 +24,6 @@ interface FeaturedProductsProps {
 
 export function FeaturedProducts({ products }: FeaturedProductsProps) {
   const { addToCart } = useCart();
-
-  const handleAddToCart = async (product: Product, variant: ProductVariant) => {
-    await addToCart({
-      variantId: variant.id,
-      quantity: 1,
-      name: product.name,
-      price: variant.price,
-      image: product.previewUrl
-    });
-  };
 
   if (products.length === 0) {
     return <ProductPlaceholders />;

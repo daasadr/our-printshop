@@ -2,7 +2,6 @@ import { Suspense } from 'react';
 import { ProductList } from '@/components/ProductList';
 import { ProductListSkeleton } from '@/components/ProductListSkeleton';
 import { Metadata } from 'next';
-import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: 'Produkty | Our Printshop',
