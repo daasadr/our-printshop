@@ -4,13 +4,17 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
-import { FormattedProduct } from '@/types/prisma';
 import { formatPriceCZK } from '@/utils/currency';
 
 interface Product {
   id: string;
   name: string;
   previewUrl: string;
+  price: number;
+}
+
+interface ProductVariant {
+  id: string;
   price: number;
 }
 
@@ -21,7 +25,7 @@ interface FeaturedProductsProps {
 export function FeaturedProducts({ products }: FeaturedProductsProps) {
   const { addToCart } = useCart();
 
-  const handleAddToCart = async (product: Product, variant: any) => {
+  const handleAddToCart = async (product: Product, variant: ProductVariant) => {
     await addToCart({
       variantId: variant.id,
       quantity: 1,

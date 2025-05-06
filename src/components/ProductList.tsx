@@ -1,15 +1,8 @@
-'use client';
-import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { formatPriceCZK } from '@/utils/currency';
 import { Category, FormattedProduct, PrismaProduct } from '@/types/prisma';
 import prisma from '@/lib/prisma';
 import { convertEurToCzk } from '@/lib/currency';
-
-interface ProductListProps {
-  products: FormattedProduct[];
-}
 
 async function getCategories(): Promise<Category[]> {
   return prisma.category.findMany();
@@ -51,7 +44,7 @@ async function getProducts(category?: string): Promise<FormattedProduct[]> {
         price: convertedPrice,
         category: product.category?.name || '',
         variants: convertedVariants,
-        designs: product.designs.map(({ productId, ...design }) => design),
+        designs: product.designs.map(({ productId: _productId, ...design }) => design),
       } as FormattedProduct;
     }));
 
