@@ -50,13 +50,9 @@ export default async function OrderSuccessPage({ searchParams }) {
     redirect('/');
   }
   
-  // Ověření uživatele
-  const session = await getServerSession(authOptions);
-  
   // Načtení informací o objednávce
   const order = await getOrderBySessionId(sessionId);
   
-  // Pokud není objednávka nalezena
   if (!order) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">

@@ -3,8 +3,6 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useCart } from '@/hooks/useCart';
-import { formatPriceCZK } from '@/utils/currency';
 
 interface Product {
   id: string;
@@ -13,18 +11,11 @@ interface Product {
   price: number;
 }
 
-interface ProductVariant {
-  id: string;
-  price: number;
-}
-
 interface FeaturedProductsProps {
   products: Product[];
 }
 
 export function FeaturedProducts({ products }: FeaturedProductsProps) {
-  const { addToCart } = useCart();
-
   if (products.length === 0) {
     return <ProductPlaceholders />;
   }
