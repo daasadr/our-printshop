@@ -1,8 +1,10 @@
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Category, FormattedProduct, PrismaProduct } from '@/types/prisma';
 import prisma from '@/lib/prisma';
 import { convertEurToCzk } from '@/lib/currency';
+import { formatPriceCZK } from '@/utils/currency';
 
 async function getCategories(): Promise<Category[]> {
   return prisma.category.findMany();
@@ -55,56 +57,17 @@ async function getProducts(category?: string): Promise<FormattedProduct[]> {
   }
 }
 
-export default async function ProductList() {
-  const [categories, products] = await Promise.all([
-    getCategories(),
-    getProducts(),
-  ]);
-
-  if (!products.length) {
-    return (
-      <div className="text-center mt-8">
-        <h2 className="text-2xl font-bold mb-4">Žádné produkty nenalezeny</h2>
-        <p>Zkuste vybrat jinou kategorii nebo se vraťte později.</p>
-      </div>
-    );
-  }
-
+export function ProductList() {
   return (
-    <>
-      <div className="flex gap-4 mb-8">
-        {categories.map((category) => (
-          <Link
-            key={category.id}
-            href={`/products?category=${category.name}`}
-            className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200"
-          >
-            {category.name}
-          </Link>
-        ))}
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {products.map((product) => (
-          <Link
-            key={product.id}
-            href={`/products/${product.id}`}
-            className="block group"
-          >
-            <div className="aspect-square relative mb-4">
-              <Image
-                src={product.previewUrl}
-                alt={product.name}
-                fill
-                className="object-cover rounded-lg"
-              />
-            </div>
-            <h3 className="text-lg font-semibold mb-2 group-hover:text-blue-600">
-              {product.name}
-            </h3>
-            <p className="text-gray-600">Od {product.price} CZK</p>
-          </Link>
-        ))}
-      </div>
-    </>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {/* Placeholder pro produkty */}
+      {[...Array(6)].map((_, index) => (
+        <div key={index} className="animate-pulse">
+          <div className="aspect-square bg-gray-200 rounded-lg mb-4" />
+          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+          <div className="h-4 bg-gray-200 rounded w-1/2" />
+        </div>
+      ))}
+    </div>
   );
 }
