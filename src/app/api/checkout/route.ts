@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth';
 import { Session } from 'next-auth';
 import Stripe from 'stripe';
 import { convertEurToCzkSync } from '@/utils/currency';
+import { Variant } from '@/types/prisma';
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing STRIPE_SECRET_KEY');
@@ -70,7 +71,7 @@ export async function POST(req: NextRequest) {
     // 2. Vypočítat celkovou cenu
     let total = 0;
     const orderItems = items.map((item: { variantId: string; quantity: number }) => {
-      const variant = variants.find((v) => v.id === item.variantId);
+      const variant = variants.find((v: Variant) => v.id === item.variantId);
       if (!variant) throw new Error('Varianta nenalezena');
       
       const priceInCzk = convertEurToCzkSync(variant.price);
@@ -121,7 +122,7 @@ export async function POST(req: NextRequest) {
     const stripeSession = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: items.map((item: { variantId: string; quantity: number }) => {
-        const variant = variants.find((v) => v.id === item.variantId);
+        const variant = variants.find((v: Variant) => v.id === item.variantId);
         if (!variant) throw new Error('Varianta nenalezena');
         
         return {
