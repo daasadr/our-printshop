@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
+import { Session } from 'next-auth';
 
 // GET /api/cart - Get user's cart
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
     
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -43,7 +44,7 @@ export async function GET() {
 // POST /api/cart - Add item to cart
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
     
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -123,7 +124,7 @@ export async function POST(request: Request) {
 // DELETE /api/cart - Remove item from cart
 export async function DELETE(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
     
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -195,9 +196,9 @@ export async function DELETE(request: Request) {
 // PATCH /api/cart - Update item quantity
 export async function PATCH(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
     
-    if (!session?.user?.email) {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -211,7 +212,7 @@ export async function PATCH(request: Request) {
     }
 
     const cart = await prisma.cart.findUnique({
-      where: { userId: session.user.email },
+      where: { userId: session.user.id },
       include: {
         items: true,
       },
