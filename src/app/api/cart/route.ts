@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { Session } from 'next-auth';
+import { CartItem } from '@/types/prisma';
 
 // GET /api/cart - Get user's cart
 export async function GET() {
@@ -222,7 +223,7 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'Cart not found' }, { status: 404 });
     }
 
-    const cartItem = cart.items.find((item) => item.variantId === variantId);
+    const cartItem = cart.items.find((item: CartItem) => item.variantId === variantId);
 
     if (!cartItem) {
       return NextResponse.json(
