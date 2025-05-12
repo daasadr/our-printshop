@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
+import { Session } from 'next-auth';
 import Stripe from 'stripe';
 import { convertEurToCzkSync } from '@/utils/currency';
 
@@ -35,8 +36,14 @@ export async function POST(req: NextRequest) {
       );
     }
     
-    const session = await getServerSession(authOptions);
-    console.log('Session:', session);
+    const session = await getServerSession(authOptions) as Session | null;
+    
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
     
     // 1. Ověřit, že všechny produkty existují a jsou dostupné
     const variantIds = items.map((item: { variantId: string }) => item.variantId);
