@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient, Prisma } from '@prisma/client';
-import { PrismaProduct, FormattedProduct, ProductInclude } from '@/types/prisma';
+import { PrismaClient } from '@prisma/client';
+import { PrismaProduct, FormattedProduct, ProductInclude, ProductWhereInput } from '@/types/prisma';
 import { convertEurToCzk } from '@/utils/currency';
 import prisma from '@/lib/prisma';
 
@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     const category = url.searchParams.get('category');
    
     // Definujeme where podmínku
-    const whereCondition: Prisma.ProductWhereInput = {
+    const whereCondition: ProductWhereInput = {
       isActive: true,
       ...(category ? { categoryId: category } : {})
     };
