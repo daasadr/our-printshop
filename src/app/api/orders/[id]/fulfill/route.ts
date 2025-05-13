@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { PrintfulOrderResponse } from '@/types/printful';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
+import { Session } from 'next-auth';
+import { OrderItem } from '@/types/prisma';
 
 export async function POST(
   req: NextRequest,
@@ -45,7 +49,7 @@ export async function POST(
         country_code: order.shippingInfo.country,
         zip: order.shippingInfo.zip
       },
-      items: order.items.map(item => ({
+      items: order.items.map((item: OrderItem) => ({
         variant_id: parseInt(item.variant.printfulVariantId),
         quantity: item.quantity,
         retail_price: item.price.toString()
