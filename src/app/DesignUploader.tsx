@@ -126,6 +126,7 @@ const DesignUploader: React.FC<DesignUploaderProps> = ({ onDesignUploaded }) => 
                 alt="Náhled designu"
                 width={200}
                 height={200}
+                unoptimized
                 className="object-cover rounded-lg"
               />
             </div>
