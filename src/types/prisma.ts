@@ -159,7 +159,16 @@ export type OrderItem = {
   variantId: string;
   quantity: number;
   price: number;
-  variant: Variant;
+  variant: Variant & {
+    product: {
+      id: string;
+      name: string;
+      designs: Array<{
+        id: string;
+        previewUrl: string;
+      }>;
+    };
+  };
   createdAt: Date;
   updatedAt: Date;
 };
