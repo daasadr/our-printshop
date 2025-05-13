@@ -1,3 +1,5 @@
+import { Prisma } from '@prisma/client';
+
 export type Product = {
   id: string;
   name: string;
@@ -149,4 +151,24 @@ export type CartWithItems = {
   items: CartItem[];
   createdAt: Date;
   updatedAt: Date;
+};
+
+export type OrderItem = {
+  id: string;
+  orderId: string;
+  variantId: string;
+  quantity: number;
+  price: number;
+  variant: Variant;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type Session = {
+  user: {
+    id: string;
+    email: string;
+    name?: string;
+  };
+  expires: string;
 };

@@ -1,9 +1,12 @@
-import { NextAuthOptions } from "next-auth";
+import { NextAuthOptions } from "next-auth/next";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { compare } from "bcryptjs";
-import prisma from "@/lib/prisma";
+import prisma from "./prisma";
+import bcrypt from "bcryptjs";
+import { JWT } from "next-auth/jwt";
 
 export const authOptions: NextAuthOptions = {
+  adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -13,50 +16,58 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Vyplňte prosím email a heslo");
+          throw new Error('Vyplňte prosím email a heslo');
         }
 
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
+          where: {
+            email: credentials.email
+          }
         });
 
-        if (!user) {
-          throw new Error("Uživatel s tímto emailem neexistuje");
+        if (!user || !user?.hashedPassword) {
+          throw new Error('Uživatel nenalezen');
         }
 
-        const isValid = await compare(credentials.password, user.password);
+        const isCorrectPassword = await bcrypt.compare(
+          credentials.password,
+          user.hashedPassword
+        );
 
-        if (!isValid) {
-          throw new Error("Neplatné heslo");
+        if (!isCorrectPassword) {
+          throw new Error('Nesprávné heslo');
         }
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name || ""
-        };
+        return user;
       }
     })
   ],
-  pages: {
-    signIn: "/auth/signin"
-  },
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
-      }
-      return session;
-    }
-  },
   session: {
     strategy: "jwt"
   },
-  secret: process.env.NEXTAUTH_SECRET
+  secret: process.env.NEXTAUTH_SECRET,
+  debug: process.env.NODE_ENV === "development",
+  pages: {
+    signIn: '/login',
+  },
+  callbacks: {
+    async jwt({ token, user }: { token: JWT, user: any }) {
+      if (user) {
+        return {
+          ...token,
+          id: user.id
+        };
+      }
+      return token;
+    },
+    async session({ session, token }: { session: any, token: JWT }) {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id
+        }
+      };
+    }
+  }
 };

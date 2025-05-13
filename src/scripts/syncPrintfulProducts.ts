@@ -311,7 +311,7 @@ async function syncPrintfulProducts() {
           if (productDetails.result.sync_variants && productDetails.result.sync_variants.length > 0) {
             for (const variant of productDetails.result.sync_variants) {
               const existingVariant = existingProduct.variants.find(
-                v => v.printfulVariantId === variant.id.toString()
+                v: { printfulVariantId: string } => v.printfulVariantId === variant.id.toString()
               );
               
               const eurPrice = parseFloat(variant.retail_price);

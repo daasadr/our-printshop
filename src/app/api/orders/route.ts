@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import Stripe from 'stripe';
+import { Session } from 'next-auth';
+import { Variant, OrderItem } from '@/types/prisma';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2023-10-16',
@@ -41,7 +43,7 @@ export async function POST(req: NextRequest) {
     // 2. Vypočítat celkovou cenu
     let total = 0;
     const orderItems = items.map((item: { variantId: string; quantity: number }) => {
-      const variant = variants.find((v) => v.id === item.variantId);
+      const variant = variants.find((v: Variant) => v.id === item.variantId);
       if (!variant) throw new Error('Varianta nenalezena');
       
       const itemTotal = variant.price * item.quantity;
@@ -93,7 +95,7 @@ export async function POST(req: NextRequest) {
     });
     
     // 4. Vytvořit Stripe Checkout Session
-    const lineItems = order.items.map(item => ({
+    const lineItems = order.items.map((item: OrderItem) => ({
       price_data: {
         currency: 'czk',
         product_data: {

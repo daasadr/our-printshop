@@ -1,3 +1,4 @@
+import { PrismaClient, Prisma } from '@prisma/client';
 import prisma from '@/lib/prisma';
 
 // Definice základních kategorií
@@ -33,7 +34,7 @@ async function initCategories() {
   try {
     console.log('Inicializuji kategorie...');
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: PrismaClient) => {
       // Vytvoření kategorií
       for (const categoryData of categories) {
         const existingCategory = await tx.$queryRaw`

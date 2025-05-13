@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma';
 import ProductDetail from '@/components/ProductDetail';
 import ProductSkeleton from '@/components/ProductSkeleton';
 import { convertEurToCzk } from '@/utils/currency';
+import { Product, Variant, Design } from '@/types/prisma';
 
 type ProductWithRelations = Product & {
   variants: (Variant & { price: number })[];
@@ -34,7 +35,7 @@ async function getProduct(id: string): Promise<ProductWithRelations | null> {
     });
     if (!product) return null;
     // Převedeme ceny všech variant na CZK
-    const convertedVariants = await Promise.all(product.variants.map(async variant => ({
+    const convertedVariants = await Promise.all(product.variants.map(async (variant: Variant) => ({
       ...variant,
       price: await convertEurToCzk(variant.price)
     })));
