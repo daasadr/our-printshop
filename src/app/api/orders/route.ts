@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { items, shippingInfo } = body;
     
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
     
     // 1. Ověřit, že všechny produkty existují a jsou dostupné
     const variantIds = items.map((item: { variantId: string }) => item.variantId);
