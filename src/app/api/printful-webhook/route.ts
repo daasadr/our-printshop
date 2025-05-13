@@ -1,10 +1,13 @@
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { PrismaClient, OrderStatus } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import prisma from '@/lib/prisma';
 
 // Printful webhook secret from environment variables
-const PRINTFUL_WEBHOOK_SECRET = process.env.PRINTFUL_WEBHOOK_SECRET!;
+const PRINTFUL_WEBHOOK_SECRET = process.env.PRINTFUL_WEBHOOK_SECRET;
+
+// Typ pro stav objednávky
+type OrderStatus = 'pending' | 'processing' | 'completed' | 'cancelled' | 'failed';
 
 export async function POST(req: Request) {
   const headersList = headers();
@@ -31,16 +34,16 @@ export async function POST(req: Request) {
     let newStatus: OrderStatus;
     switch (type) {
       case 'package_shipped':
-        newStatus = OrderStatus.shipped;
+        newStatus = 'completed';
         break;
       case 'package_delivered':
-        newStatus = OrderStatus.delivered;
+        newStatus = 'completed';
         break;
       case 'order_failed':
-        newStatus = OrderStatus.error;
+        newStatus = 'failed';
         break;
       case 'order_canceled':
-        newStatus = OrderStatus.cancelled;
+        newStatus = 'cancelled';
         break;
       default:
         console.log(`Unhandled Printful event type: ${type}`);
