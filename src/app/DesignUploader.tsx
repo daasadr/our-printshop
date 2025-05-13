@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDropzone } from 'react-dropzone';
+import Image from 'next/image';
 
 interface DesignUploaderProps {
   onDesignUploaded: (design: Design) => void;
@@ -120,7 +121,13 @@ const DesignUploader: React.FC<DesignUploaderProps> = ({ onDesignUploaded }) => 
           <div className="mb-4">
             <h3 className="text-sm font-medium mb-2">Náhled:</h3>
             <div className="border rounded-md p-4">
-              <img src={preview} alt="Náhled designu" className="max-h-64 mx-auto" />
+              <Image
+                src={preview}
+                alt="Náhled designu"
+                width={200}
+                height={200}
+                className="object-cover rounded-lg"
+              />
             </div>
           </div>
         )}
