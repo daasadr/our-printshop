@@ -133,6 +133,10 @@ async function syncPrintfulProducts() {
    
     // Pro každý produkt v Printful
     for (const syncProduct of printfulProducts) {
+      if (!syncProduct.sync_product) {
+        console.warn(`Produkt s ID ${syncProduct.id} nemá sync_product, přeskakuji.`);
+        continue;
+      }
       const productName = syncProduct.sync_product.name;
       
       // Určíme kategorii
@@ -205,10 +209,9 @@ async function syncPrintfulProducts() {
           // Nejprve vytvoříme produkt
           const newProduct = await prisma.product.create({
             data: {
-              title: productName,
+              name: productName,
               description: `Originální produkt: ${productName}`,
               printfulId: syncProduct.id.toString(),
-              printfulSync: true,
               isActive: true,
               category: {
                 connect: {
@@ -272,9 +275,8 @@ async function syncPrintfulProducts() {
           await prisma.product.update({
             where: { id: existingProduct.id },
             data: {
-              title: productName,
+              name: productName,
               description: `Originální produkt: ${productName}`,
-              printfulSync: true,
               isActive: true,
               category: {
                 connect: {
@@ -311,7 +313,7 @@ async function syncPrintfulProducts() {
           if (productDetails.result.sync_variants && productDetails.result.sync_variants.length > 0) {
             for (const variant of productDetails.result.sync_variants) {
               const existingVariant = existingProduct.variants.find(
-                v: { printfulVariantId: string } => v.printfulVariantId === variant.id.toString()
+                v => v.printfulVariantId === variant.id.toString()
               );
               
               const eurPrice = parseFloat(variant.retail_price);

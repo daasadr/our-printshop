@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCart } from '@/hooks/useCart';
 import { FiMenu, FiX, FiUser, FiHeart } from 'react-icons/fi';
+import { FaShoppingCart } from 'react-icons/fa';
 import { signOut, useSession } from 'next-auth/react';
 
 const Header: React.FC = () => {
@@ -69,13 +70,14 @@ const Header: React.FC = () => {
                 </Link>
               </>
             )}
-            <Link href="/cart" className="p-2 text-gray-700 hover:text-blue-600 relative">
-              Košík
-              {items.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {items.length}
-                </span>
-              )}
+            <Link href="/products" className="p-2 text-gray-700 hover:text-blue-600">
+              Produkty
+            </Link>
+            <Link href="/about" className="p-2 text-gray-700 hover:text-blue-600">
+              O nás
+            </Link>
+            <Link href="/kontakt" className="p-2 text-gray-700 hover:text-blue-600">
+              Kontakt
             </Link>
 
             {/* Mobilní menu toggle */}
@@ -95,6 +97,14 @@ const Header: React.FC = () => {
             </Link>
             <Link href="/wishlist" className="hidden sm:block p-2 text-gray-700 hover:text-blue-600">
               <FiHeart className="w-5 h-5" />
+            </Link>
+            <Link href="/cart" className="hidden sm:block p-2 text-gray-700 hover:text-blue-600 relative" aria-label="Košík">
+              <FaShoppingCart className="w-5 h-5" />
+              {items.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {items.length}
+                </span>
+              )}
             </Link>
           </div>
         </div>
