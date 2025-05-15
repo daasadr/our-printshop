@@ -11,6 +11,8 @@ const nextConfig = {
       },
     ],
   },
+  // Vypnout statickou generaci pro API routes
+  output: 'standalone',
 };
 
 module.exports = nextConfig; 

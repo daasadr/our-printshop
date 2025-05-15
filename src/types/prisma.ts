@@ -1,5 +1,4 @@
-import { Prisma } from '@prisma/client';
-
+// Types for our database models
 export type Product = {
   id: string;
   name: string;

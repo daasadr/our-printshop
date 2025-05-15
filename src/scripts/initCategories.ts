@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import prisma from '@/lib/prisma';
 
 // Definice základních kategorií
@@ -34,7 +34,7 @@ async function initCategories() {
   try {
     console.log('Inicializuji kategorie...');
 
-    await prisma.$transaction(async (tx: PrismaClient) => {
+    await prisma.$transaction(async (tx) => {
       // Vytvoření kategorií
       for (const categoryData of categories) {
         const existingCategory = await tx.$queryRaw`
@@ -44,7 +44,7 @@ async function initCategories() {
         if (!existingCategory || (Array.isArray(existingCategory) && existingCategory.length === 0)) {
           await tx.$executeRaw`
             INSERT INTO "Category" (id, name, "displayName", "printfulCategory", "createdAt", "updatedAt")
-            VALUES (${Prisma.raw('gen_random_uuid()')}, ${categoryData.name}, ${categoryData.displayName}, ${categoryData.printfulCategory}, NOW(), NOW())
+            VALUES (gen_random_uuid(), ${categoryData.name}, ${categoryData.displayName}, ${categoryData.printfulCategory}, NOW(), NOW())
           `;
           console.log(`Vytvořena kategorie: ${categoryData.displayName}`);
         } else {

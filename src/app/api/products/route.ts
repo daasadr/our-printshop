@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { PrismaProduct, FormattedProduct, ProductInclude, ProductWhereInput } from '@/types/prisma';
