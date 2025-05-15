@@ -1,14 +1,15 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
 import Link from 'next/link';
+
 
 const NewsletterSignup: React.FC = () => {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
   
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     
     if (!email) {
