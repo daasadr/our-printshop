@@ -1,9 +1,11 @@
 export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { PrismaProduct, FormattedProduct, ProductInclude, ProductWhereInput } from '@/types/prisma';
 import { convertEurToCzk } from '@/utils/currency';
 import prisma from '@/lib/prisma';
+
+type ProductWithCategories = Prisma.ProductGetPayload<{ include: { categories: { include: { category: true } }, variants: { where: { isActive: true }, orderBy: { price: 'asc' } }, designs: true } }>;
 
 export async function GET(req: NextRequest) {
   try {
@@ -29,7 +31,7 @@ export async function GET(req: NextRequest) {
     const products = await prisma.product.findMany({
       where: whereCondition,
       include,
-    });
+    }) as ProductWithCategories[];
 
     console.log('Načtené produkty:', products);
     products.forEach(product => {

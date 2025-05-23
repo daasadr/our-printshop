@@ -1,4 +1,9 @@
 // Types for our database models
+// Tento soubor je nyní redundantní, používej typy generované Prismou z @prisma/client
+// Pokud potřebuješ typ produktu s kategoriemi, použij např.:
+// import { Prisma } from '@prisma/client';
+// type ProductWithCategories = Prisma.ProductGetPayload<{ include: { categories: { include: { category: true } }, variants: true, designs: true } }>;
+
 export type Product = {
   id: string;
   name: string;

@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { PrismaProduct, FormattedProduct, ProductInclude } from '@/types/prisma';
 import { convertEurToCzk } from '@/utils/currency';
 import prisma from '@/lib/prisma';
@@ -11,6 +11,8 @@ import prisma from '@/lib/prisma';
 // import { convertEurToCzk } from '@/utils/currency';
 // 
 // const prisma = new PrismaClient();
+
+type ProductWithCategories = Prisma.ProductGetPayload<{ include: { categories: { include: { category: true } }, variants: { where: { isActive: true }, orderBy: { price: 'asc' } }, designs: true } }>;
 
 export async function GET() {
   try {
@@ -29,7 +31,7 @@ export async function GET() {
       },
       include,
       take: 4, // Omezíme na 4 produkty jako featured
-    }) as unknown as PrismaProduct[];
+    }) as ProductWithCategories[];
 
     const formattedProducts: FormattedProduct[] = await Promise.all(products.map(async product => {
       const convertedVariants = await Promise.all((product.variants || []).map(async variant => ({

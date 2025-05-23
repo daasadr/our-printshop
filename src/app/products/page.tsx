@@ -6,6 +6,9 @@ import { Metadata } from 'next';
 import prisma from '@/lib/prisma';
 import { convertEurToCzk } from '@/lib/currency';
 import { FormattedProduct, PrismaProduct } from '@/types/prisma';
+import { Prisma } from '@prisma/client';
+
+type ProductWithCategories = Prisma.ProductGetPayload<{ include: { categories: { include: { category: true } }, variants: { where: { isActive: true }, orderBy: { price: 'asc' } }, designs: true } }>;
 
 export const metadata: Metadata = {
   title: 'Produkty | Our Printshop',
@@ -26,7 +29,7 @@ async function getProducts(): Promise<FormattedProduct[]> {
     const products = await prisma.product.findMany({
       where: { isActive: true },
       include,
-    }) as unknown as PrismaProduct[];
+    }) as ProductWithCategories[];
 
     const formattedProducts = await Promise.all(products.map(async (product) => {
       const basePrice = product.variants[0]?.price || 0;
