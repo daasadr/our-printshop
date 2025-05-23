@@ -1,6 +1,4 @@
-const prisma = require('@/lib/prisma');
-// Použijeme fetch pro starší verze Node.js
-const fetch = require('node-fetch');
+const prisma = require('../lib/prisma');
 const dotenv = require('dotenv');
 
 // Načtení proměnných prostředí z .env souboru
@@ -148,6 +146,12 @@ async function syncPrintfulProducts() {
           console.log('Varianty produktu nenalezeny v odpovědi API!');
         }
         
+        // Najdi správné ID kategorie podle názvu
+        const categoryRecord = await prisma.category.findFirst({
+          where: { name: category }
+        });
+        const categoryId = categoryRecord ? categoryRecord.id : null;
+
         if (!existingProduct) {
           // Vytvoříme nový produkt
           console.log(`Vytvářím nový produkt: ${productName}`);
@@ -155,12 +159,11 @@ async function syncPrintfulProducts() {
           // Nejprve vytvoříme produkt
           const newProduct = await prisma.product.create({
             data: {
-              title: productName,
+              name: productName,
               description: `Originální produkt: ${productName}`,
               printfulId: syncProduct.id.toString(),
-              printfulSync: true,
               isActive: true,
-              category
+              categoryId: categoryId
             }
           });
           

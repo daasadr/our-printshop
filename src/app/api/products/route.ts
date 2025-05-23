@@ -9,45 +9,51 @@ export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
     const category = url.searchParams.get('category');
-   
+
     // Definujeme where podmínku
     const whereCondition: ProductWhereInput = {
       isActive: true,
-      ...(category ? { categoryId: category } : {})
+      // Filtrace podle kategorie bude řešena až po načtení, protože máme many-to-many vztah
     };
-    
-    const include: ProductInclude = {
+
+    const include = {
       variants: {
         where: { isActive: true },
         orderBy: { price: 'asc' },
       },
       designs: true,
-      category: true,
+      categories: { include: { category: true } },
     };
-    
+
     // Získáme produkty z databáze
     const products = await prisma.product.findMany({
       where: whereCondition,
       include,
-    }) as unknown as PrismaProduct[];
-    
-    // Transformace dat pro klienta s ověřením, že existují potřebná data
-    const formattedProducts: FormattedProduct[] = await Promise.all(products.map(async product => {
-      // Najdeme první aktivní variantu nebo použijeme defaultní hodnoty
-      const firstVariant = product.variants && product.variants.length > 0 
-        ? product.variants[0] 
-        : null;
-      
-      // Najdeme první design nebo použijeme prázdný string
-      const firstDesign = product.designs && product.designs.length > 0 
-        ? product.designs[0] 
-        : null;
-      
-      // Získáme URL adresu obrázku
-      const originalPreviewUrl = firstDesign?.previewUrl || '';
-      console.log(`Původní URL obrázku pro produkt ${product.name}: ${originalPreviewUrl}`);
-      
-      // Zajistíme, že URL adresa začíná na https://
+    });
+
+    console.log('Načtené produkty:', products);
+    products.forEach(product => {
+      console.log('Product:', product.id, 'categories:', product.categories);
+    });
+
+    // Pokud je zadána kategorie, filtrujeme produkty podle ní
+    let filteredProducts = products;
+    if (category) {
+      filteredProducts = products.filter(product =>
+        product.categories.some(pc => pc.categoryId === category)
+      );
+    }
+
+    // Transformace dat pro klienta
+    const formattedProducts: FormattedProduct[] = await Promise.all(filteredProducts.map(async product => {
+      const convertedVariants = await Promise.all(
+        (product.variants || []).map(async variant => ({
+          ...variant,
+          price: await convertEurToCzk(variant.price)
+        }))
+      );
+
+      const originalPreviewUrl = product.designs?.[0]?.previewUrl || '';
       let processedPreviewUrl = '';
       if (originalPreviewUrl) {
         if (originalPreviewUrl.startsWith('http')) {
@@ -56,34 +62,27 @@ export async function GET(req: NextRequest) {
           processedPreviewUrl = `https://${originalPreviewUrl}`;
         }
       }
-      console.log(`Zpracovaná URL obrázku pro produkt ${product.name}: ${processedPreviewUrl}`);
 
-      // Konvertujeme ceny z EUR na CZK
-      const priceInCzk = firstVariant?.price ? await convertEurToCzk(firstVariant.price) : 0;
-      const convertedVariants = await Promise.all(product.variants.map(async variant => ({
-        ...variant,
-        price: await convertEurToCzk(variant.price)
-      })));
-      
-      // Vraťmeme formátovaný produkt
       return {
         id: product.id,
         name: product.name,
         description: product.description,
         previewUrl: processedPreviewUrl,
-        price: priceInCzk,
+        price: product.variants?.[0]?.price
+          ? await convertEurToCzk(product.variants[0].price)
+          : 0,
         variants: convertedVariants,
-        designs: product.designs.map(({ productId, ...design }) => design),
+        designs: (product.designs || []).map(({ productId, ...design }) => design),
         isActive: product.isActive,
         createdAt: product.createdAt,
         updatedAt: product.updatedAt,
-        category: product.category?.name || '',
-        categoryId: product.categoryId,
+        categories: product.categories.map(pc => pc.category.name),
+        categoryIds: product.categories.map(pc => pc.categoryId),
         printfulId: product.printfulId,
         printfulSync: product.printfulSync
       };
     }));
-   
+
     // Vracíme data jako JSON
     return NextResponse.json(formattedProducts);
   } catch (error) {

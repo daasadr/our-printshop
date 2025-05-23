@@ -14,13 +14,13 @@ import prisma from '@/lib/prisma';
 
 export async function GET() {
   try {
-    const include: ProductInclude = {
+    const include = {
       variants: {
         where: { isActive: true },
         orderBy: { price: 'asc' },
       },
       designs: true,
-      category: true,
+      categories: { include: { category: true } },
     };
 
     const products = await prisma.product.findMany({
@@ -32,12 +32,12 @@ export async function GET() {
     }) as unknown as PrismaProduct[];
 
     const formattedProducts: FormattedProduct[] = await Promise.all(products.map(async product => {
-      const convertedVariants = await Promise.all(product.variants.map(async variant => ({
+      const convertedVariants = await Promise.all((product.variants || []).map(async variant => ({
         ...variant,
         price: await convertEurToCzk(variant.price)
       })));
 
-      const originalPreviewUrl = product.designs[0]?.previewUrl || '';
+      const originalPreviewUrl = product.designs?.[0]?.previewUrl || '';
       let processedPreviewUrl = '';
       if (originalPreviewUrl) {
         if (originalPreviewUrl.startsWith('http')) {
@@ -52,14 +52,14 @@ export async function GET() {
         name: product.name,
         description: product.description,
         previewUrl: processedPreviewUrl,
-        price: product.variants[0]?.price ? await convertEurToCzk(product.variants[0].price) : 0,
+        price: product.variants?.[0]?.price ? await convertEurToCzk(product.variants[0].price) : 0,
         variants: convertedVariants,
-        designs: product.designs.map(({ productId, ...design }) => design),
+        designs: (product.designs || []).map(({ productId, ...design }) => design),
         isActive: product.isActive,
         createdAt: product.createdAt,
         updatedAt: product.updatedAt,
-        category: product.category?.name || '',
-        categoryId: product.categoryId,
+        categories: product.categories.map(pc => pc.category.name),
+        categoryIds: product.categories.map(pc => pc.categoryId),
         printfulId: product.printfulId,
         printfulSync: product.printfulSync
       };

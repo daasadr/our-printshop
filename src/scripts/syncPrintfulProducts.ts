@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma';
+const prisma = require('../lib/prisma');
 import fetch from 'node-fetch';
 import { convertEurToCzkSync } from '../utils/currency';
 

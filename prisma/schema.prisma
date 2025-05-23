@@ -5,6 +5,8 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
+  engineType = "binary"
 }
 
 model Product {
@@ -16,11 +18,8 @@ model Product {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   variants        Variant[]
-  categoryId      String?
-  category        Category? @relation(fields: [categoryId], references: [id])
   designs         Design[]
-
-  @@index([categoryId])
+  categories      ProductCategory[]
 }
 
 model Design {
@@ -58,9 +57,9 @@ model Category {
   id          String    @id @default(cuid())
   name        String    @unique
   description String?
-  products    Product[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  products    ProductCategory[]
 }
 
 model User {
@@ -148,6 +147,15 @@ model CartItem {
   @@unique([cartId, variantId])
   @@index([cartId])
   @@index([variantId])
+}
+
+model ProductCategory {
+  product   Product   @relation(fields: [productId], references: [id])
+  productId String
+  category  Category  @relation(fields: [categoryId], references: [id])
+  categoryId String
+
+  @@id([productId, categoryId])
 }
 
 enum OrderStatus {

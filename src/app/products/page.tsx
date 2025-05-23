@@ -19,7 +19,7 @@ async function getProducts(): Promise<FormattedProduct[]> {
       orderBy: { price: 'asc' },
     },
     designs: true,
-    category: true,
+    categories: { include: { category: true } },
   };
 
   try {
@@ -41,7 +41,8 @@ async function getProducts(): Promise<FormattedProduct[]> {
         ...product,
         previewUrl: product.designs[0]?.previewUrl || '',
         price: convertedPrice,
-        category: product.category?.name || '',
+        categories: product.categories.map(pc => pc.category.name),
+        categoryIds: product.categories.map(pc => pc.categoryId),
         variants: convertedVariants,
         designs: product.designs.map(({ productId: _productId, ...design }) => design),
       } as FormattedProduct;

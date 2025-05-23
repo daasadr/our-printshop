@@ -93,8 +93,8 @@ export type FormattedProduct = {
   price: number;
   variants: Variant[];
   designs: Omit<Design, 'productId'>[];
-  category: string;
-  categoryId: string | null;
+  categories: string[];
+  categoryIds: string[];
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;

@@ -6,28 +6,23 @@ const prisma = new PrismaClient();
 const categories = [
   {
     name: 'women',
-    displayName: 'Dámské oblečení',
-    printfulCategory: 'women'
+    description: 'Dámské oblečení'
   },
   {
     name: 'men',
-    displayName: 'Pánské oblečení',
-    printfulCategory: 'men'
+    description: 'Pánské oblečení'
   },
   {
     name: 'kids',
-    displayName: 'Dětské oblečení',
-    printfulCategory: 'kids'
+    description: 'Dětské oblečení'
   },
   {
     name: 'home-decor',
-    displayName: 'Domov a dekorace',
-    printfulCategory: 'home-decor'
+    description: 'Domov a dekorace'
   },
   {
     name: 'other',
-    displayName: 'Ostatní',
-    printfulCategory: 'other'
+    description: 'Ostatní'
   }
 ];
 
@@ -42,11 +37,14 @@ async function initCategories() {
 
       if (!existingCategory) {
         await prisma.category.create({
-          data: category
+          data: {
+            name: category.name,
+            description: category.description
+          }
         });
-        console.log(`Vytvořena kategorie: ${category.displayName}`);
+        console.log(`Vytvořena kategorie: ${category.description}`);
       } else {
-        console.log(`Kategorie již existuje: ${category.displayName}`);
+        console.log(`Kategorie již existuje: ${category.description}`);
       }
     }
 
@@ -64,6 +62,22 @@ async function initCategories() {
         });
       }
       console.log('Produkty byly aktualizovány s výchozí kategorií');
+    }
+
+    // Oprava starých produktů: přiřadit správné categoryId podle názvu kategorie
+    const dbCategories = await prisma.category.findMany();
+    const allProducts = await prisma.product.findMany();
+    for (const product of allProducts) {
+      if (!product.categoryId && product.category) {
+        const cat = dbCategories.find(c => c.name === product.category);
+        if (cat) {
+          await prisma.product.update({
+            where: { id: product.id },
+            data: { categoryId: cat.id }
+          });
+          console.log(`Přiřazeno categoryId pro produkt ${product.name}`);
+        }
+      }
     }
 
     console.log('Inicializace kategorií dokončena!');

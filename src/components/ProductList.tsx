@@ -3,61 +3,53 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Category, FormattedProduct, PrismaProduct } from '@/types/prisma';
+import { FormattedProduct } from '@/types/prisma';
 import prisma from '@/lib/prisma';
 import { convertEurToCzk } from '@/lib/currency';
 import { formatPriceCZK } from '@/utils/currency';
 import { useCart } from '@/hooks/useCart';
 
-async function getCategories(): Promise<Category[]> {
-  return prisma.category.findMany();
-}
-
 async function getProducts(category?: string): Promise<FormattedProduct[]> {
-  const where = {
-    isActive: true,
-    ...(category && { categoryId: category }),
-  };
-
   const include = {
     variants: {
       where: { isActive: true },
       orderBy: { price: 'asc' },
     },
     designs: true,
-    category: true,
+    categories: { include: { category: true } },
   };
 
-  try {
-    const products = await prisma.product.findMany({
-      where,
-      include,
-    }) as unknown as PrismaProduct[];
+  const products = await prisma.product.findMany({
+    where: { isActive: true },
+    include,
+  });
 
-    const formattedProducts = await Promise.all(products.map(async (product) => {
-      const basePrice = product.variants[0]?.price || 0;
-      const convertedPrice = await convertEurToCzk(basePrice);
-
-      const convertedVariants = await Promise.all(product.variants.map(async (variant) => ({
-        ...variant,
-        price: await convertEurToCzk(variant.price),
-      })));
-
-      return {
-        ...product,
-        previewUrl: product.designs[0]?.previewUrl || '',
-        price: convertedPrice,
-        category: product.category?.name || '',
-        variants: convertedVariants,
-        designs: product.designs.map(({ productId: _productId, ...design }) => design),
-      } as FormattedProduct;
-    }));
-
-    return formattedProducts;
-  } catch (error) {
-    console.error('Error fetching products:', error);
-    throw error;
+  // Filtrace podle kategorie (pokud je zadána)
+  let filteredProducts = products;
+  if (category) {
+    filteredProducts = products.filter(product =>
+      product.categories.some(pc => pc.categoryId === category)
+    );
   }
+
+  // Mapování na výstup
+  return await Promise.all(filteredProducts.map(async (product) => {
+    const basePrice = product.variants[0]?.price || 0;
+    const convertedPrice = await convertEurToCzk(basePrice);
+    const convertedVariants = await Promise.all(product.variants.map(async (variant) => ({
+      ...variant,
+      price: await convertEurToCzk(variant.price),
+    })));
+    return {
+      ...product,
+      previewUrl: product.designs[0]?.previewUrl || '',
+      price: convertedPrice,
+      categories: product.categories.map(pc => pc.category.name),
+      categoryIds: product.categories.map(pc => pc.categoryId),
+      variants: convertedVariants,
+      designs: product.designs.map(({ productId: _productId, ...design }) => design),
+    } as FormattedProduct;
+  }));
 }
 
 interface ProductListProps {

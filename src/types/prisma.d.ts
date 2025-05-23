@@ -47,8 +47,8 @@ export interface FormattedProduct {
     createdAt: Date;
     updatedAt: Date;
   }>;
-  category: string;
-  categoryId: string | null;
+  categories: string[];
+  categoryIds: string[];
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;

@@ -16,6 +16,7 @@ type ProductWithRelations = Product & {
   createdAt: Date;
   updatedAt: Date;
   categoryId: string | null;
+  categories: { category: { name: string }; categoryId: string }[];
 };
 
 // Pro využití v app routeru je lepší načítat data přímo v komponentě stránky
@@ -30,7 +31,8 @@ async function getProduct(id: string): Promise<ProductWithRelations | null> {
             price: 'asc'
           }
         },
-        designs: true
+        designs: true,
+        categories: { include: { category: true } },
       }
     });
     if (!product) return null;
@@ -39,10 +41,12 @@ async function getProduct(id: string): Promise<ProductWithRelations | null> {
       ...variant,
       price: await convertEurToCzk(variant.price)
     })));
-    // Vrátíme produkt s převedenými cenami
+    // Vrátíme produkt s převedenými cenami a kategoriemi
     return {
       ...product,
-      variants: convertedVariants
+      variants: convertedVariants,
+      categories: product.categories.map(pc => pc.category.name),
+      categoryIds: product.categories.map(pc => pc.categoryId),
     };
   } catch (error) {
     console.error('Error fetching product:', error);
