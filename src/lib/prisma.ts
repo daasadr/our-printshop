@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { PrismaClient } from '@prisma/client';
+import type { PrismaClient } from '@prisma/client';
+const { PrismaClient: PrismaClientConstructor } = require('@prisma/client');
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
 export const prisma =
   globalForPrisma.prisma ||
-  new PrismaClient({
+  new PrismaClientConstructor({
     log: ['query', 'info', 'warn', 'error'],
   });
 

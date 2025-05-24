@@ -1,11 +1,11 @@
 export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient, Prisma } from '@prisma/client';
-import { PrismaProduct, FormattedProduct, ProductInclude, ProductWhereInput } from '@/types/prisma';
+import { FormattedProduct, ProductWhereInput } from '@/types/prisma';
 import { convertEurToCzk } from '@/utils/currency';
 import prisma from '@/lib/prisma';
 
-type ProductWithCategories = Prisma.ProductGetPayload<{ include: { categories: { include: { category: true } }, variants: { where: { isActive: true }, orderBy: { price: 'asc' } }, designs: true } }>;
+// Typ produktu s kategoriemi
+type ProductWithCategories = any;
 
 export async function GET(req: NextRequest) {
   try {

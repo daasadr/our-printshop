@@ -5,10 +5,36 @@ import { ProductListSkeleton } from '@/components/ProductListSkeleton';
 import { Metadata } from 'next';
 import prisma from '@/lib/prisma';
 import { convertEurToCzk } from '@/lib/currency';
-import { FormattedProduct, PrismaProduct } from '@/types/prisma';
-import { Prisma } from '@prisma/client';
+import { FormattedProduct } from '@/types/prisma';
+import type { PrismaClient } from '@prisma/client';
 
-type ProductWithCategories = Prisma.ProductGetPayload<{ include: { categories: { include: { category: true } }, variants: { where: { isActive: true }, orderBy: { price: 'asc' } }, designs: true } }>;
+type ProductWithCategories = Awaited<ReturnType<PrismaClient['product']['findMany']>>[number] & {
+  categories: Array<{
+    category: {
+      id: string;
+      name: string;
+      description: string | null;
+      createdAt: Date;
+      updatedAt: Date;
+    };
+    categoryId: string;
+  }>;
+  variants: Array<{
+    id: string;
+    productId: string;
+    price: number;
+    isActive: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+  }>;
+  designs: Array<{
+    id: string;
+    productId: string;
+    previewUrl: string;
+    createdAt: Date;
+    updatedAt: Date;
+  }>;
+};
 
 export const metadata: Metadata = {
   title: 'Produkty | Our Printshop',

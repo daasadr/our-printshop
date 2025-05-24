@@ -1,18 +1,17 @@
 export const dynamic = "force-dynamic";
 import { NextResponse } from 'next/server';
-import { PrismaClient, Prisma } from '@prisma/client';
-import { PrismaProduct, FormattedProduct, ProductInclude } from '@/types/prisma';
+import { FormattedProduct } from '@/types/prisma';
 import { convertEurToCzk } from '@/utils/currency';
 import prisma from '@/lib/prisma';
+
+// Typ produktu s kategoriemi
+type ProductWithCategories = any;
 
 // Dočasně deaktivovaná implementace featured products
 // import { PrismaClient } from '@prisma/client';
 // import { ProductWithRelations, FormattedProduct } from '@/types/prisma';
-// import { convertEurToCzk } from '@/utils/currency';
 // 
 // const prisma = new PrismaClient();
-
-type ProductWithCategories = Prisma.ProductGetPayload<{ include: { categories: { include: { category: true } }, variants: { where: { isActive: true }, orderBy: { price: 'asc' } }, designs: true } }>;
 
 export async function GET() {
   try {
