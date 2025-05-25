@@ -1,145 +1,36 @@
-export const dynamic = "force-dynamic";
-import { NextResponse } from 'next/server';
-import { FormattedProduct } from '@/types/prisma';
-import { convertEurToCzk } from '@/utils/currency';
-import prisma from '@/lib/prisma';
-
-// Typ produktu s kategoriemi
-type ProductWithCategories = any;
-
-// Dočasně deaktivovaná implementace featured products
-// import { PrismaClient } from '@prisma/client';
-// import { ProductWithRelations, FormattedProduct } from '@/types/prisma';
-// 
-// const prisma = new PrismaClient();
+import { NextResponse } from "next/server";
+import { db } from "@/lib/drizzle";
+import { product, productCategory, category, variant, design } from "@/db/schema";
 
 export async function GET() {
   try {
-    const include = {
-      variants: {
-        where: { isActive: true },
-        orderBy: { price: 'asc' },
-      },
-      designs: true,
-      categories: { include: { category: true } },
-    };
+    // Získání 4 "featured" produktů (zatím všechny, protože není isFeatured)
+    const products = await db.select().from(product).limit(4);
+    const productCategories = await db.select().from(productCategory);
+    const categories = await db.select().from(category);
+    const variants = await db.select().from(variant);
+    const designs = await db.select().from(design);
 
-    const products = await prisma.product.findMany({
-      where: {
-        isActive: true,
-      },
-      include,
-      take: 4, // Omezíme na 4 produkty jako featured
-    }) as ProductWithCategories[];
-
-    const formattedProducts: FormattedProduct[] = await Promise.all(products.map(async product => {
-      const convertedVariants = await Promise.all((product.variants || []).map(async variant => ({
-        ...variant,
-        price: await convertEurToCzk(variant.price)
-      })));
-
-      const originalPreviewUrl = product.designs?.[0]?.previewUrl || '';
-      let processedPreviewUrl = '';
-      if (originalPreviewUrl) {
-        if (originalPreviewUrl.startsWith('http')) {
-          processedPreviewUrl = originalPreviewUrl;
-        } else {
-          processedPreviewUrl = `https://${originalPreviewUrl}`;
-        }
-      }
+    const result = products.map((prod) => {
+      const prodCats = productCategories.filter(pc => pc.productId === prod.id);
+      const prodCatNames = prodCats.map(pc => {
+        const cat = categories.find(c => c.id === pc.categoryId);
+        return cat?.name || "";
+      });
+      const prodCatIds = prodCats.map(pc => pc.categoryId);
 
       return {
-        id: product.id,
-        name: product.name,
-        description: product.description,
-        previewUrl: processedPreviewUrl,
-        price: product.variants?.[0]?.price ? await convertEurToCzk(product.variants[0].price) : 0,
-        variants: convertedVariants,
-        designs: (product.designs || []).map(({ productId, ...design }) => design),
-        isActive: product.isActive,
-        createdAt: product.createdAt,
-        updatedAt: product.updatedAt,
-        categories: product.categories.map(pc => pc.category.name),
-        categoryIds: product.categories.map(pc => pc.categoryId),
-        printfulId: product.printfulId,
-        printfulSync: product.printfulSync
+        ...prod,
+        categories: prodCatNames,
+        categoryIds: prodCatIds,
+        variants: variants.filter(v => v.productId === prod.id && v.isActive),
+        designs: designs.filter(d => d.productId === prod.id),
       };
-    }));
+    });
 
-    return NextResponse.json(formattedProducts);
+    return NextResponse.json(result);
   } catch (error) {
-    console.error('Error fetching featured products:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error("Error fetching featured products:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-  
-  // Původní implementace:
-  /*
-  try {
-    const featuredProducts = await prisma.product.findMany({
-      where: {
-        isFeatured: true,
-        isActive: true,
-      },
-      include: {
-        variants: {
-          where: {
-            isActive: true,
-          },
-          orderBy: {
-            price: 'asc',
-          },
-        },
-        designs: true,
-      },
-    }) as ProductWithRelations[];
-
-    const formattedProducts: FormattedProduct[] = await Promise.all(featuredProducts.map(async product => {
-      const convertedVariants = await Promise.all(product.variants.map(async variant => ({
-        ...variant,
-        price: await convertEurToCzk(variant.price)
-      })));
-
-      const originalPreviewUrl = product.designs[0]?.previewUrl || '';
-      
-      let processedPreviewUrl = '';
-      if (originalPreviewUrl) {
-        if (originalPreviewUrl.startsWith('http')) {
-          processedPreviewUrl = originalPreviewUrl;
-        } else {
-          processedPreviewUrl = `https://${originalPreviewUrl}`;
-        }
-      }
-
-      return {
-        id: product.id,
-        title: product.title,
-        description: product.description,
-        previewUrl: processedPreviewUrl,
-        price: product.variants[0]?.price ? await convertEurToCzk(product.variants[0].price) : 0,
-        variants: convertedVariants,
-        designs: product.designs,
-        isActive: product.isActive,
-        createdAt: product.createdAt,
-        updatedAt: product.updatedAt,
-        category: product.category,
-        categoryId: product.categoryId,
-        printfulId: product.printfulId,
-        printfulSync: product.printfulSync
-      };
-    }));
-
-    return NextResponse.json(formattedProducts);
-  } catch (error) {
-    console.error('Error fetching featured products:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  } finally {
-    await prisma.$disconnect();
-  }
-  */
 }

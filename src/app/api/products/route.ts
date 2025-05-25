@@ -1,97 +1,41 @@
-export const dynamic = "force-dynamic";
-import { NextRequest, NextResponse } from 'next/server';
-import { FormattedProduct, ProductWhereInput } from '@/types/prisma';
-import { convertEurToCzk } from '@/utils/currency';
-import prisma from '@/lib/prisma';
-
-// Typ produktu s kategoriemi
-type ProductWithCategories = any;
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/drizzle";
+import { product, productCategory, category, variant, design } from "@/db/schema";
 
 export async function GET(req: NextRequest) {
   try {
-    const url = new URL(req.url);
-    const category = url.searchParams.get('category');
+    // Získání všech produktů
+    const products = await db.select().from(product);
+    // Získání všech kategorií k produktům
+    const productCategories = await db.select().from(productCategory);
+    // Získání všech kategorií
+    const categories = await db.select().from(category);
+    // Získání všech variant
+    const variants = await db.select().from(variant);
+    // Získání všech designů
+    const designs = await db.select().from(design);
 
-    // Definujeme where podmínku
-    const whereCondition: ProductWhereInput = {
-      isActive: true,
-      // Filtrace podle kategorie bude řešena až po načtení, protože máme many-to-many vztah
-    };
-
-    const include = {
-      variants: {
-        where: { isActive: true },
-        orderBy: { price: 'asc' },
-      },
-      designs: true,
-      categories: { include: { category: true } },
-    };
-
-    // Získáme produkty z databáze
-    const products = await prisma.product.findMany({
-      where: whereCondition,
-      include,
-    }) as ProductWithCategories[];
-
-    console.log('Načtené produkty:', products);
-    products.forEach(product => {
-      console.log('Product:', product.id, 'categories:', product.categories);
-    });
-
-    // Pokud je zadána kategorie, filtrujeme produkty podle ní
-    let filteredProducts = products;
-    if (category) {
-      filteredProducts = products.filter(product =>
-        product.categories.some(pc => pc.categoryId === category)
-      );
-    }
-
-    // Transformace dat pro klienta
-    const formattedProducts: FormattedProduct[] = await Promise.all(filteredProducts.map(async product => {
-      const convertedVariants = await Promise.all(
-        (product.variants || []).map(async variant => ({
-          ...variant,
-          price: await convertEurToCzk(variant.price)
-        }))
-      );
-
-      const originalPreviewUrl = product.designs?.[0]?.previewUrl || '';
-      let processedPreviewUrl = '';
-      if (originalPreviewUrl) {
-        if (originalPreviewUrl.startsWith('http')) {
-          processedPreviewUrl = originalPreviewUrl;
-        } else {
-          processedPreviewUrl = `https://${originalPreviewUrl}`;
-        }
-      }
+    // Sestavení výsledku
+    const result = products.map((prod) => {
+      const prodCats = productCategories.filter(pc => pc.productId === prod.id);
+      const prodCatNames = prodCats.map(pc => {
+        const cat = categories.find(c => c.id === pc.categoryId);
+        return cat?.name || "";
+      });
+      const prodCatIds = prodCats.map(pc => pc.categoryId);
 
       return {
-        id: product.id,
-        name: product.name,
-        description: product.description,
-        previewUrl: processedPreviewUrl,
-        price: product.variants?.[0]?.price
-          ? await convertEurToCzk(product.variants[0].price)
-          : 0,
-        variants: convertedVariants,
-        designs: (product.designs || []).map(({ productId, ...design }) => design),
-        isActive: product.isActive,
-        createdAt: product.createdAt,
-        updatedAt: product.updatedAt,
-        categories: product.categories.map(pc => pc.category.name),
-        categoryIds: product.categories.map(pc => pc.categoryId),
-        printfulId: product.printfulId,
-        printfulSync: product.printfulSync
+        ...prod,
+        categories: prodCatNames,
+        categoryIds: prodCatIds,
+        variants: variants.filter(v => v.productId === prod.id && v.isActive),
+        designs: designs.filter(d => d.productId === prod.id),
       };
-    }));
+    });
 
-    // Vracíme data jako JSON
-    return NextResponse.json(formattedProducts);
+    return NextResponse.json(result);
   } catch (error) {
-    console.error('Error fetching products:', error);
-    return NextResponse.json(
-      { message: 'Chyba při načítání produktů' },
-      { status: 500 }
-    );
+    console.error("Chyba při načítání produktů:", error);
+    return NextResponse.json({ message: "Chyba při načítání produktů" }, { status: 500 });
   }
 }

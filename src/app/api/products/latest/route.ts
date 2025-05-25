@@ -1,81 +1,36 @@
-export const dynamic = "force-dynamic";
-
-import { NextResponse } from 'next/server';
-import { FormattedProduct } from '@/types/prisma';
-import { convertEurToCzk } from '@/utils/currency';
-import prisma from '@/lib/prisma';
-
-// Typ produktu s kategoriemi
-type ProductWithCategories = any;
+import { NextResponse } from "next/server";
+import { db } from "@/lib/drizzle";
+import { product, productCategory, category, variant, design } from "@/db/schema";
 
 export async function GET() {
   try {
-    const include = {
-      variants: {
-        where: { isActive: true },
-        orderBy: { price: 'asc' },
-      },
-      designs: true,
-      categories: { include: { category: true } },
-    };
+    // Získání nejnovějších 4 produktů
+    const products = await db.select().from(product).orderBy(product.createdAt).limit(4);
+    const productCategories = await db.select().from(productCategory);
+    const categories = await db.select().from(category);
+    const variants = await db.select().from(variant);
+    const designs = await db.select().from(design);
 
-    const products = await prisma.product.findMany({
-      where: {
-        isActive: true,
-      },
-      include,
-      orderBy: {
-        createdAt: 'desc',
-      },
-      take: 4,
-    }) as ProductWithCategories[];
+    const result = products.map((prod) => {
+      const prodCats = productCategories.filter(pc => pc.productId === prod.id);
+      const prodCatNames = prodCats.map(pc => {
+        const cat = categories.find(c => c.id === pc.categoryId);
+        return cat?.name || "";
+      });
+      const prodCatIds = prodCats.map(pc => pc.categoryId);
 
-    const formattedProducts: FormattedProduct[] = await Promise.all(
-      products.map(async product => {
-        const convertedVariants = await Promise.all(
-          (product.variants || []).map(async variant => ({
-            ...variant,
-            price: await convertEurToCzk(variant.price)
-          }))
-        );
+      return {
+        ...prod,
+        categories: prodCatNames,
+        categoryIds: prodCatIds,
+        variants: variants.filter(v => v.productId === prod.id && v.isActive),
+        designs: designs.filter(d => d.productId === prod.id),
+      };
+    });
 
-        const originalPreviewUrl = product.designs?.[0]?.previewUrl || '';
-        let processedPreviewUrl = '';
-        if (originalPreviewUrl) {
-          if (originalPreviewUrl.startsWith('http')) {
-            processedPreviewUrl = originalPreviewUrl;
-          } else {
-            processedPreviewUrl = `https://${originalPreviewUrl}`;
-          }
-        }
-
-        return {
-          id: product.id,
-          name: product.name,
-          description: product.description,
-          previewUrl: processedPreviewUrl,
-          price: product.variants?.[0]?.price
-            ? await convertEurToCzk(product.variants[0].price)
-            : 0,
-          variants: convertedVariants,
-          designs: (product.designs || []).map(({ productId, ...design }) => design),
-          isActive: product.isActive,
-          createdAt: product.createdAt,
-          updatedAt: product.updatedAt,
-          categories: product.categories.map(pc => pc.category.name),
-          categoryIds: product.categories.map(pc => pc.categoryId),
-          printfulId: product.printfulId,
-          printfulSync: product.printfulSync
-        };
-      })
-    );
-
-    return NextResponse.json(formattedProducts);
+    return NextResponse.json(result);
   } catch (error) {
-    console.error('Error fetching latest products:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error("Error fetching latest products:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -1,74 +1,70 @@
-// @ts-expect-error - NextAuthOptions is not exported from next-auth
-import type { NextAuthOptions } from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
+import { NextAuthOptions } from "next-auth";
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import { db } from "@/db";
 import CredentialsProvider from "next-auth/providers/credentials";
-import prisma from "./prisma";
 import bcrypt from "bcryptjs";
-import { JWT } from "next-auth/jwt";
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: DrizzleAdapter(db),
+  session: {
+    strategy: "jwt",
+  },
+  pages: {
+    signIn: "/login",
+  },
   providers: [
     CredentialsProvider({
       name: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Heslo", type: "password" }
+        password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error('Vyplňte prosím email a heslo');
+          return null;
         }
 
-        const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email
-          }
+        const user = await db.query.user.findFirst({
+          where: (user, { eq }) => eq(user.email, credentials.email)
         });
 
-        if (!user || !user?.hashedPassword) {
-          throw new Error('Uživatel nenalezen');
+        if (!user) {
+          return null;
         }
 
-        const isCorrectPassword = await bcrypt.compare(
+        const passwordMatch = await bcrypt.compare(
           credentials.password,
-          user.hashedPassword
+          user.password
         );
 
-        if (!isCorrectPassword) {
-          throw new Error('Nesprávné heslo');
+        if (!passwordMatch) {
+          return null;
         }
 
-        return user;
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+        };
       }
     })
   ],
-  session: {
-    strategy: "jwt"
-  },
-  secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === "development",
-  pages: {
-    signIn: '/login',
-  },
   callbacks: {
-    async jwt({ token, user }: { token: JWT, user: any }) {
-      if (user) {
-        return {
-          ...token,
-          id: user.id
-        };
+    async session({ token, session }) {
+      if (token) {
+        session.user.id = token.id;
+        session.user.name = token.name;
+        session.user.email = token.email;
       }
-      return token;
+
+      return session;
     },
-    async session({ session, token }: { session: any, token: JWT }) {
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: token.id
-        }
-      };
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+
+      return token;
     }
   }
 };
