@@ -9,7 +9,10 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const price = product.variants[0]?.price || 0;
-  const previewUrl = product.designs[0]?.previewUrl || '';
+  const previewUrl =
+    product.designs[0]?.previewUrl && product.designs[0]?.previewUrl.startsWith('http')
+      ? product.designs[0].previewUrl
+      : '/placeholder.jpg';
   
   return (
     <Link href={`/products/${product.id}`} className="group">

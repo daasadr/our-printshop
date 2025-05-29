@@ -1,0 +1,12 @@
+{
+  "maven.terminal.customEnv": [
+    {
+      "environmentVariable": "PRINTFUL_API_KEY",
+      "value": "u2NTJcwYqbkO8aGQWWhHPDfCYNFv5juwSndv0gJN"
+    },
+    {
+      "environmentVariable": "DATABASE_URL",
+      "value": "postgresql://postgres@localhost:5432/printshop"
+    }
+  ]
+}

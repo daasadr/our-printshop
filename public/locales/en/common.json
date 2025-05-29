@@ -1,0 +1,73 @@
+{
+  "welcome": "Original Clothing with Artistic Prints",
+  "subtitle": "Express your unique style with our creative designs.",
+  "cta_collection": "View Collection",
+  "cta_story": "Our Story",
+  "categories": "Our Categories",
+  "category_home": "Home & Decor",
+  "category_women": "Women's Style",
+  "category_men": "Men's Collection",
+  "category_kids": "For Little Explorers",
+  "latest_products": "Latest Products",
+  "cta_ready": "Ready to Express Your Style?",
+  "cta_subtitle": "Explore our collection and find the design that defines you. Each product is crafted with attention to detail.",
+  "cta_shop_now": "Shop Now",
+  "newsletter_title": "Stay Updated",
+  "newsletter_subtitle": "Subscribe to our newsletter and be the first to know about new designs and special offers.",
+  
+  "product": {
+    "price_not_available": "Price not available",
+    "add_to_cart": "Add to Cart",
+    "shipping_from": "Shipping from {{price}}",
+    "shipping_by_country": "Shipping by country",
+    "shipping_range": "Shipping {{min}} - {{max}}"
+  },
+  
+  "newsletter": {
+    "placeholder": "Your email address",
+    "subscribe": "Subscribe",
+    "sending": "Sending...",
+    "success": "Thank you for subscribing to our newsletter!",
+    "privacy_notice": "By subscribing, you agree to the processing of your personal data in accordance with our",
+    "privacy_policy": "privacy policy",
+    "error": {
+      "email_required": "Please enter your email address.",
+      "invalid_email": "Please enter a valid email address.",
+      "subscription_failed": "An error occurred while subscribing.",
+      "generic": "Sorry, an error occurred. Please try again later."
+    }
+  },
+  
+  "error": {
+    "server_error": "Server error: {{status}} {{statusText}}",
+    "load_products": "Failed to load latest products. Please try again later.",
+    "image_load": "Error loading image for product {{product}}:"
+  },
+  
+  "about": {
+    "title": "Welcome to the Jungle !(★ ω ★)",
+    "hero_alt": "Jungle",
+    "intro": "Welcome to the world of HappyWilderness, where fantasy meets fashion and every piece is a unique expression of originality and creativity.",
+    "team": "Four different creative personalities, each completely different, have come together to offer you a diverse spectrum of designs and ideas that will captivate you and your surroundings. You'll become a source of inspiration for others.",
+    "inspiration_alt": "Our Inspiration",
+    "philosophy": "We believe that fashion should be more than just clothing - it should be an expression of your unique style and values. That's why we strive to create products that not only look great but also have a story.",
+    "values_title": "Our Values",
+    "values": {
+      "originality": {
+        "title": "Originality",
+        "description": "Every design is unique and created with attention to detail."
+      },
+      "quality": {
+        "title": "Quality",
+        "description": "We use only premium materials that are comfortable to wear and last long."
+      },
+      "sustainability": {
+        "title": "Sustainability",
+        "description": "On-demand production means minimal waste and an eco-friendly approach."
+      }
+    },
+    "story_title": "Your Story",
+    "story": "If you've ever been to a magical place, you know very well that the magic of that place isn't just in its physical presence but in how it becomes a part of you and creates a connection within you, so you can return to it in your thoughts anytime and experience that enchantment over and over again. For this reason, we decided to create HappyWilderness to pass on a piece of this magic to you and help you create an extraordinary place from your own home where you'll feel happy and fulfilled.",
+    "quote": "We believe that fashion should be more than just clothing - it should be an expression of your unique style and values."
+  }
+}

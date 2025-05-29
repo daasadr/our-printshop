@@ -12,6 +12,7 @@ import prisma from '@/lib/prisma';
 // const prisma = new PrismaClient();
 
 export async function GET() {
+  console.log('HIT /api/products/featured');
   try {
     const include: ProductInclude = {
       variants: {

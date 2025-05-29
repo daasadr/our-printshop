@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useCart } from '@/hooks/useCart';
 import { FiMenu, FiX, FiUser, FiHeart } from 'react-icons/fi';
 import { signOut, useSession } from 'next-auth/react';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -38,12 +39,7 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex-shrink-0">
-            <div className="h-10 w-32 relative">
-              {/* Zde by bylo vaše logo */}
-              <div className="font-bold text-xl">HappyWilderness</div>
-            </div>
-          </Link>
+          {/* Logo */}
 
           {/* Desktopová navigace */}
           <nav className="hidden md:flex items-center space-x-4">
@@ -88,7 +84,7 @@ const Header: React.FC = () => {
             </button>
           </nav>
 
-          {/* Akce uživatele */}
+          {/* Akce uživatele + jazykový prepínač */}
           <div className="flex items-center space-x-4">
             <Link href="/account" className="hidden sm:block p-2 text-gray-700 hover:text-blue-600">
               <FiUser className="w-5 h-5" />
@@ -96,6 +92,9 @@ const Header: React.FC = () => {
             <Link href="/wishlist" className="hidden sm:block p-2 text-gray-700 hover:text-blue-600">
               <FiHeart className="w-5 h-5" />
             </Link>
+            <div className="ml-2">
+              <LanguageSwitcher />
+            </div>
           </div>
         </div>
 

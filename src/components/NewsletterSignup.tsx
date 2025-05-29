@@ -2,8 +2,10 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useTranslation } from 'next-i18next';
 
 const NewsletterSignup: React.FC = () => {
+  const { t } = useTranslation('common');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
@@ -13,7 +15,7 @@ const NewsletterSignup: React.FC = () => {
     
     if (!email) {
       setStatus('error');
-      setMessage('Zadejte prosím e-mailovou adresu.');
+      setMessage(t('newsletter.error.email_required'));
       return;
     }
     
@@ -21,7 +23,7 @@ const NewsletterSignup: React.FC = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setStatus('error');
-      setMessage('Zadejte prosím platnou e-mailovou adresu.');
+      setMessage(t('newsletter.error.invalid_email'));
       return;
     }
     
@@ -38,16 +40,16 @@ const NewsletterSignup: React.FC = () => {
       });
       
       if (!response.ok) {
-        throw new Error('Nastala chyba při přihlašování k odběru.');
+        throw new Error(t('newsletter.error.subscription_failed'));
       }
       
       setStatus('success');
-      setMessage('Děkujeme za přihlášení k odběru novinek!');
+      setMessage(t('newsletter.success'));
       setEmail('');
     } catch (error) {
       console.error('Newsletter subscription error:', error);
       setStatus('error');
-      setMessage('Omlouváme se, nastala chyba. Zkuste to prosím znovu později.');
+      setMessage(t('newsletter.error.generic'));
     }
   };
   
@@ -59,7 +61,7 @@ const NewsletterSignup: React.FC = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Vaše e-mailová adresa"
+            placeholder={t('newsletter.placeholder')}
             className="flex-grow px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
             disabled={status === 'loading'}
           />
@@ -72,7 +74,7 @@ const NewsletterSignup: React.FC = () => {
             }`}
             disabled={status === 'loading'}
           >
-            {status === 'loading' ? 'Odesílání...' : 'Přihlásit se'}
+            {status === 'loading' ? t('newsletter.sending') : t('newsletter.subscribe')}
           </button>
         </div>
         
@@ -85,8 +87,10 @@ const NewsletterSignup: React.FC = () => {
         )}
         
         <p className="mt-3 text-xs text-gray-500">
-          Přihlášením k odběru souhlasíte se zpracováním vašich osobních údajů v souladu s našimi 
-          <Link href="/privacy-policy" className="underline ml-1">zásadami ochrany soukromí</Link>.
+          {t('newsletter.privacy_notice')}
+          <Link href="/privacy-policy" className="underline ml-1">
+            {t('newsletter.privacy_policy')}
+          </Link>.
         </p>
       </form>
     </div>

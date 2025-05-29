@@ -1,0 +1,73 @@
+{
+  "welcome": "Originelle Kleidung mit künstlerischen Drucken",
+  "subtitle": "Drücken Sie Ihren einzigartigen Stil mit unseren kreativen Designs aus.",
+  "cta_collection": "Kollektion ansehen",
+  "cta_story": "Unsere Geschichte",
+  "categories": "Unsere Kategorien",
+  "category_home": "Heim & Deko",
+  "category_women": "Damenmode",
+  "category_men": "Herrenkollektion",
+  "category_kids": "Für kleine Entdecker",
+  "latest_products": "Neueste Produkte",
+  "cta_ready": "Bereit, Ihren Stil auszudrücken?",
+  "cta_subtitle": "Entdecken Sie unsere Kollektion und finden Sie das Design, das Sie definiert. Jedes Produkt wird mit Liebe zum Detail hergestellt.",
+  "cta_shop_now": "Jetzt einkaufen",
+  "newsletter_title": "Bleiben Sie auf dem Laufenden",
+  "newsletter_subtitle": "Abonnieren Sie unseren Newsletter und erfahren Sie als Erste/r von neuen Designs und Sonderangeboten.",
+  
+  "product": {
+    "price_not_available": "Preis nicht verfügbar",
+    "add_to_cart": "In den Warenkorb",
+    "shipping_from": "Versand ab {{price}}",
+    "shipping_by_country": "Versand nach Land",
+    "shipping_range": "Versand {{min}} - {{max}}"
+  },
+  
+  "newsletter": {
+    "placeholder": "Ihre E-Mail-Adresse",
+    "subscribe": "Abonnieren",
+    "sending": "Wird gesendet...",
+    "success": "Vielen Dank für Ihr Newsletter-Abonnement!",
+    "privacy_notice": "Mit dem Abonnement stimmen Sie der Verarbeitung Ihrer personenbezogenen Daten gemäß unserer",
+    "privacy_policy": "Datenschutzerklärung",
+    "error": {
+      "email_required": "Bitte geben Sie Ihre E-Mail-Adresse ein.",
+      "invalid_email": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+      "subscription_failed": "Beim Abonnieren ist ein Fehler aufgetreten.",
+      "generic": "Entschuldigung, es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
+    }
+  },
+  
+  "error": {
+    "server_error": "Serverfehler: {{status}} {{statusText}}",
+    "load_products": "Neueste Produkte konnten nicht geladen werden. Bitte versuchen Sie es später erneut.",
+    "image_load": "Fehler beim Laden des Bildes für Produkt {{product}}:"
+  },
+  
+  "about": {
+    "title": "Willkommen im Dschungel !(★ ω ★)",
+    "hero_alt": "Dschungel",
+    "intro": "Willkommen in der Welt von HappyWilderness, wo Fantasie auf Mode trifft und jedes Stück ein einzigartiger Ausdruck von Originalität und Kreativität ist.",
+    "team": "Vier verschiedene kreative Persönlichkeiten, jede völlig anders, haben sich zusammengetan, um Ihnen ein vielfältiges Spektrum an Designs und Ideen anzubieten, die Sie und Ihre Umgebung begeistern werden. So werden Sie zur Inspirationsquelle für andere.",
+    "inspiration_alt": "Unsere Inspiration",
+    "philosophy": "Wir glauben, dass Mode mehr sein sollte als nur Kleidung - sie sollte ein Ausdruck Ihres einzigartigen Stils und Ihrer Werte sein. Deshalb bemühen wir uns, Produkte zu schaffen, die nicht nur gut aussehen, sondern auch eine Geschichte haben.",
+    "values_title": "Unsere Werte",
+    "values": {
+      "originality": {
+        "title": "Originalität",
+        "description": "Jedes Design ist einzigartig und mit Liebe zum Detail gestaltet."
+      },
+      "quality": {
+        "title": "Qualität",
+        "description": "Wir verwenden nur Premium-Materialien, die angenehm zu tragen sind und lange halten."
+      },
+      "sustainability": {
+        "title": "Nachhaltigkeit",
+        "description": "On-Demand-Produktion bedeutet minimalen Abfall und einen umweltfreundlichen Ansatz."
+      }
+    },
+    "story_title": "Ihre Geschichte",
+    "story": "Wenn Sie jemals an einem magischen Ort waren, wissen Sie sehr gut, dass die Magie dieses Ortes nicht nur in seiner physischen Präsenz liegt, sondern darin, dass dieser Ort ein Teil von Ihnen selbst wird und dass in Ihnen eine Verbindung zu diesem Ort entsteht, sodass Sie in Gedanken jederzeit dorthin zurückkehren und diese Faszination immer wieder erleben können. Aus diesem Grund haben wir uns entschieden, HappyWilderness zu schaffen, um Ihnen ein Stück dieser Magie zu vermitteln und Ihnen zu helfen, aus Ihrem eigenen Zuhause einen außergewöhnlichen Ort zu machen, an dem Sie sich glücklich und erfüllt fühlen.",
+    "quote": "Wir glauben, dass Mode mehr sein sollte als nur Kleidung - sie sollte ein Ausdruck Ihres einzigartigen Stils und Ihrer Werte sein."
+  }
+}

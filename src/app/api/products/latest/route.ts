@@ -5,6 +5,7 @@ import { convertEurToCzk } from '@/utils/currency';
 import prisma from '@/lib/prisma';
 
 export async function GET() {
+  console.log('HIT /api/products/latest');
   try {
     const include: ProductInclude = {
       variants: {

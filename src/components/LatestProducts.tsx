@@ -2,104 +2,99 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useCart } from '@/hooks/useCart';
+import { useTranslation } from 'next-i18next';
+// import { useCart } from '@/hooks/useCart';
 import { FormattedProduct } from '@/types/prisma';
-import { formatPriceCZK } from '@/utils/currency';
+import { formatPriceEUR } from '@/utils/currency';
 
-const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
+const FEATURED_IDS = [
+  '382862008', // Drawstring bag
+  '382861448', // Tote bag
+  '381597946', // Don't live in a comfort zone Unisex Hoodie
+  '377907594', // Ancient Heroine Skater Dress white
+];
+
+type LatestProductsProps = {
+  limit?: number;
+};
+
+const LatestProducts: React.FC<LatestProductsProps> = ({ limit = 4 }) => {
+  const { t } = useTranslation('common');
   const [products, setProducts] = useState<FormattedProduct[]>([]);
+  const [displayed, setDisplayed] = useState<FormattedProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { addToCart } = useCart();
+//   const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchLatestProducts = async () => {
       try {
         setError(null);
-        const response = await fetch(`/api/products?limit=${limit}`);
+        const response = await fetch(`/api/products`);
         
         if (!response.ok) {
-          throw new Error(`Chyba serveru: ${response.status} ${response.statusText}`);
+          throw new Error(t('error.server_error', { status: response.status, statusText: response.statusText }));
         }
         
         const data = await response.json();
-        console.log('Načtená data z API:', data);
-        
-        // Kontrola a zpracování URL adres obrázků
-        const processedData = data.map((product: FormattedProduct) => {
-          console.log(`Zpracovávám produkt: ${product.name}`);
-          console.log(`Původní URL obrázku: ${product.previewUrl}`);
-          
-          let processedUrl = product.previewUrl;
-          
-          // Pokud URL neexistuje nebo je prázdná
-          if (!processedUrl) {
-            console.log(`Produkt ${product.name} nemá URL obrázku`);
-            return {
-              ...product,
-              previewUrl: '/images/placeholder.jpg'
-            };
-          }
-
-          // Kontrola, zda URL začíná protokolem
-          if (!processedUrl.startsWith('http')) {
-            processedUrl = `https://${processedUrl}`;
-            console.log(`Upravená URL: ${processedUrl}`);
-          }
-
-          // Kontrola, zda URL není relativní cesta
-          if (processedUrl.startsWith('/')) {
-            processedUrl = `${window.location.origin}${processedUrl}`;
-            console.log(`Převedeno na absolutní URL: ${processedUrl}`);
-          }
-
-          return {
-            ...product,
-            previewUrl: processedUrl
-          };
-        });
-        
-        console.log('Zpracovaná data produktů:', processedData);
-        setProducts(processedData);
+        setProducts(data);
       } catch (error) {
         console.error('Chyba při načítání nejnovějších produktů:', error);
-        setError('Nepodařilo se načíst nejnovější produkty. Zkuste to prosím později.');
+        setError(t('error.load_products'));
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchLatestProducts();
-  }, [limit]);
+  }, []);
 
-  const handleAddToCart = (product: FormattedProduct) => {
-    // Přidáme produkt do košíku pouze pokud má varianty
-    if (product.variants && product.variants.length > 0) {
-      addToCart({
-        variantId: product.variants[0].id,
-        quantity: 1,
-        name: `${product.name}`,
-        price: product.price,
-        image: product.previewUrl || ''
+  // Funkcia na výber náhodných N produktov
+  const getRandomProducts = React.useCallback((arr: FormattedProduct[], n: number) => {
+    if (!arr || arr.length === 0) return [];
+    const shuffled = arr.slice().sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, Math.min(n, arr.length));
+  }, []);
+
+  // Rotácia produktov každých 8 sekúnd
+  useEffect(() => {
+    if (!products || products.length === 0) return;
+    
+    // Nastavíme prvý výber hneď po načítaní
+    setDisplayed(getRandomProducts(products, limit));
+    
+    const interval = setInterval(() => {
+      setDisplayed(prev => {
+        // Zabezpečíme, že nový výber bude iný ako predchádzajúci
+        let newSelection;
+        do {
+          newSelection = getRandomProducts(products, limit);
+        } while (JSON.stringify(newSelection) === JSON.stringify(prev));
+        return newSelection;
       });
-    }
-  };
+    }, 8000);
+    
+    return () => clearInterval(interval);
+  }, [products, limit, getRandomProducts]);
+
+//   const handleAddToCart = (product: FormattedProduct) => {
+//     // Přidáme produkt do košíku pouze pokud má varianty
+//     if (product.variants && product.variants.length > 0) {
+//       addToCart({
+//         variantId: product.variants[0].id,
+//         quantity: 1,
+//         name: `${product.name}`,
+//         price: product.price,
+//         image: product.previewUrl || ''
+//       });
+//     }
+//   };
 
   const processImageUrl = (url: string | null): string => {
-    if (!url) {
-      console.log('Chybí URL obrázku, používám placeholder');
-      return '/images/placeholder.jpg';
+    if (!url || url === '/images/placeholder.jpg') {
+      return '/placeholder.jpg';
     }
-
-    try {
-      // Zajistíme, že URL začíná na https://
-      const processedUrl = url.startsWith('http') ? url : `https://${url}`;
-      console.log(`Zpracovaná URL obrázku: ${processedUrl}`);
-      return processedUrl;
-    } catch (error) {
-      console.error('Chyba při zpracování URL obrázku:', error);
-      return '/images/placeholder.jpg';
-    }
+    return url.startsWith('http') ? url : `https://${url}`;
   };
 
   if (isLoading) {
@@ -114,24 +109,23 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
     );
   }
 
-  // Pokud nemáme žádné produkty, zobrazíme placeholdery
-  if (!products || products.length === 0) {
+  if (!displayed || displayed.length === 0) {
     return <ProductPlaceholders />;
   }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {products.map((product) => (
+      {displayed.map((product) => (
         <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
           <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
             <Image
-              src={processImageUrl(product.previewUrl)}
+              src={processImageUrl(product.image)}
               alt={product.name}
               width={500}
               height={500}
               className="h-full w-full object-cover object-center group-hover:opacity-75"
               onError={(e) => {
-                console.error(`Chyba při načítání obrázku pro produkt ${product.name}:`, e);
+                console.error(t('error.image_load', { product: product.name }), e);
                 const target = e.target as HTMLImageElement;
                 target.src = '/images/placeholder.jpg';
               }}
@@ -152,16 +146,15 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
             <div className="mt-4 flex justify-between items-center">
               {product.price > 0 ? (
                 <p className="text-lg font-medium text-gray-900">
-                  {formatPriceCZK(product.price)}
+                  {formatPriceEUR(product.price)}
                 </p>
               ) : (
                 <p className="text-sm text-gray-500">
-                  Cena není k dispozici
+                  {t('product.price_not_available')}
                 </p>
               )}
               
               <button
-                onClick={() => handleAddToCart(product)}
                 className={`px-3 py-1.5 ${
                   product.variants && product.variants.length > 0 
                     ? 'bg-blue-600 hover:bg-blue-700' 
@@ -169,8 +162,17 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
                 } text-white text-sm font-medium rounded-md transition-colors`}
                 disabled={!product.variants || product.variants.length === 0}
               >
-                Do košíku
+                {t('product.add_to_cart')}
               </button>
+            </div>
+
+            <div className="mt-1 text-sm text-gray-500">
+              {product.shippingPrice 
+                ? t('product.shipping_range', { 
+                    min: formatPriceEUR(product.shippingPrice.min),
+                    max: formatPriceEUR(product.shippingPrice.max)
+                  })
+                : t('product.shipping_by_country')}
             </div>
           </div>
         </div>
@@ -237,7 +239,7 @@ const ProductPlaceholders: React.FC = () => {
             <p className="mt-1 text-sm text-gray-500">Více variant</p>
             <div className="mt-4 flex justify-between items-center">
               <p className="text-lg font-medium text-gray-900">
-                {formatPriceCZK(product.price)}
+                {formatPriceEUR(product.price)}
               </p>
               <button
                 className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"

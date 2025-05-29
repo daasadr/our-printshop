@@ -101,6 +101,12 @@ export type FormattedProduct = {
   updatedAt: Date;
   printfulId: string;
   printfulSync: boolean;
+  image?: string;
+  currency?: string;
+  shippingPrice?: {
+    min: number;
+    max: number;
+  } | null;
 };
 
 // Types for Prisma queries

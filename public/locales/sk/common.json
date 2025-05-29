@@ -1,0 +1,76 @@
+{
+  "welcome": "Originálne oblečenie s autorskými potlačami",
+  "subtitle": "Vyjadrite svoj jedinečný štýl s našimi kreatívnymi dizajnmi.",
+  "cta_collection": "Pozrieť kolekciu",
+  "cta_story": "Náš príbeh",
+  "categories": "Naše kategórie",
+  "category_home": "Domov a dekorácie",
+  "category_women": "Štýlovo pre dámy",
+  "category_men": "Pánska kolekcia",
+  "category_kids": "Pre malých objaviteľov",
+  "latest_products": "Najnovšie produkty",
+  "cta_ready": "Pripravení vyjadriť svoj štýl?",
+  "cta_subtitle": "Preskúmajte našu kolekciu a nájdite dizajn, ktorý vás vystihuje. Každý produkt je vyrobený s láskou k detailu.",
+  "cta_shop_now": "Nakupovať teraz",
+  "newsletter_title": "Zostaňte v obraze",
+  "newsletter_subtitle": "Prihláste sa na odber noviniek a buďte prví, kto sa dozvie o nových dizajnoch a špeciálnych ponukách.",
+  
+  "product": {
+    "price_not_available": "Cena nie je k dispozícii",
+    "add_to_cart": "Do košíka",
+    "shipping_from": "Doprava od {{price}}",
+    "shipping_by_country": "Doprava podľa krajiny",
+    "shipping_range": "Doprava {{min}} - {{max}}"
+  },
+  
+  "newsletter": {
+    "placeholder": "Vaša e-mailová adresa",
+    "subscribe": "Prihlásiť sa",
+    "sending": "Odosielanie...",
+    "success": "Ďakujeme za prihlásenie k odberu noviniek!",
+    "privacy_notice": "Prihlásením k odberu súhlasíte so spracovaním vašich osobných údajov v súlade s našimi",
+    "privacy_policy": "zásadami ochrany súkromia",
+    "error": {
+      "email_required": "Zadajte prosím e-mailovú adresu.",
+      "invalid_email": "Zadajte prosím platnú e-mailovú adresu.",
+      "subscription_failed": "Nastala chyba pri prihlasovaní k odberu.",
+      "generic": "Prepáčte, nastala chyba. Skúste to prosím znova neskôr."
+    }
+  },
+  
+  "error": {
+    "server_error": "Chyba servera: {{status}} {{statusText}}",
+    "load_products": "Nepodarilo sa načítať najnovšie produkty. Skúste to prosím neskôr.",
+    "image_load": "Chyba pri načítaní obrázku pre produkt {{product}}:"
+  },
+  
+  "about": {
+    "title": "Vitajte v džungli !(★ ω ★)",
+    "hero_alt": "Džungľa",
+    "intro": "Vitajte vo svete HappyWilderness, kde sa fantázia stretáva s módou a každý kus je jedinečným vyjadrením originality a kreativity.",
+    "team": "Štyri rôzne tvorivé osobnosti, každá úplne iná, spoločne sme sa spojili aby sme vám ponúkli rozmanité spektrum dizajnov a nápadov, ktoré vás zaujmú a zaujmú vaše okolie. Stanete sa tak zdrojom inšpirácie pre ostatných.",
+    "inspiration_alt": "Naša inšpirácia",
+    "philosophy": "Veríme, že móda má byť viac než len oblečenie - má byť vyjadrením vášho jedinečného štýlu a hodnôt. Preto sa snažíme vytvárať produkty, ktoré nielen skvele vyzerajú, ale majú aj príbeh.",
+    "values_title": "Naše hodnoty",
+    "values": {
+      "originality": {
+        "title": "Originalita",
+        "description": "Každý dizajn je unikátny a vytvorený s dôrazom na detail."
+      },
+      "quality": {
+        "title": "Kvalita",
+        "description": "Používame len prémiové materiály, ktoré sú príjemné na nosenie a dlho vydržia."
+      },
+      "sustainability": {
+        "title": "Udržateľnosť",
+        "description": "Výroba na vyžiadanie znamená minimálny odpad a šetrný prístup k životnému prostrediu."
+      }
+    },
+    "story_title": "Váš príbeh",
+    "story": "Ak ste niekedy boli na nejakom kúzelnom mieste, veľmi dobre viete, že kúzlo toho miesta nie je len v samotnej fyzickej prítomnosti, ale v tom, že sa to miesto stane súčasťou vás samotných a že vo vás sa utvorí spojenie s týmto miestom, takže sa naň môžete v myšlienkach kedykoľvek vracať a prežívať to okúzlenie stále znova a znova. Z tohto dôvodu sme sa rozhodli vytvoriť HappyWilderness, aby sme vám mohli predať kúsok tohto kúzla a pomôcť vám vytvoriť si z vlastného domova nevšedné miesto, kde sa budete cítiť šťastní a naplnení.",
+    "quote": "Veríme, že móda má byť viac než len oblečenie - má byť vyjadrením vášho jedinečného štýlu a hodnôt."
+  },
+  "title": "Naša tlačiareň",
+  "description": "Profesionálna tlačiareň pre všetky vaše potreby",
+  "welcome": "Vitajte v našej tlačiarni"
+}

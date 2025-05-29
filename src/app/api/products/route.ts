@@ -1,95 +1,86 @@
+console.log('LOADING /api/products/route.ts - start');
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { PrismaProduct, FormattedProduct, ProductInclude, ProductWhereInput } from '@/types/prisma';
-import { convertEurToCzk } from '@/utils/currency';
-import prisma from '@/lib/prisma';
+
+const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY;
+const PRINTFUL_API_URL = 'https://api.printful.com';
+console.log('set PRINTFUL_API_KEY and PRINTFUL_API_URL');
+
+// Fixné ceny dopravy pre SK
+const SHIPPING_PRICES = {
+  MIN: 5.99,
+  MAX: 9.99
+};
+console.log('set SHIPPING_PRICES');
 
 export async function GET(req: NextRequest) {
+  console.log('HIT /api/products');
   try {
-    const url = new URL(req.url);
-    const category = url.searchParams.get('category');
-   
-    // Definujeme where podmínku
-    const whereCondition: ProductWhereInput = {
-      isActive: true,
-      ...(category ? { categoryId: category } : {})
-    };
-    
-    const include: ProductInclude = {
-      variants: {
-        where: { isActive: true },
-        orderBy: { price: 'asc' },
-      },
-      designs: true,
-      category: true,
-    };
-    
-    // Získáme produkty z databáze
-    const products = await prisma.product.findMany({
-      where: whereCondition,
-      include,
-    }) as unknown as PrismaProduct[];
-    
-    // Transformace dat pro klienta s ověřením, že existují potřebná data
-    const formattedProducts: FormattedProduct[] = await Promise.all(products.map(async product => {
-      // Najdeme první aktivní variantu nebo použijeme defaultní hodnoty
-      const firstVariant = product.variants && product.variants.length > 0 
-        ? product.variants[0] 
-        : null;
-      
-      // Najdeme první design nebo použijeme prázdný string
-      const firstDesign = product.designs && product.designs.length > 0 
-        ? product.designs[0] 
-        : null;
-      
-      // Získáme URL adresu obrázku
-      const originalPreviewUrl = firstDesign?.previewUrl || '';
-      console.log(`Původní URL obrázku pro produkt ${product.name}: ${originalPreviewUrl}`);
-      
-      // Zajistíme, že URL adresa začíná na https://
-      let processedPreviewUrl = '';
-      if (originalPreviewUrl) {
-        if (originalPreviewUrl.startsWith('http')) {
-          processedPreviewUrl = originalPreviewUrl;
-        } else {
-          processedPreviewUrl = `https://${originalPreviewUrl}`;
-        }
+    // 1. Získaj zoznam produktov
+    const response = await fetch(`${PRINTFUL_API_URL}/store/products?limit=100`, {
+      headers: {
+        'Authorization': `Bearer ${PRINTFUL_API_KEY}`,
+        'Content-Type': 'application/json'
       }
-      console.log(`Zpracovaná URL obrázku pro produkt ${product.name}: ${processedPreviewUrl}`);
+    });
+    if (!response.ok) {
+      console.error('Chyba pri získavaní zoznamu produktov:', response.status, response.statusText);
+      return NextResponse.json({ error: 'Failed to fetch product list from Printful' }, { status: 500 });
+    }
+    const data = await response.json();
+    if (!data.result || !Array.isArray(data.result)) {
+      console.error('Neočakávaný formát dát zoznamu produktov:', data);
+      return NextResponse.json({ error: 'Unexpected data format from Printful' }, { status: 500 });
+    }
 
-      // Konvertujeme ceny z EUR na CZK
-      const priceInCzk = firstVariant?.price ? await convertEurToCzk(firstVariant.price) : 0;
-      const convertedVariants = await Promise.all(product.variants.map(async variant => ({
-        ...variant,
-        price: await convertEurToCzk(variant.price)
-      })));
-      
-      // Vraťmeme formátovaný produkt
-      return {
-        id: product.id,
-        name: product.name,
-        description: product.description,
-        previewUrl: processedPreviewUrl,
-        price: priceInCzk,
-        variants: convertedVariants,
-        designs: product.designs.map(({ productId, ...design }) => design),
-        isActive: product.isActive,
-        createdAt: product.createdAt,
-        updatedAt: product.updatedAt,
-        category: product.category?.name || '',
-        categoryId: product.categoryId,
-        printfulId: product.printfulId,
-        printfulSync: product.printfulSync
-      };
-    }));
-   
-    // Vracíme data jako JSON
-    return NextResponse.json(formattedProducts);
-  } catch (error) {
-    console.error('Error fetching products:', error);
-    return NextResponse.json(
-      { message: 'Chyba při načítání produktů' },
-      { status: 500 }
+    // 2. Pre každý produkt načítaj detail (varianty a ceny)
+    const productsWithDetails = await Promise.all(
+      data.result.map(async (item: any) => {
+        try {
+          const detailRes = await fetch(`${PRINTFUL_API_URL}/store/products/${item.id}`, {
+            headers: {
+              'Authorization': `Bearer ${PRINTFUL_API_KEY}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          if (!detailRes.ok) {
+            console.error(`Chyba pri detaili produktu ${item.id}:`, detailRes.status, detailRes.statusText);
+            return null;
+          }
+          const detailData = await detailRes.json();
+          const firstVariant = detailData.result?.sync_variants?.[0];
+          
+          // Ak thumbnail_url nie je platný, použijeme lokálny placeholder
+          const imageUrl = item.thumbnail_url && item.thumbnail_url.startsWith('http')
+            ? item.thumbnail_url
+            : '/placeholder.jpg';
+            
+          return {
+            id: item.id,
+            name: item.name,
+            image: imageUrl,
+            price: firstVariant?.retail_price || null,
+            currency: firstVariant?.currency || 'EUR',
+            shippingPrice: {
+              min: SHIPPING_PRICES.MIN,
+              max: SHIPPING_PRICES.MAX
+            },
+            printfulId: item.id.toString()
+          };
+        } catch (err) {
+          console.error(`Výnimka pri spracovaní produktu ${item.id}:`, err);
+          return null;
+        }
+      })
     );
+
+    // Odstránime produkty, ktoré sa nepodarilo načítať
+    const filteredProducts = productsWithDetails.filter(Boolean);
+    if (filteredProducts.length === 0) {
+      return NextResponse.json({ error: 'No products could be loaded from Printful' }, { status: 500 });
+    }
+    return NextResponse.json(filteredProducts);
+  } catch (error) {
+    console.error('Error fetching products from Printful:', error);
+    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
   }
 }
