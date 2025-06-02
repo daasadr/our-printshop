@@ -5,6 +5,7 @@
   "cta_story": "Our Story",
   "categories": "Our Categories",
   "category_home": "Home & Decor",
+  "category_home-decor": "Home & Decor",
   "category_women": "Women's Style",
   "category_men": "Men's Collection",
   "category_kids": "For Little Explorers",
@@ -69,5 +70,33 @@
     "story_title": "Your Story",
     "story": "If you've ever been to a magical place, you know very well that the magic of that place isn't just in its physical presence but in how it becomes a part of you and creates a connection within you, so you can return to it in your thoughts anytime and experience that enchantment over and over again. For this reason, we decided to create HappyWilderness to pass on a piece of this magic to you and help you create an extraordinary place from your own home where you'll feel happy and fulfilled.",
     "quote": "We believe that fashion should be more than just clothing - it should be an expression of your unique style and values."
-  }
+  },
+  
+  "footer": {
+    "about_title": "About Us",
+    "about_text": "Original clothing with artistic prints. Each piece is custom-made to your requirements.",
+    "quick_links": "Quick Links",
+    "products": "Products",
+    "about": "About Us",
+    "contact": "Contact",
+    "terms": "Terms and Conditions",
+    "privacy": "Privacy Policy",
+    "categories": "Categories",
+    "tshirts": "T-Shirts",
+    "hoodies": "Hoodies",
+    "posters": "Posters",
+    "mugs": "Mugs",
+    "accessories": "Accessories",
+    "contact_title": "Contact Us",
+    "email": "Email: info@vasbrand.cz",
+    "phone": "Phone: +420 123 456 789",
+    "address": "Address: Your Street 123, 123 45 Prague",
+    "brand": "VášBrand",
+    "rights": "All rights reserved.",
+    "made_with_love": "Made with ❤️ in the Czech Republic. Powered by Next.js and Printful."
+  },
+  
+  "login": "Login",
+  "register": "Register",
+  "cart": "Cart"
 }

@@ -1,7 +1,6 @@
 "use client";
 import { useTranslation } from "next-i18next";
 import Link from "next/link";
-// import LanguageSwitcher from "@/components/LanguageSwitcher";
 import Image from "next/image";
 import { useState } from "react";
 

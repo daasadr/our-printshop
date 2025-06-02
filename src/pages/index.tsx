@@ -7,8 +7,11 @@ import Hero from '@/components/Hero';
 import CategoryTiles from '@/components/CategoryTiles';
 import LatestProducts from '@/components/LatestProducts';
 import NewsletterSignup from '@/components/NewsletterSignup';
+import { useTranslation } from 'next-i18next';
 
 export default function Home() {
+  const { t } = useTranslation('common');
+
   return (
     <>
       <Head>
@@ -24,13 +27,13 @@ export default function Home() {
           <CategoryTiles />
         </section>
         <section className="py-12 bg-gray-50">
-          <h2 className="text-3xl font-bold text-center mb-8">Nejnovější produkty</h2>
+          <h2 className="text-3xl font-bold text-center mb-8">{t('latest_products')}</h2>
           <div className="container mx-auto px-4">
             <LatestProducts />
           </div>
         </section>
         <section className="py-12">
-          <h2 className="text-3xl font-bold text-center mb-8">Zůstaňte v obraze</h2>
+          <h2 className="text-3xl font-bold text-center mb-8">{t('newsletter_title')}</h2>
           <NewsletterSignup />
         </section>
       </main>

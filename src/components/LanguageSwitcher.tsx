@@ -1,52 +1,41 @@
 "use client";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import React from "react";
 
 const LANGUAGES = [
   { code: "cs", label: "Čeština", flag: "🇨🇿" },
   { code: "sk", label: "Slovenčina", flag: "🇸🇰" },
-  { code: "de", label: "Deutsch", flag: "🇩🇪" },
   { code: "en", label: "English", flag: "🇬🇧" },
+  { code: "de", label: "Deutsch", flag: "🇩🇪" },
 ];
 
 export default function LanguageSwitcher() {
   const router = useRouter();
-  const pathname = usePathname();
-  const currentLang = pathname.split("/")[1];
+  const { locale, asPath } = router;
 
   const handleChange = (lang: string) => {
-    const segments = pathname.split("/");
-    segments[1] = lang;
-    const newPath = segments.join("/");
-    router.push(newPath);
+    if (lang === locale) return;
+    router.push(asPath, asPath, { locale: lang });
   };
 
   return (
-    <div style={{ display: "flex", gap: 16, alignItems: "center", justifyContent: "center", margin: "16px 0" }}>
+    <div className="flex gap-4 items-center justify-center my-4">
       {LANGUAGES.map((lang) => (
         <button
           key={lang.code}
           onClick={() => handleChange(lang.code)}
-          disabled={lang.code === currentLang}
-          style={{
-            background: "none",
-            border: "none",
-            cursor: lang.code === currentLang ? "default" : "pointer",
-            outline: "none",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            opacity: lang.code === currentLang ? 1 : 0.7,
-            transform: lang.code === currentLang ? "scale(1.15)" : "scale(1)",
-            transition: "transform 0.2s, opacity 0.2s",
-            fontWeight: lang.code === currentLang ? "bold" : "normal",
-            fontSize: 22,
-            filter: lang.code === currentLang ? "drop-shadow(0 2px 6px #0002)" : "none",
-          }}
+          disabled={lang.code === locale}
+          className={`
+            flex flex-col items-center transition-all duration-200
+            ${lang.code === locale 
+              ? 'opacity-100 scale-110 font-bold' 
+              : 'opacity-70 hover:opacity-100 hover:scale-105'
+            }
+          `}
           aria-label={lang.label}
         >
-          <span style={{ fontSize: 32, marginBottom: 2 }}>{lang.flag}</span>
-          <span style={{ fontSize: 13 }}>{lang.label}</span>
+          <span className="text-3xl mb-1">{lang.flag}</span>
+          <span className="text-sm">{lang.label}</span>
         </button>
       ))}
     </div>

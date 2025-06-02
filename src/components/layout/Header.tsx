@@ -7,6 +7,7 @@ import { useCart } from '@/hooks/useCart';
 import { FiMenu, FiX, FiUser, FiHeart } from 'react-icons/fi';
 import { signOut, useSession } from 'next-auth/react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { useTranslation } from 'next-i18next';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -14,6 +15,7 @@ const Header: React.FC = () => {
   const pathname = usePathname();
   const { items } = useCart();
   const session = useSession();
+  const { t } = useTranslation('common');
 
   // Sledování scrollu pro změnu stylu headeru
   useEffect(() => {
@@ -58,15 +60,15 @@ const Header: React.FC = () => {
             ) : (
               <>
                 <Link href="/login" className="p-2 text-gray-700 hover:text-blue-600">
-                  Přihlásit
+                  {t('login')}
                 </Link>
                 <Link href="/register" className="p-2 text-gray-700 hover:text-blue-600">
-                  Registrovat
+                  {t('register')}
                 </Link>
               </>
             )}
             <Link href="/cart" className="p-2 text-gray-700 hover:text-blue-600 relative">
-              Košík
+              {t('cart')}
               {items.length > 0 && (
                 <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {items.length}
