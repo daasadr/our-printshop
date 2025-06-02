@@ -57,6 +57,7 @@ export default function Hero() {
                 alt="Náš příběh"
                 fill
                 className="object-cover object-center rounded-t-lg"
+                onError={(e) => { (e.target as HTMLImageElement).src = '/images/placeholder.jpg'; }}
               />
             </div>
             <div className="p-6 text-center">

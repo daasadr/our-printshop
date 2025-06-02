@@ -67,7 +67,7 @@
         "description": "On-Demand-Produktion bedeutet minimalen Abfall und einen umweltfreundlichen Ansatz."
       }
     },
-    "story_title": "Ihre Geschichte",
+    "story_title": "Unsere Geschichte",
     "story": "Wenn Sie jemals an einem magischen Ort waren, wissen Sie sehr gut, dass die Magie dieses Ortes nicht nur in seiner physischen Präsenz liegt, sondern darin, dass dieser Ort ein Teil von Ihnen selbst wird und dass in Ihnen eine Verbindung zu diesem Ort entsteht, sodass Sie in Gedanken jederzeit dorthin zurückkehren und diese Faszination immer wieder erleben können. Aus diesem Grund haben wir uns entschieden, HappyWilderness zu schaffen, um Ihnen ein Stück dieser Magie zu vermitteln und Ihnen zu helfen, aus Ihrem eigenen Zuhause einen außergewöhnlichen Ort zu machen, an dem Sie sich glücklich und erfüllt fühlen.",
     "quote": "Wir glauben, dass Mode mehr sein sollte als nur Kleidung - sie sollte ein Ausdruck Ihres einzigartigen Stils und Ihrer Werte sein."
   },
@@ -92,7 +92,7 @@
     "address": "Adresse: Ihre Straße 123, 12345 Berlin",
     "brand": "VášBrand",
     "rights": "Alle Rechte vorbehalten.",
-    "made_with_love": "Hergestellt mit ❤️ in Deutschland. Powered by Next.js und Printful."
+    "made_with_love": "Made with ❤️ in the Czech Republic. Powered by Next.js and Printful."
   },
   "login": "Anmelden",
   "register": "Registrieren",

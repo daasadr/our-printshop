@@ -1,8 +1,9 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
-import { formatPriceCZK, convertEurToCzkSync } from '@/utils/currency';
+import { formatPriceByLocale, convertEurToCzkSync, convertEurToGbpSync, detectUserCountry } from '@/utils/currency';
+import { useRouter } from 'next/router';
 
 interface Variant {
   id: string;
@@ -48,6 +49,14 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   );
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const { locale = 'cs' } = useRouter();
+  const [country, setCountry] = useState<string | null>(null);
+  
+  useEffect(() => {
+    if (locale === 'en') {
+      detectUserCountry().then(setCountry);
+    }
+  }, [locale]);
   
   // Funkce pro získání dostupných velikostí
   const getAvailableSizes = () => {
@@ -151,6 +160,15 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   // Zkontrolujeme, zda máme varianty
   const hasVariants = product.variants && product.variants.length > 0;
   
+  let displayPrice = selectedVariant ? selectedVariant.price : null;
+  if (selectedVariant) {
+    if (locale === 'cs') {
+      displayPrice = convertEurToCzkSync(selectedVariant.price);
+    } else if (locale === 'en' && country === 'GB') {
+      displayPrice = convertEurToGbpSync(selectedVariant.price);
+    }
+  }
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       {/* Obrázek produktu */}
@@ -180,7 +198,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         <div className="mb-6">
           <h2 className="text-lg font-medium mb-2">Cena</h2>
           <p className="text-2xl font-bold text-blue-600">
-            {selectedVariant ? formatPriceCZK(selectedVariant.price) : 'Není k dispozici'}
+            {displayPrice !== null ? formatPriceByLocale(displayPrice, locale, country || undefined) : 'Není k dispozici'}
           </p>
         </div>
         

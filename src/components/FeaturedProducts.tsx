@@ -1,9 +1,10 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { formatPriceCZK } from '@/utils/currency';
+import { formatPriceByLocale, convertEurToCzkSync, convertEurToGbpSync, detectUserCountry } from '@/utils/currency';
+import { useRouter } from 'next/router';
 
 interface Product {
   id: string;
@@ -17,8 +18,17 @@ interface FeaturedProductsProps {
 }
 
 export function FeaturedProducts({ products }: FeaturedProductsProps) {
+  const { locale = 'cs' } = useRouter();
+  const [country, setCountry] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (locale === 'en') {
+      detectUserCountry().then(setCountry);
+    }
+  }, [locale]);
+
   if (products.length === 0) {
-    return <ProductPlaceholders />;
+    return <ProductPlaceholders locale={locale} />;
   }
 
   return (
@@ -42,7 +52,12 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
             <h3 className="text-lg font-semibold mb-2 group-hover:text-blue-600">
               {product.name}
             </h3>
-            <p className="text-gray-600">From {product.price} CZK</p>
+            <p className="text-gray-600">From {(() => {
+              let displayPrice = product.price;
+              if (locale === 'cs') displayPrice = convertEurToCzkSync(product.price);
+              else if (locale === 'en' && country === 'GB') displayPrice = convertEurToGbpSync(product.price);
+              return formatPriceByLocale(displayPrice, locale, country || undefined);
+            })()}</p>
           </Link>
         ))}
       </div>
@@ -51,7 +66,15 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
 }
 
 // Placeholder pro produkt, když nemáme data
-const ProductPlaceholders: React.FC = () => {
+const ProductPlaceholders: React.FC<{ locale: string }> = ({ locale }) => {
+  const [country, setCountry] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (locale === 'en') {
+      detectUserCountry().then(setCountry);
+    }
+  }, [locale]);
+
   // Ukázkové produkty
   const placeholders = [
     {
@@ -89,7 +112,12 @@ const ProductPlaceholders: React.FC = () => {
           <div className="mt-4">
             <h3 className="text-sm font-medium text-gray-900">{product.title}</h3>
             <p className="mt-1 text-sm text-gray-500">Více variant</p>
-            <p className="mt-2 text-sm font-medium text-gray-900">{formatPriceCZK(product.price)}</p>
+            <p className="mt-2 text-sm font-medium text-gray-900">{(() => {
+              let displayPrice = product.price;
+              if (locale === 'cs') displayPrice = convertEurToCzkSync(product.price);
+              else if (locale === 'en' && country === 'GB') displayPrice = convertEurToGbpSync(product.price);
+              return formatPriceByLocale(displayPrice, locale, country || undefined);
+            })()}</p>
           </div>
           
           <div className="mt-4">

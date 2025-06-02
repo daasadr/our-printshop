@@ -37,4 +37,43 @@ export function convertEurToCzkSync(priceEur: number): number {
 
 export function formatPriceEUR(amount: number): string {
     return `€${amount.toLocaleString('cs-CZ')}`;
+}
+
+// Formátování ceny v GBP
+export function formatPriceGBP(price: number): string {
+  return new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'GBP',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(price);
+}
+
+// Konverzia z EUR na GBP (fixný kurz, napr. 0.85)
+export function convertEurToGbpSync(priceEur: number): number {
+  const EUR_TO_GBP = 0.85; // môžeš neskôr získať dynamicky
+  return Math.round(priceEur * EUR_TO_GBP * 100) / 100;
+}
+
+// Detekcia krajiny používateľa (asynchrónne)
+export async function detectUserCountry(): Promise<string | null> {
+  try {
+    const res = await fetch('https://ipapi.co/country/');
+    if (!res.ok) return null;
+    const country = await res.text();
+    return country.trim();
+  } catch {
+    return null;
+  }
+}
+
+// Upravená funkcia na formátovanie ceny podľa locale a krajiny
+export function formatPriceByLocale(price: number, locale: string, country?: string): string {
+  if (locale === 'cs') {
+    return formatPriceCZK(price);
+  } else if (locale === 'en' && country === 'GB') {
+    return formatPriceGBP(price);
+  } else {
+    return formatPriceEUR(price);
+  }
 } 

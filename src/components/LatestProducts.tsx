@@ -3,9 +3,10 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useTranslation } from 'next-i18next';
+import { useRouter } from 'next/router';
 // import { useCart } from '@/hooks/useCart';
 import { FormattedProduct } from '@/types/prisma';
-import { formatPriceEUR } from '@/utils/currency';
+import { formatPriceByLocale, convertEurToCzkSync, convertEurToGbpSync, detectUserCountry } from '@/utils/currency';
 
 const FEATURED_IDS = [
   '382862008', // Drawstring bag
@@ -20,10 +21,12 @@ type LatestProductsProps = {
 
 const LatestProducts: React.FC<LatestProductsProps> = ({ limit = 4 }) => {
   const { t } = useTranslation('common');
+  const { locale = 'cs' } = useRouter();
   const [products, setProducts] = useState<FormattedProduct[]>([]);
   const [displayed, setDisplayed] = useState<FormattedProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [country, setCountry] = useState<string | null>(null);
 //   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -48,6 +51,12 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ limit = 4 }) => {
 
     fetchLatestProducts();
   }, []);
+
+  useEffect(() => {
+    if (locale === 'en') {
+      detectUserCountry().then(setCountry);
+    }
+  }, [locale]);
 
   // Funkcia na výber náhodných N produktov
   const getRandomProducts = React.useCallback((arr: FormattedProduct[], n: number) => {
@@ -146,7 +155,12 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ limit = 4 }) => {
             <div className="mt-4 flex justify-between items-center">
               {product.price > 0 ? (
                 <p className="text-lg font-medium text-gray-900">
-                  {formatPriceEUR(product.price)}
+                  {(() => {
+                    let displayPrice = product.price;
+                    if (locale === 'cs') displayPrice = convertEurToCzkSync(product.price);
+                    else if (locale === 'en' && country === 'GB') displayPrice = convertEurToGbpSync(product.price);
+                    return formatPriceByLocale(displayPrice, locale, country || undefined);
+                  })()}
                 </p>
               ) : (
                 <p className="text-sm text-gray-500">
@@ -169,8 +183,18 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ limit = 4 }) => {
             <div className="mt-1 text-sm text-gray-500">
               {product.shippingPrice 
                 ? t('product.shipping_range', { 
-                    min: formatPriceEUR(product.shippingPrice.min),
-                    max: formatPriceEUR(product.shippingPrice.max)
+                    min: (() => {
+                      let displayPrice = product.shippingPrice.min;
+                      if (locale === 'cs') displayPrice = convertEurToCzkSync(product.shippingPrice.min);
+                      else if (locale === 'en' && country === 'GB') displayPrice = convertEurToGbpSync(product.shippingPrice.min);
+                      return formatPriceByLocale(displayPrice, locale, country || undefined);
+                    })(),
+                    max: (() => {
+                      let displayPrice = product.shippingPrice.max;
+                      if (locale === 'cs') displayPrice = convertEurToCzkSync(product.shippingPrice.max);
+                      else if (locale === 'en' && country === 'GB') displayPrice = convertEurToGbpSync(product.shippingPrice.max);
+                      return formatPriceByLocale(displayPrice, locale, country || undefined);
+                    })()
                   })
                 : t('product.shipping_by_country')}
             </div>
@@ -239,7 +263,7 @@ const ProductPlaceholders: React.FC = () => {
             <p className="mt-1 text-sm text-gray-500">Více variant</p>
             <div className="mt-4 flex justify-between items-center">
               <p className="text-lg font-medium text-gray-900">
-                {formatPriceEUR(product.price)}
+                {formatPriceByLocale(product.price, 'cs')}
               </p>
               <button
                 className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
