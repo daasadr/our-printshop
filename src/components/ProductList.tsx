@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { formatPriceCZK } from '@/utils/currency';
 import { useCart } from '@/hooks/useCart';
 import { ProductWithRelations } from '@/types';
+import { getProductImages } from '@/utils/productImage';
 
 interface ProductListProps {
   products: ProductWithRelations[];
@@ -42,7 +43,7 @@ export function ProductList({ products }: ProductListProps) {
           <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
             <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
               <Image
-                src={firstDesign?.previewUrl || '/images/placeholder.jpg'}
+                src={getProductImages(product).main}
                 alt={product.name}
                 width={500}
                 height={500}

@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { formatPriceCZK } from '@/utils/currency';
+import { getProductImages } from '@/utils/productImage';
 
 interface ProductCardProps {
   product: any;
@@ -15,7 +16,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       <div className="bg-white/5 backdrop-blur-md rounded-lg overflow-hidden transition-transform hover:scale-105">
         <div className="relative aspect-square">
           <Image
-            src={previewUrl}
+            src={getProductImages(product).main}
             alt={product.name}
             fill
             className="object-cover"
