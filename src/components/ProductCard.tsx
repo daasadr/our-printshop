@@ -1,10 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { FormattedProduct } from '@/types/prisma';
 import { formatPriceCZK } from '@/utils/currency';
 
 interface ProductCardProps {
-  product: FormattedProduct;
+  product: any;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {

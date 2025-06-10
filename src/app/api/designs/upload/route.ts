@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { createDesign, readDesigns } from '@/lib/directus';
 import { uploadDesign } from '@/services/printful';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
@@ -54,13 +54,11 @@ export async function POST(req: NextRequest) {
     // Nahrání designu do Printful
     const printfulResponse = await uploadDesign(file) as PrintfulApiResponse<PrintfulFile>;
 
-    // Uložení designu do databáze
-    const design = await prisma.design.create({
-      data: {
-        name,
-        printfulFileId: String(printfulResponse.result.id),
-        previewUrl: printfulResponse.result.url
-      }
+    // Uložení designu do Directus
+    const design = await createDesign({
+      name,
+      printfulFileId: String(printfulResponse.result.id),
+      previewUrl: printfulResponse.result.url
     });
 
     return NextResponse.json(design);
@@ -85,11 +83,9 @@ export async function GET() {
       );
     }
 
-    // Získání seznamu designů z databáze
-    const designs = await prisma.design.findMany({
-      orderBy: {
-        createdAt: 'desc'
-      }
+    // Získání seznamu designů z Directus
+    const designs = await readDesigns({
+      sort: ['-date_created']
     });
 
     return NextResponse.json(designs);

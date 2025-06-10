@@ -1,95 +1,79 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
-import { PrintfulOrderResponse } from '@/types/printful';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
-import { Session } from 'next-auth';
-import { OrderItem } from '@/types/prisma';
+import { readOrder, updateOrder, readVariants } from '@/lib/directus';
+import { createPrintfulOrder } from '@/lib/printful';
+import { Order } from '@/types';
 
 export async function POST(
-  req: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const order = await prisma.order.findUnique({
-      where: { id: params.id },
-      include: {
-        items: {
-          include: {
-            variant: true
-          }
-        },
-        shippingInfo: true
-      }
-    });
+    const session = await getServerSession(authOptions) as { user: { id: string } } | null;
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const order = await readOrder(params.id, {
+      fields: [
+        '*',
+        'items.*',
+        'items.variant.*',
+        'items.variant.product.*',
+        'shippingInfo.*'
+      ]
+    }) as unknown as Order | null;
 
     if (!order) {
-      return NextResponse.json(
-        { error: 'Objednávka nenalezena' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
-    if (!order.shippingInfo) {
-      return NextResponse.json(
-        { error: 'Chybí dodací údaje' },
-        { status: 400 }
-      );
+    if (order.status !== 'pending') {
+      return NextResponse.json({ error: 'Order is not pending' }, { status: 400 });
     }
 
-    // Vytvoříme objednávku v Printful
-    const printfulOrder = {
+    const printfulOrder = await createPrintfulOrder({
       external_id: order.id,
-      recipient: {
-        name: order.shippingInfo.name,
+      shipping: {
         address1: order.shippingInfo.address1,
         city: order.shippingInfo.city,
-        state_code: order.shippingInfo.state || '',
-        state_name: order.shippingInfo.state || '',
         country_code: order.shippingInfo.country,
+        state_code: order.shippingInfo.state,
         zip: order.shippingInfo.zip
       },
-      items: order.items.map((item: OrderItem) => ({
-        variant_id: parseInt(item.variant.printfulVariantId),
-        quantity: item.quantity,
-        retail_price: item.price.toString()
+      items: await Promise.all(order.items.map(async item => {
+        const variants = await readVariants({ filter: { id: { _eq: item.variant } } });
+        const variantObj = variants?.[0];
+        if (!variantObj) {
+          throw new Error(`Variant not found for item ${item.id}`);
+        }
+        if (!variantObj.printfulVariantId) {
+          throw new Error(`Missing printfulVariantId for variant ${variantObj.id}`);
+        }
+        if (!variantObj.design_url) {
+          throw new Error(`Missing design_url for variant ${variantObj.id}`);
+        }
+        return {
+          variant_id: parseInt(variantObj.printfulVariantId),
+          quantity: item.quantity,
+          files: [{
+            url: variantObj.design_url
+          }]
+        };
       }))
-    };
-
-    const response = await fetch('https://api.printful.com/orders', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.PRINTFUL_API_KEY}`
-      },
-      body: JSON.stringify(printfulOrder)
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      console.error('Printful API error:', error);
-      return NextResponse.json(
-        { error: 'Chyba při vytváření objednávky v Printful' },
-        { status: 500 }
-      );
-    }
-
-    const printfulResponse = await response.json() as PrintfulOrderResponse;
-
-    // Aktualizujeme objednávku v databázi
-    await prisma.order.update({
-      where: { id: order.id },
-      data: {
-        printfulOrderId: printfulResponse.result.id.toString(),
-        status: 'processing'
-      }
+    await updateOrder(order.id, {
+      status: 'processing',
+      printfulOrderId: printfulOrder.id
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error fulfilling order:', error);
     return NextResponse.json(
-      { error: 'Došlo k chybě při zpracování objednávky' },
+      { error: 'Failed to fulfill order' },
       { status: 500 }
     );
   }

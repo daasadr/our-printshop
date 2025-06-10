@@ -1,11 +1,23 @@
-import { NextAuthOptions } from "next-auth";
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
-import { db } from "@/db";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+import { readUsers } from '@/lib/directus';
+import type { User } from '@/lib/directus';
 
-export const authOptions: NextAuthOptions = {
-  adapter: DrizzleAdapter(db),
+type AuthConfig = {
+  session: {
+    strategy: "jwt";
+  };
+  pages: {
+    signIn: string;
+  };
+  providers: any[];
+  callbacks: {
+    session: (params: { token: any; session: any }) => Promise<any>;
+    jwt: (params: { token: any; user: any }) => Promise<any>;
+  };
+};
+
+export const authConfig: AuthConfig = {
   session: {
     strategy: "jwt",
   },
@@ -14,7 +26,7 @@ export const authOptions: NextAuthOptions = {
   },
   providers: [
     CredentialsProvider({
-      name: "credentials",
+      name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" }
@@ -24,28 +36,33 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const user = await db.query.user.findFirst({
-          where: (user, { eq }) => eq(user.email, credentials.email)
-        });
+        try {
+          const users = await readUsers({
+            filter: {
+              email: {
+                _eq: credentials.email
+              }
+            }
+          }) as User[];
+          const user = users?.[0] as User | undefined;
+          if (!user) {
+            return null;
+          }
 
-        if (!user) {
+          const isValid = await bcrypt.compare(credentials.password, user.password);
+          if (!isValid) {
+            return null;
+          }
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name
+          };
+        } catch (error) {
+          console.error('Auth error:', error);
           return null;
         }
-
-        const passwordMatch = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
-
-        if (!passwordMatch) {
-          return null;
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-        };
       }
     })
   ],
@@ -68,3 +85,6 @@ export const authOptions: NextAuthOptions = {
     }
   }
 };
+
+// Backward compatibility for existing imports
+export const authOptions = authConfig;

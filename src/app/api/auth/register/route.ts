@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { readUsers, createUser } from '@/lib/directus';
 import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
   try {
-    const { name, email, password } = await request.json();
+    const { name, email } = await request.json();
 
     // Validace vstupních dat
-    if (!name || !email || !password) {
+    if (!name || !email) {
       return NextResponse.json(
         { message: 'Vyplňte prosím všechna pole' },
         { status: 400 }
@@ -15,27 +15,21 @@ export async function POST(request: Request) {
     }
 
     // Kontrola, zda uživatel již existuje
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
+    const existingUsers = await readUsers({
+      filter: { email: { _eq: email } }
     });
 
-    if (existingUser) {
+    if (existingUsers.length > 0) {
       return NextResponse.json(
         { message: 'Uživatel s tímto emailem již existuje' },
         { status: 400 }
       );
     }
 
-    // Hashování hesla
-    const hashedPassword = await bcrypt.hash(password, 12);
-
     // Vytvoření nového uživatele
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-      },
+    await createUser({
+      name,
+      email,
     });
 
     return NextResponse.json(
@@ -48,7 +42,5 @@ export async function POST(request: Request) {
       { message: 'Něco se pokazilo při vytváření účtu' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 } 

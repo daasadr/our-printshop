@@ -119,3 +119,78 @@ npm run sync-printful
 ## Support
 
 For support, please contact support@happywilderness.cz
+
+# Propojení Next.js e-shopu s Directus CMS
+
+## 1. Instalace Directus SDK
+
+```
+npm install @directus/sdk
+```
+
+## 2. Nastavení Directus klienta
+
+Vytvořte soubor `src/lib/directus.ts`:
+
+```ts
+import { Directus } from '@directus/sdk';
+
+export const directus = new Directus(
+  process.env.NEXT_PUBLIC_DIRECTUS_URL || 'https://tvuj-directus-url.cz'
+);
+```
+
+## 3. Načtení produktů v Next.js
+
+V souboru `src/app/products/page.tsx`:
+
+```ts
+import { directus } from '@/lib/directus';
+
+export default async function ProductsPage() {
+  const { data: products } = await directus.items('products').readByQuery({
+    fields: [
+      '*',
+      'categories.*',
+      'variants.*',
+      'mockups',
+    ],
+  });
+
+  return (
+    <div>
+      <h1>Produkty</h1>
+      <ul>
+        {products?.map((product: any) => (
+          <li key={product.id}>
+            <h2>{product.name}</h2>
+            <p>{product.description}</p>
+            <p>Cena: {product.price} Kč</p>
+            {product.mockups && product.mockups.length > 0 && (
+              <img src={product.mockups[0].image_url || product.mockups[0]} alt={product.name} width={200} />
+            )}
+            {product.categories && product.categories.length > 0 && (
+              <p>Kategorie: {product.categories.map((cat: any) => cat.name).join(', ')}</p>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+## 4. Nastavení proměnné prostředí
+
+Do `.env.local` přidejte:
+```
+NEXT_PUBLIC_DIRECTUS_URL=https://tvuj-directus-url.cz
+```
+
+## 5. Práva v Directusu
+
+V administraci Directusu nastavte pro veřejnou roli právo číst kolekce `products`, `categories`, atd.
+
+---
+
+Tento základní příklad lze dále rozšiřovat o detail produktu, objednávky, uživatele atd.

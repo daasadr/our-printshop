@@ -1,54 +1,44 @@
+// import { createNewsletterSubscriber, readNewsletterSubscribers } from '@/lib/directus';
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
 
 export async function POST(req: NextRequest) {
+  // Zakomentuj nebo odstraň celý obsah souboru, pokud není potřeba.
   try {
-    const body = await req.json();
-    const { email } = body;
-    
+    const { email } = await req.json();
+
     if (!email) {
       return NextResponse.json(
-        { message: 'E-mail je povinný' },
+        { error: 'Email je povinný' },
         { status: 400 }
       );
     }
-    
-    // Základní validace e-mailu
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+
+    // Kontrola, zda email již není zaregistrován
+    // const existingSubscribers = await readNewsletterSubscribers({
+    //   filter: {
+    //     email: { _eq: email }
+    //   }
+    // });
+
+    if (false) {
       return NextResponse.json(
-        { message: 'Neplatná e-mailová adresa' },
+        { error: 'Tento email je již zaregistrován' },
         { status: 400 }
       );
     }
-    
-    // Zde by byl kód pro reálné přidání odběratele do systému
-    // Například zápis do databáze nebo odeslání do služby jako Mailchimp, SendGrid, apod.
-    
-    // Příklad zápisu do databáze (pokud byste měli tabulku pro odběratele)
-    /*
-    await prisma.newsletterSubscriber.upsert({
-      where: { email },
-      update: { updatedAt: new Date() },
-      create: {
-        email,
-        subscribedAt: new Date(),
-      },
-    });
-    */
-    
-    // Simulace úspěšné odpovědi
-    return NextResponse.json({
-      success: true,
-      message: 'Odběr byl úspěšně zaregistrován',
-    });
+
+    // Vytvoření nového odběratele
+    // const subscriber = await createNewsletterSubscriber({
+    //   email,
+    //   status: 'active'
+    // });
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Newsletter subscription error:', error);
     return NextResponse.json(
-      { message: 'Chyba při zpracování požadavku' },
+      { error: 'Chyba při registraci do newsletteru' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

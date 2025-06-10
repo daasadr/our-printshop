@@ -1,10 +1,9 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { CartWithItems, CartItem } from '@/types/prisma';
 
 interface CartContextType {
-  cart: CartWithItems | null;
+  cart: any | null;
   loading: boolean;
   error: string | null;
   addToCart: (variantId: string, quantity: number) => Promise<void>;
@@ -16,7 +15,7 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [cart, setCart] = useState<CartWithItems | null>(null);
+  const [cart, setCart] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

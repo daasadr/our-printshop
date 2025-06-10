@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 
 // Stripe instance pro server
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2023-10-16', // použijeme nejnovější stabilní verzi API
+  apiVersion: '2025-05-28.basil', // aktuální verze API
 });
 
 // Stripe Promise pro klienta

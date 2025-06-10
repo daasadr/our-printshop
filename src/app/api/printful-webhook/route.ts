@@ -1,69 +1,74 @@
-import { headers } from 'next/headers';
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import prisma from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server';
+import { readOrder, updateOrder } from '@/lib/directus';
+import { Order } from '@/types';
+import crypto from 'crypto';
 
 // Printful webhook secret from environment variables
 const PRINTFUL_WEBHOOK_SECRET = process.env.PRINTFUL_WEBHOOK_SECRET;
 
-// Typ pro stav objednávky
-type OrderStatus = 'pending' | 'processing' | 'completed' | 'cancelled' | 'failed';
+// Mapování Printful stavů na naše stavy
+const PRINTFUL_STATUS_MAP: Record<string, Order['status']> = {
+  'pending': 'pending',
+  'processing': 'processing',
+  'fulfilled': 'fulfilled',
+  'cancelled': 'cancelled',
+  'failed': 'cancelled'
+};
 
-export async function POST(req: Request) {
-  const headersList = headers();
-  const signature = headersList.get('X-Printful-Signature');
-
-  if (!signature || signature !== PRINTFUL_WEBHOOK_SECRET) {
-    return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
-  }
-
+export async function POST(req: NextRequest) {
   try {
-    const data = await req.json();
-    const { type, data: eventData } = data;
+    const body = await req.json();
+    const signature = req.headers.get('x-printful-signature');
+
+    // Ověření podpisu
+    if (!signature) {
+      return NextResponse.json(
+        { error: 'Missing signature' },
+        { status: 401 }
+      );
+    }
+
+    const hmac = crypto.createHmac('sha256', process.env.PRINTFUL_WEBHOOK_SECRET!);
+    const digest = hmac.update(JSON.stringify(body)).digest('hex');
+
+    if (digest !== signature) {
+      return NextResponse.json(
+        { error: 'Invalid signature' },
+        { status: 401 }
+      );
+    }
+
+    const { type, data } = body;
+
+    if (type !== 'order_status_changed') {
+      return NextResponse.json({ success: true });
+    }
+
+    const { order_id, status: printfulStatus } = data;
 
     // Najít objednávku podle Printful ID
-    const order = await prisma.order.findUnique({
-      where: { printfulOrderId: eventData.order.id.toString() }
-    });
+    const orders = await readOrder(order_id, {
+      fields: ['*']
+    }) as unknown as Order | null;
 
-    if (!order) {
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    if (!orders) {
+      return NextResponse.json(
+        { error: 'Order not found' },
+        { status: 404 }
+      );
     }
 
-    // Aktualizovat status objednávky podle události z Printful
-    let newStatus: OrderStatus;
-    switch (type) {
-      case 'package_shipped':
-        newStatus = 'completed';
-        break;
-      case 'package_delivered':
-        newStatus = 'completed';
-        break;
-      case 'order_failed':
-        newStatus = 'failed';
-        break;
-      case 'order_canceled':
-        newStatus = 'cancelled';
-        break;
-      default:
-        console.log(`Unhandled Printful event type: ${type}`);
-        return NextResponse.json({ received: true });
-    }
+    // Mapovat Printful stav na náš stav
+    const status = PRINTFUL_STATUS_MAP[printfulStatus] || 'processing';
 
-    // Aktualizovat objednávku v databázi
-    await prisma.order.update({
-      where: { id: order.id },
-      data: {
-        status: newStatus,
-        notes: eventData.reason || `Status updated from Printful: ${type}`
-      }
-    });
+    // Aktualizovat stav objednávky
+    await updateOrder(orders.id, { status });
 
-    return NextResponse.json({ received: true });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error processing Printful webhook:', error);
     return NextResponse.json(
-      { error: 'Webhook handler failed' },
+      { error: 'Failed to process webhook' },
       { status: 500 }
     );
   }

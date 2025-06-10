@@ -1,7 +1,7 @@
 import React from 'react';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import prisma from '@/lib/prisma';
+import { readItem } from '@/lib/directus';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
@@ -14,20 +14,8 @@ export const metadata = {
 // Funkce pro získání objednávky podle ID
 async function getOrder(orderId) {
   try {
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
-      include: {
-        items: {
-          include: {
-            variant: {
-              include: {
-                product: true
-              }
-            }
-          }
-        },
-        shippingInfo: true
-      }
+    const order = await readItem('orders', orderId, {
+      fields: ['*', 'items.*', 'items.variant.*', 'items.variant.product.*', 'shippingInfo.*']
     });
     
     return order;
@@ -84,7 +72,7 @@ export default async function CheckoutSuccessPage({ searchParams }) {
               </div>
               <div className="flex justify-between mt-2">
                 <span className="font-medium">Datum:</span>
-                <span>{new Date(order.createdAt).toLocaleDateString('cs-CZ')}</span>
+                <span>{new Date(order.date_created).toLocaleDateString('cs-CZ')}</span>
               </div>
               <div className="flex justify-between mt-2">
                 <span className="font-medium">Stav:</span>

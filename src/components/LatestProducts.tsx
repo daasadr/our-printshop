@@ -3,11 +3,10 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
-import { FormattedProduct } from '@/types/prisma';
 import { formatPriceCZK } from '@/utils/currency';
 
 const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
-  const [products, setProducts] = useState<FormattedProduct[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { addToCart } = useCart();
@@ -26,7 +25,7 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
         console.log('Načtená data z API:', data);
         
         // Kontrola a zpracování URL adres obrázků
-        const processedData = data.map((product: FormattedProduct) => {
+        const processedData = data.map((product: any) => {
           console.log(`Zpracovávám produkt: ${product.name}`);
           console.log(`Původní URL obrázku: ${product.previewUrl}`);
           
@@ -72,7 +71,7 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
     fetchLatestProducts();
   }, [limit]);
 
-  const handleAddToCart = (product: FormattedProduct) => {
+  const handleAddToCart = (product: any) => {
     // Přidáme produkt do košíku pouze pokud má varianty
     if (product.variants && product.variants.length > 0) {
       addToCart({

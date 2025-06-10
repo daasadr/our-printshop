@@ -1,6 +1,5 @@
-import fetch from 'node-fetch';
 import { PrintfulApiResponse, PrintfulFile, PrintfulProductData, PrintfulOrderData, PrintfulOrderResponse } from '@/types/printful';
-import prisma from '@/lib/prisma';
+import { readItem, updateItem, readOrder, updateOrder } from '@/lib/directus';
 
 const PRINTFUL_API_URL = 'https://api.printful.com';
 const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY;
@@ -58,14 +57,15 @@ export async function uploadDesign(file: File): Promise<PrintfulApiResponse<Prin
   const response = await fetch(`${PRINTFUL_API_URL}/files`, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${PRINTFUL_API_KEY}`,
+      'Authorization': `Bearer ${process.env.PRINTFUL_API_KEY}`
     },
     body: formData
   });
 
   if (!response.ok) {
-    const error = await response.json() as PrintfulError;
-    throw new Error(error.message || 'Failed to upload design to Printful');
+    const error = await response.json();
+    console.error('Printful API error:', error);
+    throw new Error('Printful API error');
   }
 
   return response.json() as Promise<PrintfulApiResponse<PrintfulFile>>;
@@ -143,17 +143,9 @@ export async function deleteProduct(productId: number): Promise<PrintfulApiRespo
 
 export async function fulfillOrder(orderId: string) {
   try {
-    // 1. Načíst objednávku z databáze
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
-      include: {
-        items: {
-          include: {
-            variant: true
-          }
-        },
-        shippingInfo: true
-      }
+    // 1. Načíst objednávku z Directus
+    const order = await readOrder(orderId, {
+      fields: ['*', 'items.*', 'items.variant.*', 'shippingInfo.*']
     });
 
     if (!order || !order.shippingInfo) {
@@ -195,25 +187,45 @@ export async function fulfillOrder(orderId: string) {
 
     const printfulResponse = await response.json() as PrintfulOrderResponse;
 
-    // 4. Aktualizovat objednávku v databázi
-    await prisma.order.update({
-      where: { id: orderId },
-      data: {
-        printfulOrderId: printfulResponse.result.id.toString(),
-        status: 'processing'
-      }
+    // 4. Aktualizovat objednávku v Directus
+    await updateOrder(orderId, {
+      printfulOrderId: printfulResponse.result.id.toString(),
+      status: 'processing'
     });
 
     return true;
   } catch (error) {
     console.error('Error fulfilling order with Printful:', error);
-    // Aktualizovat stav objednávky na error
-    await prisma.order.update({
-      where: { id: orderId },
-      data: {
-        status: 'error'
-      }
+    // Aktualizovat stav objednávky na cancelled
+    await updateOrder(orderId, {
+      status: 'cancelled'
     });
     throw error;
   }
+}
+
+async function fetchPrintful(endpoint: string, options: RequestInit = {}) {
+  const response = await fetch(`${PRINTFUL_API_URL}${endpoint}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${process.env.PRINTFUL_API_KEY}`,
+      ...options.headers
+    }
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    console.error('Printful API error:', error);
+    throw new Error('Printful API error');
+  }
+
+  return response.json();
+}
+
+export async function createPrintfulOrder(order: PrintfulOrderData): Promise<PrintfulApiResponse<PrintfulOrderResponse>> {
+  return fetchPrintful('/orders', {
+    method: 'POST',
+    body: JSON.stringify(order)
+  });
 }

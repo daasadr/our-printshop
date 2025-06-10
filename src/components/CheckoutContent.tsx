@@ -4,14 +4,13 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import CheckoutForm from '@/components/CheckoutForm';
-import { CartWithItems } from '@/types/prisma';
 import { CartItem as SimpleCartItem } from '@/types/cart';
 import { useCart } from '@/hooks/useCart';
 
 export default function CheckoutContent() {
   const router = useRouter();
   const { items: localCartItems, totalPrice: localTotalPrice } = useCart();
-  const [serverCart, setServerCart] = useState<CartWithItems | null>(null);
+  const [serverCart, setServerCart] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { status, data: session } = useSession({
@@ -34,7 +33,7 @@ export default function CheckoutContent() {
         if (!response.ok) {
           throw new Error('Nepodařilo se načíst košík');
         }
-        const data: CartWithItems = await response.json();
+        const data: any = await response.json();
         
         if (!data || !data.items || data.items.length === 0) {
           router.push('/cart');

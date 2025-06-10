@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { readVariants, createOrder, updateOrder, readOrders, createOrderItem } from '@/lib/directus';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { Session } from 'next-auth';
 import Stripe from 'stripe';
 import { convertEurToCzkSync } from '@/utils/currency';
-import { Variant } from '@/types/prisma';
+import { Product, Variant } from '@/types';
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing STRIPE_SECRET_KEY');
 }
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2023-10-16',
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2025-05-28.basil',
 });
 
 // Přidáme export pro Next.js, aby věděl, že tato route je dynamická
@@ -21,49 +21,25 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { items, shippingDetails } = body;
-
-    if (!items?.length) {
-      return NextResponse.json(
-        { error: 'Košík je prázdný' },
-        { status: 400 }
-      );
-    }
-
-    if (!shippingDetails) {
-      return NextResponse.json(
-        { error: 'Chybí dodací údaje' },
-        { status: 400 }
-      );
-    }
+    const { items, shippingInfo } = body;
     
     const session = await getServerSession(authOptions) as Session | null;
     
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-    
     // 1. Ověřit, že všechny produkty existují a jsou dostupné
     const variantIds = items.map((item: { variantId: string }) => item.variantId);
-    console.log('Variant IDs:', variantIds);
-    
-    const variants = await prisma.variant.findMany({
-      where: {
-        id: { in: variantIds },
-        isActive: true
+    const variantsResult = await readVariants({
+      filter: {
+        id: { _in: variantIds },
+        isActive: { _eq: true }
       },
-      include: {
-        product: true
-      }
+      fields: ['*', 'product.*', 'product.designs.*']
     });
-    console.log('Found variants:', variants.length);
+    
+    const variants = (Array.isArray(variantsResult) ? variantsResult : []) as unknown as (Variant & { product: Product })[];
     
     if (variants.length !== variantIds.length) {
       return NextResponse.json(
-        { error: 'Některé produkty nejsou dostupné' },
+        { message: 'Některé produkty nejsou dostupné' },
         { status: 400 }
       );
     }
@@ -71,91 +47,99 @@ export async function POST(req: NextRequest) {
     // 2. Vypočítat celkovou cenu
     let total = 0;
     const orderItems = items.map((item: { variantId: string; quantity: number }) => {
-      const variant = variants.find((v: Variant) => v.id === item.variantId);
+      const variant = variants.find((v) => v.id === item.variantId);
       if (!variant) throw new Error('Varianta nenalezena');
       
-      const priceInCzk = convertEurToCzkSync(variant.price);
-      const itemTotal = priceInCzk * item.quantity;
+      const itemTotal = variant.price * item.quantity;
       total += itemTotal;
       
       return {
         variantId: item.variantId,
         quantity: item.quantity,
-        price: priceInCzk
+        price: variant.price
       };
     });
-    console.log('Total price:', total);
     
-    // 3. Vytvořit order v databázi
-    const order = await prisma.order.create({
-      data: {
-        status: 'pending',
-        total,
-        items: {
-          create: orderItems
-        },
-        shippingInfo: {
-          create: {
-            name: shippingDetails.name,
-            email: shippingDetails.email,
-            phone: shippingDetails.phone || '',
-            address1: shippingDetails.address,
-            address2: shippingDetails.address2 || '',
-            city: shippingDetails.city,
-            state: shippingDetails.state || '',
-            country: shippingDetails.country,
-            zip: shippingDetails.zip
-          }
-        },
-        ...(session?.user?.email ? {
-          user: {
-            connect: {
-              email: session.user.email
-            }
-          }
-        } : {})
-      }
+    // 3. Vytvořit order v Directus
+    const orderResult = await createOrder({
+      status: 'pending',
+      total_price: total,
+      ...(session?.user?.email ? {
+        user: session.user.email
+      } : {})
     });
-    console.log('Created order:', order.id);
 
-    // 4. Vytvořit Stripe checkout session
-    const stripeSession = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: items.map((item: { variantId: string; quantity: number }) => {
-        const variant = variants.find((v: Variant) => v.id === item.variantId);
-        if (!variant) throw new Error('Varianta nenalezena');
-        
-        return {
-          price_data: {
-            currency: 'czk',
-            product_data: {
-              name: `${variant.product.name} - ${variant.name}`,
-              images: []
-            },
-            unit_amount: Math.round(convertEurToCzkSync(variant.price) * 100)
+    const order = typeof orderResult === 'object' ? orderResult : { id: '' };
+
+    // 3b. Uložit položky objednávky do order_items
+    for (const item of orderItems) {
+      await createOrderItem({
+        order: order.id,
+        product: item.product,
+        variant: item.variantId,
+        quantity: item.quantity,
+        price: item.price
+      });
+    }
+    
+    // 4. Vytvořit Stripe Checkout Session
+    const lineItems = orderItems.map((item: any) => {
+      const variant = variants.find((v) => v.id === item.variantId);
+      if (!variant) throw new Error('Varianta nenalezena');
+      
+      return {
+        price_data: {
+          currency: 'czk',
+          product_data: {
+            name: `${variant.product.name} - ${variant.name}`,
+            images: variant.product.designs?.[0]?.previewUrl ? [variant.product.designs[0].previewUrl] : [],
           },
-          quantity: item.quantity
-        };
-      }),
+          unit_amount: Math.round(item.price * 100), // Stripe používá nejmenší jednotku měny (haléře)
+        },
+        quantity: item.quantity,
+      };
+    });
+
+    // Přidat poštovné
+    const shippingCost = 129; // 129 Kč za dopravu
+    lineItems.push({
+      price_data: {
+        currency: 'czk',
+        product_data: {
+          name: 'Poštovné',
+          images: [], // Prázdné pole pro poštovné
+        },
+        unit_amount: shippingCost * 100,
+      },
+      quantity: 1,
+    });
+
+    const checkoutSession = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
       mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/order/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cart`,
       metadata: {
         orderId: order.id
-      }
+      },
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/order/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/order/cancelled`,
+      line_items: lineItems,
+      shipping_address_collection: {
+        allowed_countries: ['CZ', 'SK'],
+      },
+      billing_address_collection: 'required',
+      customer_email: shippingInfo.email,
     });
-
-    // 5. Aktualizovat order se session ID
-    await prisma.order.update({
-      where: { id: order.id },
-      data: { stripeSessionId: stripeSession.id }
+    
+    // 5. Aktualizovat objednávku s Stripe Session ID
+    await updateOrder(order.id, {
+      stripeSessionId: checkoutSession.id
     });
-
-    return NextResponse.json({ url: stripeSession.url });
+    
+    return NextResponse.json({ url: checkoutSession.url });
   } catch (error) {
-    console.error('Error creating checkout session:', error);
+    console.error('Order creation error:', error);
     return NextResponse.json(
-      { error: 'Nepodařilo se vytvořit platební relaci' },
+      { error: 'Failed to create order' },
       { status: 500 }
     );
   }
@@ -163,22 +147,9 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   try {
-    const orders = await prisma.order.findMany({
-      include: {
-        shippingInfo: true,
-        items: {
-          include: {
-            variant: {
-              include: {
-                product: true
-              }
-            }
-          }
-        }
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
+    const orders = await readOrders({
+      fields: ['*', 'shippingInfo.*', 'items.*', 'items.variant.*', 'items.variant.product.*'],
+      sort: ['-date_created']
     });
     return NextResponse.json(orders);
   } catch (error) {
@@ -187,7 +158,5 @@ export async function GET() {
       { error: 'Internal server error' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 } 

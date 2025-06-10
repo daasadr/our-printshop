@@ -3,70 +3,25 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FormattedProduct } from '@/types/prisma';
-import prisma from '@/lib/prisma';
-import { convertEurToCzk } from '@/lib/currency';
 import { formatPriceCZK } from '@/utils/currency';
 import { useCart } from '@/hooks/useCart';
-
-async function getProducts(category?: string): Promise<FormattedProduct[]> {
-  const include = {
-    variants: {
-      where: { isActive: true },
-      orderBy: { price: 'asc' },
-    },
-    designs: true,
-    categories: { include: { category: true } },
-  };
-
-  const products = await prisma.product.findMany({
-    where: { isActive: true },
-    include,
-  });
-
-  // Filtrace podle kategorie (pokud je zadána)
-  let filteredProducts = products;
-  if (category) {
-    filteredProducts = products.filter(product =>
-      product.categories.some(pc => pc.categoryId === category)
-    );
-  }
-
-  // Mapování na výstup
-  return await Promise.all(filteredProducts.map(async (product) => {
-    const basePrice = product.variants[0]?.price || 0;
-    const convertedPrice = await convertEurToCzk(basePrice);
-    const convertedVariants = await Promise.all(product.variants.map(async (variant) => ({
-      ...variant,
-      price: await convertEurToCzk(variant.price),
-    })));
-    return {
-      ...product,
-      previewUrl: product.designs[0]?.previewUrl || '',
-      price: convertedPrice,
-      categories: product.categories.map(pc => pc.category.name),
-      categoryIds: product.categories.map(pc => pc.categoryId),
-      variants: convertedVariants,
-      designs: product.designs.map(({ productId: _productId, ...design }) => design),
-    } as FormattedProduct;
-  }));
-}
+import { ProductWithRelations } from '@/types';
 
 interface ProductListProps {
-  products: FormattedProduct[];
+  products: ProductWithRelations[];
 }
 
 export function ProductList({ products }: ProductListProps) {
   const { addToCart } = useCart();
 
-  const handleAddToCart = (product: FormattedProduct) => {
+  const handleAddToCart = (product: ProductWithRelations) => {
     if (product.variants && product.variants.length > 0) {
       addToCart({
         variantId: product.variants[0].id,
         quantity: 1,
         name: product.name,
-        price: product.price,
-        image: product.previewUrl || ''
+        price: product.variants[0].price,
+        image: product.designs[0]?.previewUrl || ''
       });
     }
   };
@@ -77,7 +32,7 @@ export function ProductList({ products }: ProductListProps) {
         <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
           <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
             <Image
-              src={product.previewUrl || '/images/placeholder.jpg'}
+              src={product.designs[0]?.previewUrl || '/images/placeholder.jpg'}
               alt={product.name}
               width={500}
               height={500}
@@ -102,9 +57,9 @@ export function ProductList({ products }: ProductListProps) {
             </p>
             
             <div className="mt-4 flex justify-between items-center">
-              {product.price > 0 ? (
+              {product.variants && product.variants.length > 0 ? (
                 <p className="text-lg font-medium text-gray-900">
-                  {formatPriceCZK(product.price)}
+                  {formatPriceCZK(product.variants[0].price)}
                 </p>
               ) : (
                 <p className="text-sm text-gray-500">
