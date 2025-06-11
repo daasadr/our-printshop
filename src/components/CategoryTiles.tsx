@@ -10,9 +10,12 @@ interface Category {
   name: string;
   description?: string;
   image?: string;
+  displayName?: string;
+  imagePlaceholder?: string;
 }
 
 interface CategoryTilesProps {
+  categories: Category[];
   title?: string;
   showTitle?: boolean;
   titleClassName?: string;
@@ -27,25 +30,12 @@ const placeholderImages: Record<string, string> = {
 };
 
 const CategoryTiles: React.FC<CategoryTilesProps> = ({
+  categories,
   title = "Naše kategorie",
   showTitle = true,
   titleClassName = "",
   className = ""
 }) => {
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  useEffect(() => {
-    async function fetchCategories() {
-      try {
-        const data = await readCategories();
-        setCategories(data);
-      } catch (e) {
-        setCategories([]);
-      }
-    }
-    fetchCategories();
-  }, []);
-
   return (
     <div className={`container mx-auto px-4 ${className}`}>
       {showTitle && (
@@ -67,7 +57,7 @@ const CategoryTiles: React.FC<CategoryTilesProps> = ({
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-6">
               <h3 className="text-xl font-semibold text-white">
-                {category.name.charAt(0).toUpperCase() + category.name.slice(1)}
+                {(category.displayName || category.name.charAt(0).toUpperCase() + category.name.slice(1))}
               </h3>
             </div>
           </Link>
