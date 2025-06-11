@@ -50,6 +50,7 @@ interface PrintfulProductDetails {
     id: number;
     name: string;
     sync_variants?: PrintfulVariant[];
+    collections?: string[];
     [key: string]: any;
   };
 }
@@ -187,6 +188,9 @@ async function syncPrintfulProducts() {
           console.log(`Zpracovaná URL obrázku pro produkt ${productName}: ${thumbnailUrl}`);
         }
         
+        // Získame kolekcie produktu z detailu (ak existujú)
+        const collections = productDetails.result.collections || [];
+        
         // Zkontrolujeme, zda produkt existuje v databázi
         const existingProduct = await prisma.product.findFirst({
           where: { 
@@ -214,7 +218,8 @@ async function syncPrintfulProducts() {
                 connect: {
                   name: category
                 }
-              }
+              },
+              collections: collections
             }
           });
           
@@ -280,7 +285,8 @@ async function syncPrintfulProducts() {
                 connect: {
                   name: category
                 }
-              }
+              },
+              collections: collections
             }
           });
           

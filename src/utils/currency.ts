@@ -1,4 +1,5 @@
 import { getCurrentRate, getCurrentRateSync } from './exchangeRate';
+import { applyMarketMultiplier } from './marketPricing';
 
 // Formátování ceny v CZK
 export function formatPriceCZK(price: number): string {
@@ -36,17 +37,21 @@ export function convertEurToCzkSync(priceEur: number): number {
 }
 
 export function formatPriceEUR(amount: number): string {
-    return `€${amount.toLocaleString('cs-CZ')}`;
+    // Zaokrúhli na .99
+    const rounded = Math.floor(amount) + 0.99;
+    return `€${rounded.toLocaleString('cs-CZ', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 // Formátování ceny v GBP
 export function formatPriceGBP(price: number): string {
+  // Zaokrúhli na .99
+  const rounded = Math.floor(price) + 0.99;
   return new Intl.NumberFormat('en-GB', {
     style: 'currency',
     currency: 'GBP',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(price);
+  }).format(rounded);
 }
 
 // Konverzia z EUR na GBP (fixný kurz, napr. 0.85)
@@ -69,11 +74,14 @@ export async function detectUserCountry(): Promise<string | null> {
 
 // Upravená funkcia na formátovanie ceny podľa locale a krajiny
 export function formatPriceByLocale(price: number, locale: string, country?: string): string {
+  // Najprv aplikujeme cenový multiplikátor podľa krajiny
+  const adjustedPrice = applyMarketMultiplier(price, country || null);
+  
   if (locale === 'cs') {
-    return formatPriceCZK(price);
+    return formatPriceCZK(convertEurToCzkSync(adjustedPrice));
   } else if (locale === 'en' && country === 'GB') {
-    return formatPriceGBP(price);
+    return formatPriceGBP(convertEurToGbpSync(adjustedPrice));
   } else {
-    return formatPriceEUR(price);
+    return formatPriceEUR(adjustedPrice);
   }
 } 

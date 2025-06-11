@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 // import { useCart } from '@/hooks/useCart';
 import { FormattedProduct } from '@/types/prisma';
 import { formatPriceByLocale, convertEurToCzkSync, convertEurToGbpSync, detectUserCountry } from '@/utils/currency';
+import { getSimilarProductsByCollections } from '@/utils/similarProducts';
 
 const FEATURED_IDS = [
   '382862008', // Drawstring bag
@@ -122,9 +123,11 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ limit = 4 }) => {
     return <ProductPlaceholders />;
   }
 
+  const sortedProducts = getSimilarProductsByCollections(products, { id: '', collections: [] } as any, products.length);
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {displayed.map((product) => (
+      {sortedProducts.slice(0, limit || 4).map((product) => (
         <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
           <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
             <Image
@@ -155,12 +158,7 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ limit = 4 }) => {
             <div className="mt-4 flex justify-between items-center">
               {product.price > 0 ? (
                 <p className="text-lg font-medium text-gray-900">
-                  {(() => {
-                    let displayPrice = product.price;
-                    if (locale === 'cs') displayPrice = convertEurToCzkSync(product.price);
-                    else if (locale === 'en' && country === 'GB') displayPrice = convertEurToGbpSync(product.price);
-                    return formatPriceByLocale(displayPrice, locale, country || undefined);
-                  })()}
+                  {formatPriceByLocale(product.price, locale, country || undefined)}
                 </p>
               ) : (
                 <p className="text-sm text-gray-500">
@@ -183,18 +181,8 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ limit = 4 }) => {
             <div className="mt-1 text-sm text-gray-500">
               {product.shippingPrice 
                 ? t('product.shipping_range', { 
-                    min: (() => {
-                      let displayPrice = product.shippingPrice.min;
-                      if (locale === 'cs') displayPrice = convertEurToCzkSync(product.shippingPrice.min);
-                      else if (locale === 'en' && country === 'GB') displayPrice = convertEurToGbpSync(product.shippingPrice.min);
-                      return formatPriceByLocale(displayPrice, locale, country || undefined);
-                    })(),
-                    max: (() => {
-                      let displayPrice = product.shippingPrice.max;
-                      if (locale === 'cs') displayPrice = convertEurToCzkSync(product.shippingPrice.max);
-                      else if (locale === 'en' && country === 'GB') displayPrice = convertEurToGbpSync(product.shippingPrice.max);
-                      return formatPriceByLocale(displayPrice, locale, country || undefined);
-                    })()
+                    min: formatPriceByLocale(product.shippingPrice.min, locale, country || undefined),
+                    max: formatPriceByLocale(product.shippingPrice.max, locale, country || undefined)
                   })
                 : t('product.shipping_by_country')}
             </div>

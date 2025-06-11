@@ -52,12 +52,7 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
             <h3 className="text-lg font-semibold mb-2 group-hover:text-blue-600">
               {product.name}
             </h3>
-            <p className="text-gray-600">From {(() => {
-              let displayPrice = product.price;
-              if (locale === 'cs') displayPrice = convertEurToCzkSync(product.price);
-              else if (locale === 'en' && country === 'GB') displayPrice = convertEurToGbpSync(product.price);
-              return formatPriceByLocale(displayPrice, locale, country || undefined);
-            })()}</p>
+            <p className="text-gray-600">From {formatPriceByLocale(product.price, locale, country || undefined)}</p>
           </Link>
         ))}
       </div>
@@ -112,12 +107,7 @@ const ProductPlaceholders: React.FC<{ locale: string }> = ({ locale }) => {
           <div className="mt-4">
             <h3 className="text-sm font-medium text-gray-900">{product.title}</h3>
             <p className="mt-1 text-sm text-gray-500">Více variant</p>
-            <p className="mt-2 text-sm font-medium text-gray-900">{(() => {
-              let displayPrice = product.price;
-              if (locale === 'cs') displayPrice = convertEurToCzkSync(product.price);
-              else if (locale === 'en' && country === 'GB') displayPrice = convertEurToGbpSync(product.price);
-              return formatPriceByLocale(displayPrice, locale, country || undefined);
-            })()}</p>
+            <p className="mt-2 text-sm font-medium text-gray-900">{formatPriceByLocale(product.price, locale, country || undefined)}</p>
           </div>
           
           <div className="mt-4">

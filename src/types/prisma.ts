@@ -107,6 +107,7 @@ export type FormattedProduct = {
     min: number;
     max: number;
   } | null;
+  collections?: string[];
 };
 
 // Types for Prisma queries
