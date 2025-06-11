@@ -2,18 +2,26 @@ import { readProducts } from '@/lib/directus';
 import { ProductList } from '@/components/ProductList';
 import { ProductWithRelations } from '@/types';
 
-export default async function ProductsPage() {
-  // Načtení produktů včetně kategorií, variant a mockup obrázků
-  const response = await readProducts({
+interface ProductsPageProps {
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
+
+export default async function ProductsPage({ searchParams }: ProductsPageProps) {
+  const category = typeof searchParams?.category === 'string' ? searchParams.category : undefined;
+  const params: any = {
     fields: [
       '*',
-      'categories.*',
+      'categories.category_id.*',
       'variants.*',
       'designs.*'
     ]
-  }) as unknown as ProductWithRelations[];
-
-  // Pokud response není pole, použijeme prázdné pole
+  };
+  if (category) {
+    params.filter = {
+      'categories.category_id.name': { _eq: category }
+    };
+  }
+  const response = await readProducts(params) as unknown as ProductWithRelations[];
   const products = Array.isArray(response) ? response : [];
 
   return (
