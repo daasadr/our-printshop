@@ -18,7 +18,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   };
   if (category) {
     params.filter = {
-      'categories.category_id.name': { _eq: category }
+      'categories.category_id.slug': { _eq: category }
     };
   }
   const response = await readProducts(params) as unknown as ProductWithRelations[];
