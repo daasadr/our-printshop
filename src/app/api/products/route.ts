@@ -5,12 +5,16 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const category = searchParams.get('category');
+    const limit = parseInt(searchParams.get('limit') || '4', 10);
+    const sort = searchParams.get('sort') || '-date_created';
     const params: any = {
       fields: [
         '*',
         'categories.category_id.*', // join na kategorie
         'variants.*'
-      ]
+      ],
+      limit,
+      sort
     };
     if (category) {
       // Filtrujeme produkty, které mají přiřazenou danou kategorii
