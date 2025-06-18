@@ -100,7 +100,7 @@ async function sync() {
         description: details.description || '',
         price: details.sync_variants?.[0]?.retail_price || '0',
         printful_id: pf.id.toString(),
-        mockups,
+        mockup_images: mockups, 
         categories: [categoryId],
         is_active: true
       };

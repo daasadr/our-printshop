@@ -82,6 +82,11 @@ export const deleteOrderItem = (id: string) => directus.request(deleteItem('orde
 
 export const readOrder = (id: string, params?: any) => directus.request(readItem('orders', id, params));
 
+export const readProductCategories = (params?: any) => directus.request(readItems('product_categories', params));
+export const createProductCategory = (data: any) => directus.request(createItem('product_categories', data));
+export const updateProductCategory = (id: string, data: any) => directus.request(updateItem('product_categories', id, data));
+export const deleteProductCategory = (id: string) => directus.request(deleteItem('product_categories', id));
+
 export { readItem, updateItem };
 
 // Pokud budeš chtít přidat další kolekce (např. product_categories), stačí přidat obdobné CRUD funkce. 
