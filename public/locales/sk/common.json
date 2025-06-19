@@ -54,7 +54,7 @@
       "email_required": "Zadajte prosím e-mailovú adresu.",
       "invalid_email": "Zadajte prosím platnú e-mailovú adresu.",
       "subscription_failed": "Nastala chyba pri prihlasovaní k odberu.",
-      "generic": "Prepáčte, nastala chyba. Skúste to prosím znova neskôr."
+      "generic": "Prepáčte, nastala chyba. Skúste to prosím neskôr."
     }
   },
   
@@ -90,8 +90,34 @@
     "story": "Ak ste niekedy boli na nejakom kúzelnom mieste, veľmi dobre viete, že kúzlo toho miesta nie je len v samotnej fyzickej prítomnosti, ale v tom, že sa to miesto stane súčasťou vás samotných a že vo vás sa utvorí spojenie s týmto miestom, takže sa naň môžete v myšlienkach kedykoľvek vracať a prežívať to okúzlenie stále znova a znova. Z tohto dôvodu sme sa rozhodli vytvoriť HappyWilderness, aby sme vám mohli predať kúsok tohto kúzla a pomôcť vám vytvoriť si z vlastného domova nevšedné miesto, kde sa budete cítiť šťastní a naplnení.",
     "quote": "Veríme, že móda má byť viac než len oblečenie - má byť vyjadrením vášho jedinečného štýlu a hodnôt."
   },
-  "title": "Naša tlačiareň",
+  
+  "title": "Vitajte v našej tlačiarni",
   "description": "Profesionálna tlačiareň pre všetky vaše potreby",
+  
+  "footer": {
+    "about_title": "O nás",
+    "about_text": "Originálne oblečenie s autorskými potlačami. Každý kus je vyrobený na mieru podľa vašich požiadaviek.",
+    "quick_links": "Rýchle odkazy",
+    "products": "Produkty",
+    "about": "O nás",
+    "contact": "Kontakt",
+    "terms": "Obchodné podmienky",
+    "privacy": "Ochrana súkromia",
+    "categories": "Kategórie",
+    "tshirts": "Tričká",
+    "hoodies": "Mikiny",
+    "posters": "Plagáty",
+    "mugs": "Hrnčeky",
+    "accessories": "Doplnky",
+    "contact_title": "Kontaktujte nás",
+    "email": "Email: info@vasbrand.sk",
+    "phone": "Telefón: +421 123 456 789",
+    "address": "Adresa: Vaša ulica 123, 123 45 Bratislava",
+    "brand": "VášBrand",
+    "rights": "Všetky práva vyhradené.",
+    "made_with_love": "Vyrobené s ❤️ na Slovensku. Powered by Next.js a Printful."
+  },
+  
   "Index": {
     "description": "Profesionálna tlačiareň pre všetky vaše potreby"
   }

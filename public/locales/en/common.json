@@ -15,6 +15,25 @@
   "cta_shop_now": "Shop Now",
   "newsletter_title": "Stay Updated",
   "newsletter_subtitle": "Subscribe to our newsletter and be the first to know about new designs and special offers.",
+  "close": "Close",
+  
+  "header": {
+    "login": "Login",
+    "register": "Register",
+    "cart": "Cart",
+    "welcome_user": "Welcome, {{name}}",
+    "logout": "Logout",
+    "my_account": "My Account",
+    "favorites": "Favorites",
+    "menu": {
+      "open": "Open Menu",
+      "close": "Close Menu",
+      "home": "Home",
+      "products": "Products",
+      "about": "About Us",
+      "contact": "Contact"
+    }
+  },
   
   "product": {
     "price_not_available": "Price not available",
@@ -71,7 +90,31 @@
     "story": "If you've ever been to a magical place, you know very well that the magic of that place isn't just in its physical presence but in how it becomes a part of you and creates a connection within you, so you can return to it in your thoughts anytime and experience that enchantment over and over again. For this reason, we decided to create HappyWilderness to pass on a piece of this magic to you and help you create an extraordinary place from your own home where you'll feel happy and fulfilled.",
     "quote": "We believe that fashion should be more than just clothing - it should be an expression of your unique style and values."
   },
-  
+  "title": "Welcome to our print shop",
+  "description": "Professional print shop for all your needs",
+  "footer": {
+    "about_title": "About Us",
+    "about_text": "Original clothing with designer prints. Each piece is custom-made to your requirements.",
+    "quick_links": "Quick Links",
+    "products": "Products",
+    "about": "About Us",
+    "contact": "Contact",
+    "terms": "Terms & Conditions",
+    "privacy": "Privacy Policy",
+    "categories": "Categories",
+    "tshirts": "T-shirts",
+    "hoodies": "Hoodies",
+    "posters": "Posters",
+    "mugs": "Mugs",
+    "accessories": "Accessories",
+    "contact_title": "Contact Us",
+    "email": "Email: info@yourbrand.com",
+    "phone": "Phone: +1 234 567 890",
+    "address": "Address: Your Street 123, 12345 City",
+    "brand": "YourBrand",
+    "rights": "All rights reserved.",
+    "made_with_love": "Made with ❤️ in the USA. Powered by Next.js and Printful."
+  },
   "Index": {
     "description": "Professional printing for all your needs"
   }
