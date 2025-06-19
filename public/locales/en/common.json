@@ -1,5 +1,5 @@
 {
-  "welcome": "Original Clothing with Artistic Prints",
+  "welcome": "Welcome to our print shop",
   "subtitle": "Express your unique style with our creative designs.",
   "cta_collection": "View Collection",
   "cta_story": "Our Story",
@@ -72,31 +72,7 @@
     "quote": "We believe that fashion should be more than just clothing - it should be an expression of your unique style and values."
   },
   
-  "footer": {
-    "about_title": "About Us",
-    "about_text": "Original clothing with artistic prints. Each piece is custom-made to your requirements.",
-    "quick_links": "Quick Links",
-    "products": "Products",
-    "about": "About Us",
-    "contact": "Contact",
-    "terms": "Terms and Conditions",
-    "privacy": "Privacy Policy",
-    "categories": "Categories",
-    "tshirts": "T-Shirts",
-    "hoodies": "Hoodies",
-    "posters": "Posters",
-    "mugs": "Mugs",
-    "accessories": "Accessories",
-    "contact_title": "Contact Us",
-    "email": "Email: info@vasbrand.cz",
-    "phone": "Phone: +420 123 456 789",
-    "address": "Address: Your Street 123, 123 45 Prague",
-    "brand": "VášBrand",
-    "rights": "All rights reserved.",
-    "made_with_love": "Made with ❤️ in the Czech Republic. Powered by Next.js and Printful."
-  },
-  
-  "login": "Login",
-  "register": "Register",
-  "cart": "Cart"
+  "Index": {
+    "description": "Professional printing for all your needs"
+  }
 }

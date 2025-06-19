@@ -1,6 +1,6 @@
-"use client";
 import { useRouter } from "next/router";
 import React from "react";
+import { useTranslation } from "next-i18next";
 
 const LANGUAGES = [
   { code: "cs", label: "Čeština", flag: "🇨🇿" },
@@ -11,11 +11,14 @@ const LANGUAGES = [
 
 export default function LanguageSwitcher() {
   const router = useRouter();
-  const { locale, asPath } = router;
+  const { i18n } = useTranslation();
+  
+  // Get current language from router
+  const currentLang = router.locale || "cs";
 
   const handleChange = (lang: string) => {
-    if (lang === locale) return;
-    router.push(asPath, asPath, { locale: lang });
+    const { pathname, asPath, query } = router;
+    router.push({ pathname, query }, asPath, { locale: lang });
   };
 
   return (
@@ -24,17 +27,19 @@ export default function LanguageSwitcher() {
         <button
           key={lang.code}
           onClick={() => handleChange(lang.code)}
-          disabled={lang.code === locale}
+          disabled={lang.code === currentLang}
           className={`
-            flex flex-col items-center transition-all duration-200
-            ${lang.code === locale 
-              ? 'opacity-100 scale-110 font-bold' 
-              : 'opacity-70 hover:opacity-100 hover:scale-105'
-            }
+            flex flex-col items-center
+            bg-transparent border-none outline-none
+            ${lang.code === currentLang ? 'cursor-default opacity-100 scale-115' : 'cursor-pointer opacity-70 hover:opacity-100'}
+            transition-all duration-200
+            font-${lang.code === currentLang ? 'bold' : 'normal'}
+            text-lg
+            ${lang.code === currentLang ? 'filter drop-shadow-md' : ''}
           `}
           aria-label={lang.label}
         >
-          <span className="text-3xl mb-1">{lang.flag}</span>
+          <span className="text-3xl mb-0.5">{lang.flag}</span>
           <span className="text-sm">{lang.label}</span>
         </button>
       ))}

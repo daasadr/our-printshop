@@ -1,0 +1,30 @@
+{
+  "Index": {
+    "title": "Original clothing with designer prints",
+    "description": "Express your unique style with our creative designs."
+  },
+  "Navigation": {
+    "home": "Home",
+    "about": "About",
+    "products": "Products",
+    "contact": "Contact"
+  },
+  "Categories": {
+    "home": "Home & decor",
+    "women": "Stylish for women",
+    "men": "Men's collection",
+    "kids": "For little explorers"
+  },
+  "Newsletter": {
+    "title": "Stay in the loop",
+    "subtitle": "Subscribe to our newsletter and be the first to know about new designs and special offers."
+  },
+  "welcome": "Original clothing with designer prints",
+  "subtitle": "Express your unique style with our creative designs.",
+  "cta_collection": "View collection",
+  "cta_story": "Our story",
+  "latest_products": "Latest products",
+  "cta_ready": "Ready to express your style?",
+  "cta_subtitle": "Explore our collection and find a design that suits you. Each product is made with care and attention to detail.",
+  "cta_shop_now": "Shop now"
+} 

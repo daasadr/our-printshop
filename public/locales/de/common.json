@@ -1,11 +1,11 @@
 {
-  "welcome": "Originelle Kleidung mit künstlerischen Drucken",
+  "welcome": "Willkommen in unserer Druckerei",
   "subtitle": "Drücken Sie Ihren einzigartigen Stil mit unseren kreativen Designs aus.",
   "cta_collection": "Kollektion ansehen",
   "cta_story": "Unsere Geschichte",
   "categories": "Unsere Kategorien",
-  "category_home": "Heim & Deko",
-  "category_home-decor": "Heim & Deko",
+  "category_home": "Heim & Dekoration",
+  "category_home-decor": "Heim & Dekoration",
   "category_women": "Damenmode",
   "category_men": "Herrenkollektion",
   "category_kids": "Für kleine Entdecker",
@@ -15,6 +15,25 @@
   "cta_shop_now": "Jetzt einkaufen",
   "newsletter_title": "Bleiben Sie auf dem Laufenden",
   "newsletter_subtitle": "Abonnieren Sie unseren Newsletter und erfahren Sie als Erste/r von neuen Designs und Sonderangeboten.",
+  "close": "Schließen",
+  
+  "header": {
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "cart": "Warenkorb",
+    "welcome_user": "Willkommen, {{name}}",
+    "logout": "Abmelden",
+    "my_account": "Mein Konto",
+    "favorites": "Favoriten",
+    "menu": {
+      "open": "Menü öffnen",
+      "close": "Menü schließen",
+      "home": "Startseite",
+      "products": "Produkte",
+      "about": "Über uns",
+      "contact": "Kontakt"
+    }
+  },
   
   "product": {
     "price_not_available": "Preis nicht verfügbar",
@@ -71,30 +90,8 @@
     "story": "Wenn Sie jemals an einem magischen Ort waren, wissen Sie sehr gut, dass die Magie dieses Ortes nicht nur in seiner physischen Präsenz liegt, sondern darin, dass dieser Ort ein Teil von Ihnen selbst wird und dass in Ihnen eine Verbindung zu diesem Ort entsteht, sodass Sie in Gedanken jederzeit dorthin zurückkehren und diese Faszination immer wieder erleben können. Aus diesem Grund haben wir uns entschieden, HappyWilderness zu schaffen, um Ihnen ein Stück dieser Magie zu vermitteln und Ihnen zu helfen, aus Ihrem eigenen Zuhause einen außergewöhnlichen Ort zu machen, an dem Sie sich glücklich und erfüllt fühlen.",
     "quote": "Wir glauben, dass Mode mehr sein sollte als nur Kleidung - sie sollte ein Ausdruck Ihres einzigartigen Stils und Ihrer Werte sein."
   },
-  "footer": {
-    "about_title": "Über uns",
-    "about_text": "Originelle Kleidung mit künstlerischen Drucken. Jedes Stück wird individuell nach Ihren Wünschen gefertigt.",
-    "quick_links": "Schnellzugriff",
-    "products": "Produkte",
-    "about": "Über uns",
-    "contact": "Kontakt",
-    "terms": "AGB",
-    "privacy": "Datenschutz",
-    "categories": "Kategorien",
-    "tshirts": "T-Shirts",
-    "hoodies": "Hoodies",
-    "posters": "Poster",
-    "mugs": "Tassen",
-    "accessories": "Accessoires",
-    "contact_title": "Kontaktieren Sie uns",
-    "email": "E-Mail: info@vasbrand.cz",
-    "phone": "Telefon: +49 123 456 789",
-    "address": "Adresse: Ihre Straße 123, 12345 Berlin",
-    "brand": "VášBrand",
-    "rights": "Alle Rechte vorbehalten.",
-    "made_with_love": "Made with ❤️ in the Czech Republic. Powered by Next.js and Printful."
-  },
-  "login": "Anmelden",
-  "register": "Registrieren",
-  "cart": "Warenkorb"
+  
+  "Index": {
+    "description": "Professionelle Druckerei für alle Ihre Bedürfnisse"
+  }
 }

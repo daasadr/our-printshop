@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import { useCart } from '@/hooks/useCart';
 import { FiMenu, FiX, FiUser, FiHeart } from 'react-icons/fi';
 import { signOut, useSession } from 'next-auth/react';
@@ -15,6 +15,8 @@ const Header: React.FC = () => {
   const pathname = usePathname();
   const { items } = useCart();
   const session = useSession();
+  const params = useParams();
+  const lang = (params?.lang as string) || "cs";
   const { t } = useTranslation('common');
 
   // Sledování scrollu pro změnu stylu headeru
@@ -29,7 +31,7 @@ const Header: React.FC = () => {
 
   // Funkce pro zjištění, zda je odkaz aktivní
   const isActive = (path: string) => {
-    return pathname === path;
+    return pathname === `/${lang}${path}`;
   };
 
   return (
@@ -41,34 +43,36 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          {/* Logo */}
+          <Link href={`/${lang}`} className="text-2xl font-bold">
+            HappyWilderness
+          </Link>
 
           {/* Desktopová navigace */}
           <nav className="hidden md:flex items-center space-x-4">
             {session?.data ? (
               <>
                 <span className="text-gray-700">
-                  Vítejte, {session.data.user?.name || session.data.user?.email}
+                  {t('header.welcome_user', { name: session.data.user?.name || session.data.user?.email || '' })}
                 </span>
                 <button
                   onClick={() => signOut()}
                   className="p-2 text-gray-700 hover:text-blue-600"
                 >
-                  Odhlásit
+                  {t('header.logout')}
                 </button>
               </>
             ) : (
               <>
-                <Link href="/login" className="p-2 text-gray-700 hover:text-blue-600">
-                  {t('login')}
+                <Link href={`/${lang}/auth/signin`} className="p-2 text-gray-700 hover:text-blue-600">
+                  {t('header.login')}
                 </Link>
-                <Link href="/register" className="p-2 text-gray-700 hover:text-blue-600">
-                  {t('register')}
+                <Link href={`/${lang}/auth/signup`} className="p-2 text-gray-700 hover:text-blue-600">
+                  {t('header.register')}
                 </Link>
               </>
             )}
-            <Link href="/cart" className="p-2 text-gray-700 hover:text-blue-600 relative">
-              {t('cart')}
+            <Link href={`/${lang}/cart`} className="p-2 text-gray-700 hover:text-blue-600 relative">
+              {t('header.cart')}
               {items.length > 0 && (
                 <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {items.length}
@@ -80,7 +84,7 @@ const Header: React.FC = () => {
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-2 text-gray-700 md:hidden"
-              aria-label={isMenuOpen ? 'Zavřít menu' : 'Otevřít menu'}
+              aria-label={isMenuOpen ? t('header.menu.close') : t('header.menu.open')}
             >
               {isMenuOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
             </button>
@@ -88,10 +92,10 @@ const Header: React.FC = () => {
 
           {/* Akce uživatele + jazykový prepínač */}
           <div className="flex items-center space-x-4">
-            <Link href="/account" className="hidden sm:block p-2 text-gray-700 hover:text-blue-600">
+            <Link href={`/${lang}/account`} className="hidden sm:block p-2 text-gray-700 hover:text-blue-600">
               <FiUser className="w-5 h-5" />
             </Link>
-            <Link href="/wishlist" className="hidden sm:block p-2 text-gray-700 hover:text-blue-600">
+            <Link href={`/${lang}/wishlist`} className="hidden sm:block p-2 text-gray-700 hover:text-blue-600">
               <FiHeart className="w-5 h-5" />
             </Link>
             <div className="ml-2">
@@ -105,59 +109,43 @@ const Header: React.FC = () => {
           <div className="md:hidden mt-4 pb-4">
             <nav className="flex flex-col space-y-4">
               <Link
-                href="/"
+                href={`/${lang}`}
                 className={`text-base ${
                   isActive('/') ? 'text-blue-600 font-medium' : 'text-gray-700'
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                Domů
+                {t('header.menu.home')}
               </Link>
               <Link
-                href="/products"
+                href={`/${lang}/products`}
                 className={`text-base ${
-                  isActive('/products') || pathname.startsWith('/products/')
+                  isActive('/products') || pathname.startsWith(`/${lang}/products/`)
                     ? 'text-blue-600 font-medium'
                     : 'text-gray-700'
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                Produkty
+                {t('header.menu.products')}
               </Link>
               <Link
-                href="/about"
+                href={`/${lang}/about`}
                 className={`text-base ${
                   isActive('/about') ? 'text-blue-600 font-medium' : 'text-gray-700'
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                O nás
+                {t('header.menu.about')}
               </Link>
               <Link
-                href="/kontakt"
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  isActive('/kontakt') ? 'text-blue-600 font-medium' : 'text-gray-700'
+                href={`/${lang}/contact`}
+                className={`text-base ${
+                  isActive('/contact') ? 'text-blue-600 font-medium' : 'text-gray-700'
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                Kontakt
+                {t('header.menu.contact')}
               </Link>
-              <div className="pt-2 flex space-x-4 sm:hidden">
-                <Link
-                  href="/account"
-                  className="flex items-center text-gray-700"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <FiUser className="w-5 h-5 mr-2" /> Můj účet
-                </Link>
-                <Link
-                  href="/wishlist"
-                  className="flex items-center text-gray-700"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <FiHeart className="w-5 h-5 mr-2" /> Oblíbené
-                </Link>
-              </div>
             </nav>
           </div>
         )}

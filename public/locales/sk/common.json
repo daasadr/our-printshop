@@ -1,5 +1,5 @@
 {
-  "welcome": "Originálne oblečenie s autorskými potlačami",
+  "welcome": "Vitajte v našej tlačiarni",
   "subtitle": "Vyjadrite svoj jedinečný štýl s našimi kreatívnymi dizajnmi.",
   "cta_collection": "Pozrieť kolekciu",
   "cta_story": "Náš príbeh",
@@ -15,6 +15,25 @@
   "cta_shop_now": "Nakupovať teraz",
   "newsletter_title": "Zostaňte v obraze",
   "newsletter_subtitle": "Prihláste sa na odber noviniek a buďte prví, kto sa dozvie o nových dizajnoch a špeciálnych ponukách.",
+  "close": "Zavrieť",
+  
+  "header": {
+    "login": "Prihlásiť",
+    "register": "Registrovať",
+    "cart": "Košík",
+    "welcome_user": "Vitajte, {{name}}",
+    "logout": "Odhlásiť",
+    "my_account": "Môj účet",
+    "favorites": "Obľúbené",
+    "menu": {
+      "open": "Otvoriť menu",
+      "close": "Zavrieť menu",
+      "home": "Domov",
+      "products": "Produkty",
+      "about": "O nás",
+      "contact": "Kontakt"
+    }
+  },
   
   "product": {
     "price_not_available": "Cena nie je k dispozícii",
@@ -73,31 +92,7 @@
   },
   "title": "Naša tlačiareň",
   "description": "Profesionálna tlačiareň pre všetky vaše potreby",
-  "welcome": "Vitajte v našej tlačiarni",
-  "footer": {
-    "about_title": "O nás",
-    "about_text": "Originálne oblečenie s autorskými potlačami. Každý kus je vyrobený na mieru podľa vašich požiadaviek.",
-    "quick_links": "Rýchle odkazy",
-    "products": "Produkty",
-    "about": "O nás",
-    "contact": "Kontakt",
-    "terms": "Obchodné podmienky",
-    "privacy": "Ochrana súkromia",
-    "categories": "Kategórie",
-    "tshirts": "Tričká",
-    "hoodies": "Mikiny",
-    "posters": "Plagáty",
-    "mugs": "Hrnčeky",
-    "accessories": "Doplnky",
-    "contact_title": "Kontaktujte nás",
-    "email": "Email: info@vasbrand.cz",
-    "phone": "Telefón: +421 123 456 789",
-    "address": "Adresa: Vaša ulica 123, 123 45 Bratislava",
-    "brand": "VášBrand",
-    "rights": "Všetky práva vyhradené.",
-    "made_with_love": "Vyrobené s ❤️ na Slovensku. Powered by Next.js a Printful."
-  },
-  "login": "Prihlásiť sa",
-  "register": "Registrovať sa",
-  "cart": "Košík"
+  "Index": {
+    "description": "Profesionálna tlačiareň pre všetky vaše potreby"
+  }
 }

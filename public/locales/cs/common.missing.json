@@ -1,0 +1,23 @@
+{
+  "welcome": "welcome",
+  "subtitle": "subtitle",
+  "cta_collection": "cta_collection",
+  "cta_story": "cta_story",
+  "categories": "categories",
+  "category_home-decor": "category_home-decor",
+  "category_women": "category_women",
+  "category_men": "category_men",
+  "category_kids": "category_kids",
+  "newsletter": {
+    "placeholder": "newsletter.placeholder",
+    "subscribe": "newsletter.subscribe",
+    "privacy_notice": "newsletter.privacy_notice",
+    "privacy_policy": "newsletter.privacy_policy"
+  },
+  "Index": {
+    "description": "Index.description"
+  },
+  "Newsletter": {
+    "title": "Newsletter.title"
+  }
+}

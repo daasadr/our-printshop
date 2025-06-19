@@ -10,13 +10,13 @@ import NewsletterSignup from '@/components/NewsletterSignup';
 import { useTranslation } from 'next-i18next';
 
 export default function Home() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   return (
     <>
       <Head>
         <title>HappyWilderness</title>
-        <meta name="description" content="Originální oblečení s autorskými potisky" />
+        <meta name="description" content={t('Index.description')} />
       </Head>
       <Header />
       <main className="min-h-screen flex flex-col gap-16">

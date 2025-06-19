@@ -1,0 +1,30 @@
+{
+  "Index": {
+    "title": "Originálne oblečenie s autorskými potlačami",
+    "description": "Vyjadrite svoj jedinečný štýl s našimi kreatívnymi dizajnmi."
+  },
+  "Navigation": {
+    "home": "Domov",
+    "about": "O nás",
+    "products": "Produkty",
+    "contact": "Kontakt"
+  },
+  "Categories": {
+    "home": "Domov a dekorácie",
+    "women": "Štýlovo pre dámy",
+    "men": "Pánska kolekcia",
+    "kids": "Pre malých objaviteľov"
+  },
+  "Newsletter": {
+    "title": "Zostaňte v obraze",
+    "subtitle": "Prihláste sa na odber noviniek a buďte prví, kto sa dozvie o nových dizajnoch a špeciálnych ponukách."
+  },
+  "welcome": "Originálne oblečenie s autorskými potlačami",
+  "subtitle": "Vyjadrite svoj jedinečný štýl s našimi kreatívnymi dizajnmi.",
+  "cta_collection": "Pozrieť kolekciu",
+  "cta_story": "Náš príbeh",
+  "latest_products": "Najnovšie produkty",
+  "cta_ready": "Pripravení vyjadriť svoj štýl?",
+  "cta_subtitle": "Preskúmajte našu kolekciu a nájdite dizajn, ktorý vás vystihuje. Každý produkt je vyrobený s láskou k detailu.",
+  "cta_shop_now": "Nakupovať teraz"
+} 
