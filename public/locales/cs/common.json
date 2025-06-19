@@ -1,10 +1,7 @@
 {
-<<<<<<< Updated upstream
-=======
   "Index": {
     "description": "Profesionální tiskárna pro všechny vaše potřeby"
   },
->>>>>>> Stashed changes
   "welcome": "Vítejte v naší tiskárně",
   "subtitle": "Vyjádřete svůj jedinečný styl s našimi kreativními designy.",
   "cta_collection": "Prohlédnout kolekci",
@@ -96,9 +93,8 @@
     "story": "Jestli jste někdy byli na nějakém kouzelném místě, moc dobře víte, že kouzlo toho místa není jen v samotné fyzické přítomnosti ale v tom, že se to místo stane součástí vás samotných a že ve vás se utvoří spojení s tímto místem, takže se na něj můžete v myšlenkách kdykoliv vracet a prožívat to okouzlení stále znovu a znovu. Z tohoto důvodu jsme se rozhodli vytvořit HappyWilderness, abychom vám mohli předat kousek tohoto kouzla a pomoci vám vytvořit si z vlastního domova nevšední místo, kde se budete cítit šťastní a naplnění.",
     "quote": "Věříme, že móda má být víc než jen oblečení - má být vyjádřením vašeho jedinečného stylu a hodnot."
   },
-<<<<<<< Updated upstream
-  "title": "Naše tlačiareň",
-  "description": "Profesionálna tlačiareň pre všetky vaše potreby",
+  "title": "Vítejte v naší tiskárně",
+  "description": "Profesionální tiskárna pro všechny vaše potřeby",
   "footer": {
     "about_title": "O nás",
     "about_text": "Originální oblečení s autorskými potisky. Každý kus je vyroben na míru podle vašich požadavků.",
@@ -121,12 +117,5 @@
     "brand": "VášBrand",
     "rights": "Všechna práva vyhrazena.",
     "made_with_love": "Vyrobeno s ❤️ v České republice. Powered by Next.js a Printful."
-  },
-  "login": "Přihlásit se",
-  "register": "Registrovat se",
-  "cart": "Košík"
-=======
-  "title": "Vítejte v naší tiskárně",
-  "description": "Profesionální tiskárna pro všechny vaše potřeby"
->>>>>>> Stashed changes
+  }
 }
