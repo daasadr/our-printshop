@@ -71,7 +71,7 @@ const Footer: React.FC = () => {
         <div className="mt-12 pt-8 border-t border-gray-200 text-center text-gray-500 text-sm">
           <p>&copy; {new Date().getFullYear()} {t('footer.brand')}. {t('footer.rights')}</p>
           <p className="mt-2">
-            {t('footer.made_with_love')}
+            {t('footer.made_in_country')}
           </p>
         </div>
       </div>
