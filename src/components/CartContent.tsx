@@ -3,12 +3,18 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/hooks/useCart';
-import { formatPriceByLocale, convertEurToCzkSync, convertEurToGbpSync } from '@/utils/currency';
+import { formatPriceByLocale, detectUserCountry } from '@/utils/currency';
 import { useRouter } from 'next/router';
+import { useState, useEffect } from 'react';
 
 export default function CartContent() {
   const { items, updateQuantity, removeFromCart, totalPrice } = useCart();
   const { locale = 'cs' } = useRouter();
+  const [country, setCountry] = useState<string | null>(null);
+
+  useEffect(() => {
+    detectUserCountry().then(setCountry);
+  }, []);
 
   if (items.length === 0) {
     return (
@@ -44,7 +50,7 @@ export default function CartContent() {
                 {item.name}
               </h3>
               <p className="text-green-300">
-                {formatPriceByLocale(locale === 'cs' ? convertEurToCzkSync(item.price) : (locale === 'en-GB' ? convertEurToGbpSync(item.price) : item.price), locale)}
+                {formatPriceByLocale(item.price, locale, country || undefined)}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -75,7 +81,7 @@ export default function CartContent() {
         <div className="flex justify-between items-center text-white">
           <span className="text-lg">Celková cena:</span>
           <span className="text-2xl font-bold text-green-300">
-            {formatPriceByLocale(locale === 'cs' ? convertEurToCzkSync(totalPrice) : (locale === 'en-GB' ? convertEurToGbpSync(totalPrice) : totalPrice), locale)}
+            {formatPriceByLocale(totalPrice, locale, country || undefined)}
           </span>
         </div>
         <div className="mt-4">

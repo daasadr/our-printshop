@@ -74,7 +74,7 @@ export async function detectUserCountry(): Promise<string | null> {
 
 // Upravená funkcia na formátovanie ceny podľa locale a krajiny
 export function formatPriceByLocale(price: number, locale: string, country?: string): string {
-  // Najprv aplikujeme cenový multiplikátor podľa krajiny
+  // Aplikujeme cenový multiplikátor podľa krajiny
   const adjustedPrice = applyMarketMultiplier(price, country || null);
   
   if (locale === 'cs') {

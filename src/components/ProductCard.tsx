@@ -15,21 +15,13 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [country, setCountry] = useState<string | null>(null);
 
   useEffect(() => {
-    if (locale === 'en') {
-      detectUserCountry().then(setCountry);
-    }
-  }, [locale]);
+    detectUserCountry().then(setCountry);
+  }, []);
 
-  let displayPrice = price;
-  if (locale === 'cs') {
-    displayPrice = convertEurToCzkSync(price);
-  } else if (locale === 'en' && country === 'GB') {
-    displayPrice = convertEurToGbpSync(price);
-  }
   const previewUrl =
     product.designs[0]?.previewUrl && product.designs[0]?.previewUrl.startsWith('http')
       ? product.designs[0].previewUrl
-      : '/placeholder.jpg';
+      : product.image || '/placeholder.jpg';
   
   return (
     <Link href={`/products/${product.id}`} className="group">

@@ -1,72 +1,66 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { PrismaProduct, FormattedProduct, ProductInclude } from '@/types/prisma';
-import { convertEurToCzk } from '@/utils/currency';
 import prisma from '@/lib/prisma';
+import type { ProductWithRelations, FormattedProduct } from '@/types/prisma';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  console.log('HIT /api/products/latest');
   try {
-    const include: ProductInclude = {
-      variants: {
-        where: { isActive: true },
-        orderBy: { price: 'asc' },
-      },
-      designs: true,
-      category: true,
-    };
-
-    const products = await prisma.product.findMany({
+    const products: ProductWithRelations[] = await prisma.product.findMany({
       where: {
         isActive: true,
+        variants: {
+          some: {
+            isActive: true,
+          },
+        },
       },
-      include,
+      include: {
+        variants: {
+          where: { isActive: true },
+          orderBy: { price: 'asc' },
+        },
+        designs: true,
+        category: true,
+        collection: true,
+      },
       orderBy: {
         createdAt: 'desc',
       },
-      take: 4,
-    }) as unknown as PrismaProduct[];
+      take: 50,
+    });
 
-    const formattedProducts: FormattedProduct[] = await Promise.all(products.map(async product => {
-      const convertedVariants = await Promise.all(product.variants.map(async variant => ({
-        ...variant,
-        price: await convertEurToCzk(variant.price)
-      })));
+    const formattedProducts: FormattedProduct[] = products.map((product) => {
+      const firstVariant = product.variants[0];
+      const firstDesign = product.designs[0];
 
-      const originalPreviewUrl = product.designs[0]?.previewUrl || '';
-      let processedPreviewUrl = '';
-      if (originalPreviewUrl) {
-        if (originalPreviewUrl.startsWith('http')) {
-          processedPreviewUrl = originalPreviewUrl;
-        } else {
-          processedPreviewUrl = `https://${originalPreviewUrl}`;
-        }
-      }
+      const getImageUrl = () => {
+        if (!firstDesign?.previewUrl) return '/images/placeholder.jpg';
+        return firstDesign.previewUrl.startsWith('http')
+          ? firstDesign.previewUrl
+          : `https://${firstDesign.previewUrl}`;
+      };
 
       return {
         id: product.id,
         name: product.name,
         description: product.description,
-        previewUrl: processedPreviewUrl,
-        price: product.variants[0]?.price ? await convertEurToCzk(product.variants[0].price) : 0,
-        variants: convertedVariants,
+        price: firstVariant?.price || 0,
+        image: getImageUrl(),
+        variants: product.variants,
         designs: product.designs.map(({ productId, ...design }) => design),
-        isActive: product.isActive,
-        createdAt: product.createdAt,
-        updatedAt: product.updatedAt,
-        category: product.category?.name || '',
-        categoryId: product.categoryId,
-        printfulId: product.printfulId,
-        printfulSync: product.printfulSync
+        category: product.category,
+        collection: product.collection,
+        collectionId: product.collectionId,
       };
-    }));
+    });
 
     return NextResponse.json(formattedProducts);
   } catch (error) {
     console.error('Error fetching latest products:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+    return new NextResponse(
+      JSON.stringify({ error: 'Internal Server Error' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 }

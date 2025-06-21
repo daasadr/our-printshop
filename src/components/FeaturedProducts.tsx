@@ -22,10 +22,8 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
   const [country, setCountry] = useState<string | null>(null);
 
   useEffect(() => {
-    if (locale === 'en') {
-      detectUserCountry().then(setCountry);
-    }
-  }, [locale]);
+    detectUserCountry().then(setCountry);
+  }, []);
 
   if (products.length === 0) {
     return <ProductPlaceholders locale={locale} />;
@@ -65,10 +63,8 @@ const ProductPlaceholders: React.FC<{ locale: string }> = ({ locale }) => {
   const [country, setCountry] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    if (locale === 'en') {
-      detectUserCountry().then(setCountry);
-    }
-  }, [locale]);
+    detectUserCountry().then(setCountry);
+  }, []);
 
   // Ukázkové produkty
   const placeholders = [

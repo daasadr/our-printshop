@@ -28,13 +28,13 @@ export const MARKET_PRICE_MULTIPLIERS = {
   
   // Ostatné
   'GB': 1.0,   // UK - zatiaľ bez konverzie
-  'DEFAULT': 1.0
+  'DEFAULT': 1.15 // Predvolená cena pre západný trh
 };
 
 // Funkcia na získanie multiplikátora pre danú krajinu
 export function getMarketMultiplier(country: string | null): number {
   if (!country) return MARKET_PRICE_MULTIPLIERS.DEFAULT;
-  return MARKET_PRICE_MULTIPLIERS[country as keyof typeof MARKET_PRICE_MULTIPLIERS] || MARKET_PRICE_MULTIPLIERS.DEFAULT;
+  return MARKET_PRICE_MULTIPLIERS[country.toUpperCase() as keyof typeof MARKET_PRICE_MULTIPLIERS] || MARKET_PRICE_MULTIPLIERS.DEFAULT;
 }
 
 // Funkcia na aplikovanie cenového multiplikátora

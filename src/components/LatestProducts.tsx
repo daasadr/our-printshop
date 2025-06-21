@@ -4,17 +4,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-// import { useCart } from '@/hooks/useCart';
 import { FormattedProduct } from '@/types/prisma';
-import { formatPriceByLocale, convertEurToCzkSync, convertEurToGbpSync, detectUserCountry } from '@/utils/currency';
-import { getSimilarProductsByCollections } from '@/utils/similarProducts';
-
-const FEATURED_IDS = [
-  '382862008', // Drawstring bag
-  '382861448', // Tote bag
-  '381597946', // Don't live in a comfort zone Unisex Hoodie
-  '377907594', // Ancient Heroine Skater Dress white
-];
+import { formatPriceByLocale, detectUserCountry } from '@/utils/currency';
 
 type LatestProductsProps = {
   limit?: number;
@@ -28,18 +19,15 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ limit = 4 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [country, setCountry] = useState<string | null>(null);
-//   const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchLatestProducts = async () => {
       try {
         setError(null);
         const response = await fetch(`/api/products`);
-        
         if (!response.ok) {
           throw new Error(t('error.server_error', { status: response.status, statusText: response.statusText }));
         }
-        
         const data = await response.json();
         setProducts(data);
       } catch (error) {
@@ -49,33 +37,24 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ limit = 4 }) => {
         setIsLoading(false);
       }
     };
-
     fetchLatestProducts();
-  }, []);
+  }, [t]);
 
   useEffect(() => {
-    if (locale === 'en') {
-      detectUserCountry().then(setCountry);
-    }
-  }, [locale]);
+    detectUserCountry().then(setCountry);
+  }, []);
 
-  // Funkcia na výber náhodných N produktov
   const getRandomProducts = React.useCallback((arr: FormattedProduct[], n: number) => {
     if (!arr || arr.length === 0) return [];
     const shuffled = arr.slice().sort(() => 0.5 - Math.random());
     return shuffled.slice(0, Math.min(n, arr.length));
   }, []);
 
-  // Rotácia produktov každých 8 sekúnd
   useEffect(() => {
     if (!products || products.length === 0) return;
-    
-    // Nastavíme prvý výber hneď po načítaní
     setDisplayed(getRandomProducts(products, limit));
-    
     const interval = setInterval(() => {
       setDisplayed(prev => {
-        // Zabezpečíme, že nový výber bude iný ako predchádzajúci
         let newSelection;
         do {
           newSelection = getRandomProducts(products, limit);
@@ -83,26 +62,12 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ limit = 4 }) => {
         return newSelection;
       });
     }, 8000);
-    
     return () => clearInterval(interval);
   }, [products, limit, getRandomProducts]);
 
-//   const handleAddToCart = (product: FormattedProduct) => {
-//     // Přidáme produkt do košíku pouze pokud má varianty
-//     if (product.variants && product.variants.length > 0) {
-//       addToCart({
-//         variantId: product.variants[0].id,
-//         quantity: 1,
-//         name: `${product.name}`,
-//         price: product.price,
-//         image: product.previewUrl || ''
-//       });
-//     }
-//   };
-
   const processImageUrl = (url: string | null): string => {
     if (!url || url === '/images/placeholder.jpg') {
-      return '/placeholder.jpg';
+      return '/images/placeholder.jpg';
     }
     return url.startsWith('http') ? url : `https://${url}`;
   };
@@ -112,80 +77,44 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ limit = 4 }) => {
   }
 
   if (error) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-red-500">{error}</p>
-      </div>
-    );
+    return <div className="text-center py-8"><p className="text-red-500">{error}</p></div>;
   }
 
   if (!displayed || displayed.length === 0) {
-    return <ProductPlaceholders />;
+    return <ProductPlaceholders limit={limit} />;
   }
-
-  const sortedProducts = getSimilarProductsByCollections(products, { id: '', collections: [] } as any, products.length);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {sortedProducts.slice(0, limit || 4).map((product) => (
-        <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
-          <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
-            <Image
-              src={processImageUrl(product.image)}
-              alt={product.name}
-              width={500}
-              height={500}
-              className="h-full w-full object-cover object-center group-hover:opacity-75"
-              onError={(e) => {
-                console.error(t('error.image_load', { product: product.name }), e);
-                const target = e.target as HTMLImageElement;
-                target.src = '/images/placeholder.jpg';
-              }}
-            />
-          </div>
-         
-          <div className="p-4">
-            <Link href={`/products/${product.id}`}>
-              <h3 className="text-sm font-medium text-gray-900 hover:text-blue-600">
-                {product.name}
-              </h3>
+      {displayed.map((product) => (
+        <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+          <Link href={`/${locale}/products/${product.id}`} className="block">
+            <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-t-lg bg-gray-200">
+              <Image
+                src={processImageUrl(product.image)}
+                alt={product.name}
+                width={500}
+                height={500}
+                className="h-full w-full object-cover object-center transition-opacity duration-300 group-hover:opacity-80"
+                onError={(e) => {
+                  console.error(t('error.image_load', { product: product.name }), e);
+                  (e.target as HTMLImageElement).src = '/images/placeholder.jpg';
+                }}
+              />
+            </div>
+          </Link>
+          <div className="p-4 flex flex-col flex-grow">
+            <Link href={`/${locale}/products/${product.id}`} className="block">
+              <h3 className="text-sm font-semibold text-gray-800 hover:text-blue-600 truncate">{product.name}</h3>
             </Link>
-            
-            <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-              {product.description}
-            </p>
-            
-            <div className="mt-4 flex justify-between items-center">
-              {product.price > 0 ? (
-                <p className="text-lg font-medium text-gray-900">
-                  {formatPriceByLocale(product.price, locale, country || undefined)}
-                </p>
-              ) : (
-                <p className="text-sm text-gray-500">
-                  {t('product.price_not_available')}
-                </p>
-              )}
-              
-              <button
-                className={`px-3 py-1.5 ${
-                  product.variants && product.variants.length > 0 
-                    ? 'bg-blue-600 hover:bg-blue-700' 
-                    : 'bg-gray-400 cursor-not-allowed'
-                } text-white text-sm font-medium rounded-md transition-colors`}
-                disabled={!product.variants || product.variants.length === 0}
-              >
+            <div className="mt-auto pt-4 flex justify-between items-center">
+              <p className="text-lg font-bold text-gray-900">
+                {formatPriceByLocale(product.price, locale, country || undefined)}
+              </p>
+              <button className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors">
                 {t('product.add_to_cart')}
               </button>
             </div>
-
-            <div className="mt-1 text-sm text-gray-500">
-              {product.shippingPrice 
-                ? t('product.shipping_range', { 
-                    min: formatPriceByLocale(product.shippingPrice.min, locale, country || undefined),
-                    max: formatPriceByLocale(product.shippingPrice.max, locale, country || undefined)
-                  })
-                : t('product.shipping_by_country')}
-            </div>
           </div>
         </div>
       ))}
@@ -193,77 +122,41 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ limit = 4 }) => {
   );
 };
 
-// Komponenta pro načítání produktů
-const ProductsLoading: React.FC = () => {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {[1, 2, 3, 4].map((index) => (
-        <div key={index} className="animate-pulse">
-          <div className="aspect-square bg-gray-200 rounded-lg mb-4"></div>
-          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
-          <div className="h-10 bg-gray-200 rounded"></div>
-        </div>
-      ))}
-    </div>
-  );
-};
+const ProductsLoading: React.FC = () => (
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    {[...Array(4)].map((_, index) => (
+      <div key={index} className="animate-pulse">
+        <div className="aspect-square bg-gray-200 rounded-lg mb-4"></div>
+        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+        <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+      </div>
+    ))}
+  </div>
+);
 
-// Placeholder pro produkt, když nemáme data
-const ProductPlaceholders: React.FC = () => {
-  // Ukázkové produkty
-  const placeholders = [
-    {
-      id: 'placeholder-1',
-      name: 'Tričko "Minimalistický design"',
-      price: 599,
-    },
-    {
-      id: 'placeholder-2',
-      name: 'Mikina "Urban Style"',
-      price: 1299,
-    },
-    {
-      id: 'placeholder-3',
-      name: 'Plakát "Geometric Art"',
-      price: 349,
-    },
-    {
-      id: 'placeholder-4',
-      name: 'Hrnek "Morning Coffee"',
-      price: 299,
-    },
-  ];
-
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {placeholders.map((product) => (
-        <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md">
-          <div className="aspect-square overflow-hidden">
-            <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
-              Obrázek produktu
-            </div>
-          </div>
-         
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-gray-900">{product.name}</h3>
-            <p className="mt-1 text-sm text-gray-500">Více variant</p>
-            <div className="mt-4 flex justify-between items-center">
-              <p className="text-lg font-medium text-gray-900">
-                {formatPriceByLocale(product.price, 'cs')}
-              </p>
-              <button
-                className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
-              >
-                Do košíku
-              </button>
-            </div>
-          </div>
+const ProductPlaceholders: React.FC<{ limit: number }> = ({ limit }) => {
+    const { t } = useTranslation('common');
+    const { locale = 'cs' } = useRouter();
+    return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(limit)].map((_, i) => (
+                <div key={i} className="group relative bg-white rounded-lg overflow-hidden shadow-md">
+                    <div className="aspect-square overflow-hidden">
+                        <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
+                            <svg className="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l-1.586-1.586a2 2 0 00-2.828 0L6 14m6-6l.01.01"></path></svg>
+                        </div>
+                    </div>
+                    <div className="p-4">
+                        <h3 className="text-sm font-medium text-gray-900">Načítání produktu...</h3>
+                        <div className="mt-4 flex justify-between items-center">
+                            <p className="text-lg font-medium text-gray-900">{formatPriceByLocale(0, locale)}</p>
+                            <div className="px-3 py-1.5 bg-gray-400 text-white text-sm font-medium rounded-md">{t('product.add_to_cart')}</div>
+                        </div>
+                    </div>
+                </div>
+            ))}
         </div>
-      ))}
-    </div>
-  );
+    );
 };
 
 export default LatestProducts;

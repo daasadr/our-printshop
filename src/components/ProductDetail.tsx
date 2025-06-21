@@ -53,10 +53,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   const [country, setCountry] = useState<string | null>(null);
   
   useEffect(() => {
-    if (locale === 'en') {
-      detectUserCountry().then(setCountry);
-    }
-  }, [locale]);
+    detectUserCountry().then(setCountry);
+  }, []);
   
   // Funkce pro získání dostupných velikostí
   const getAvailableSizes = () => {
@@ -160,15 +158,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   // Zkontrolujeme, zda máme varianty
   const hasVariants = product.variants && product.variants.length > 0;
   
-  let displayPrice = selectedVariant ? selectedVariant.price : null;
-  if (selectedVariant) {
-    if (locale === 'cs') {
-      displayPrice = convertEurToCzkSync(selectedVariant.price);
-    } else if (locale === 'en' && country === 'GB') {
-      displayPrice = convertEurToGbpSync(selectedVariant.price);
-    }
-  }
-  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       {/* Obrázek produktu */}
@@ -198,7 +187,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         <div className="mb-6">
           <h2 className="text-lg font-medium mb-2">Cena</h2>
           <p className="text-2xl font-bold text-blue-600">
-            {displayPrice !== null ? formatPriceByLocale(displayPrice, locale, country || undefined) : 'Není k dispozici'}
+            {selectedVariant ? formatPriceByLocale(selectedVariant.price, locale, country || undefined) : 'Není k dispozici'}
           </p>
         </div>
         
