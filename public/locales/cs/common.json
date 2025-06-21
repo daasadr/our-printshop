@@ -25,7 +25,7 @@
     "register": "Registrovat",
     "cart": "Košík",
     "welcome_user": "Vítejte, {{name}}",
-    "logout": "Odhlásit",
+    "logout": "Odhlásit se",
     "my_account": "Můj účet",
     "favorites": "Oblíbené",
     "menu": {
@@ -116,6 +116,27 @@
     "address": "Adresa: Vaše ulice 123, 123 45 Praha",
     "brand": "VášBrand",
     "rights": "Všechna práva vyhrazena.",
-    "made_in_country": "Vyrobeno s ❤️ v České republice. Vytvořeno s pomocí Next.js a Printful."
-  }
+    "made_in_country": "Vyrobeno s ❤️ v České republice. Vytvořeno s pomocí Next.js a Printful.",
+    "made_in": "Vyrobeno v České republice/Slovenské republice",
+    "all_rights_reserved": "Všechna práva vyhrazena"
+  },
+  "filter_color": "Barva",
+  "filter_size": "Velikost",
+  "filter_all_colors": "Všechny barvy",
+  "filter_all_sizes": "Všechny velikosti",
+  "product_filter_title": "Filtr produktů",
+  "category": "Kategorie",
+  "all_categories": "Všechny kategorie",
+  "color": "Barva",
+  "all_colors": "Všechny barvy",
+  "size": "Velikost",
+  "all_sizes": "Všechny velikosti",
+  "price_from": "Cena od (Kč)",
+  "price_to": "Cena do (Kč)",
+  "product_name": "Název produktu",
+  "show_results": "Zobrazit výsledky",
+  "reset_filters": "Resetovat filtry",
+  "min_placeholder": "Min",
+  "max_placeholder": "Max",
+  "search_placeholder": "Hledat..."
 }

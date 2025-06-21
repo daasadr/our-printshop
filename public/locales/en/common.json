@@ -113,9 +113,30 @@
     "address": "Address: Your Street 123, 12345 City",
     "brand": "YourBrand",
     "rights": "All rights reserved.",
-    "made_in_country": "Made with ❤️ in the Czech Republic/Slovakia. Powered by Next.js and Printful."
+    "made_in_country": "Made with ❤️ in the Czech Republic/Slovakia. Powered by Next.js and Printful.",
+    "made_in": "Made in the Czech Republic/Slovak Republic",
+    "all_rights_reserved": "All rights reserved"
   },
   "Index": {
     "description": "Professional printing for all your needs"
-  }
+  },
+  "filter_color": "Color",
+  "filter_size": "Size",
+  "filter_all_colors": "All colors",
+  "filter_all_sizes": "All sizes",
+  "product_filter_title": "Product Filter",
+  "category": "Category",
+  "all_categories": "All categories",
+  "color": "Color",
+  "all_colors": "All colors",
+  "size": "Size",
+  "all_sizes": "All sizes",
+  "price_from": "Price from",
+  "price_to": "Price to",
+  "product_name": "Product name",
+  "show_results": "Show results",
+  "reset_filters": "Reset filters",
+  "min_placeholder": "Min",
+  "max_placeholder": "Max",
+  "search_placeholder": "Search..."
 }

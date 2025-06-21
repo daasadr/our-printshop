@@ -22,7 +22,7 @@
     "register": "Registrovať",
     "cart": "Košík",
     "welcome_user": "Vitajte, {{name}}",
-    "logout": "Odhlásiť",
+    "logout": "Odhlásiť sa",
     "my_account": "Môj účet",
     "favorites": "Obľúbené",
     "menu": {
@@ -115,10 +115,28 @@
     "address": "Adresa: Vaša ulica 123, 123 45 Bratislava",
     "brand": "VášBrand",
     "rights": "Všetky práva vyhradené.",
-    "made_in_country": "Vyrobené s ❤️ v Slovenskej republike. Vytvorené s pomocou Next.js a Printful."
+    "made_in_country": "Vyrobené s ❤️ v Slovenskej republike. Vytvorené s pomocou Next.js a Printful.",
+    "made_in": "Vyrobené v Českej republike/Slovenskej republike",
+    "all_rights_reserved": "Všetky práva vyhradené"
   },
   
   "Index": {
     "description": "Profesionálna tlačiareň pre všetky vaše potreby"
-  }
+  },
+  
+  "product_filter_title": "Filter produktov",
+  "category": "Kategória",
+  "all_categories": "Všetky kategórie",
+  "color": "Farba",
+  "all_colors": "Všetky farby",
+  "size": "Veľkosť",
+  "all_sizes": "Všetky veľkosti",
+  "price_from": "Cena od (€)",
+  "price_to": "Cena do (€)",
+  "product_name": "Názov produktu",
+  "show_results": "Zobraziť výsledky",
+  "reset_filters": "Resetovať filtre",
+  "min_placeholder": "Min",
+  "max_placeholder": "Max",
+  "search_placeholder": "Hľadať..."
 }
