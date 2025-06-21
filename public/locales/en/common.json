@@ -55,7 +55,23 @@
       "invalid_email": "Please enter a valid email address.",
       "subscription_failed": "An error occurred while subscribing.",
       "generic": "Sorry, an error occurred. Please try again later."
-    }
+    },
+    "subscribe_title": "Subscribe to our newsletter",
+    "subscribe_subtitle": "Get the latest news and offers straight to your inbox.",
+    "email_subject": "Welcome to our newsletter!",
+    "email_greeting": "Hello,",
+    "email_body": "Thank you for subscribing to our newsletter! Look forward to exclusive offers, design news, and inspiration straight to your inbox.",
+    "email_unsubscribe_info": "If you wish to unsubscribe, click the link below:",
+    "email_unsubscribe_link": "Unsubscribe from newsletter",
+    "unsubscribe_title": "Sorry to see you go",
+    "unsubscribe_subtitle": "Please let us know why you're unsubscribing.",
+    "unsubscribe_reason_label": "Reason for unsubscribing (optional)",
+    "unsubscribe_reason_too_many": "I receive too many emails",
+    "unsubscribe_reason_not_relevant": "The content isn't relevant",
+    "unsubscribe_reason_other": "Other",
+    "unsubscribe_button": "Unsubscribe",
+    "unsubscribe_success": "You have been successfully unsubscribed.",
+    "unsubscribing": "Unsubscribing..."
   },
   
   "error": {
@@ -138,5 +154,10 @@
   "reset_filters": "Reset filters",
   "min_placeholder": "Min",
   "max_placeholder": "Max",
-  "search_placeholder": "Search..."
+  "search_placeholder": "Search...",
+  "sort_by": "Sort by",
+  "sort_default": "Default",
+  "sort_price_asc": "Price: Low to High",
+  "sort_price_desc": "Price: High to Low",
+  "sort_name_asc": "Name: A-Z"
 }

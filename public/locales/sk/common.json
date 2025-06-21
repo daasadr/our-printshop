@@ -55,7 +55,23 @@
       "invalid_email": "Zadajte prosím platnú e-mailovú adresu.",
       "subscription_failed": "Nastala chyba pri prihlasovaní k odberu.",
       "generic": "Prepáčte, nastala chyba. Skúste to prosím neskôr."
-    }
+    },
+    "subscribe_title": "Prihláste sa na odber noviniek",
+    "subscribe_subtitle": "Získajte najnovšie správy a ponuky priamo do vašej schránky.",
+    "email_subject": "Vitajte v našom newslettri!",
+    "email_greeting": "Dobrý deň,",
+    "email_body": "Ďakujeme za prihlásenie na odber nášho newslettra! Tešte sa na exkluzívne ponuky, novinky zo sveta dizajnu a inšpiráciu priamo do vašej schránky.",
+    "email_unsubscribe_info": "Ak si prajete odber zrušiť, kliknite na odkaz nižšie:",
+    "email_unsubscribe_link": "Zrušiť odber newslettra",
+    "unsubscribe_title": "Je nám ľúto, že odchádzate",
+    "unsubscribe_subtitle": "Dajte nám, prosím, vedieť, prečo si prajete zrušiť odber.",
+    "unsubscribe_reason_label": "Dôvod odhlásenia (nepovinné)",
+    "unsubscribe_reason_too_many": "Dostávam príliš veľa e-mailov",
+    "unsubscribe_reason_not_relevant": "Obsah nie je relevantný",
+    "unsubscribe_reason_other": "Iný dôvod",
+    "unsubscribe_button": "Zrušiť odber",
+    "unsubscribe_success": "Boli ste úspešne odhlásení.",
+    "unsubscribing": "Odhlasovanie..."
   },
   
   "error": {
@@ -138,5 +154,10 @@
   "reset_filters": "Resetovať filtre",
   "min_placeholder": "Min",
   "max_placeholder": "Max",
-  "search_placeholder": "Hľadať..."
+  "search_placeholder": "Hľadať...",
+  "sort_by": "Zoradiť podľa",
+  "sort_default": "Predvolené",
+  "sort_price_asc": "Ceny: od najlacnejších",
+  "sort_price_desc": "Ceny: od najdrahších",
+  "sort_name_asc": "Názvu: A-Z"
 }

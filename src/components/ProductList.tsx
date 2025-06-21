@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { formatPriceByLocale, detectUserCountry } from '@/utils/currency';
 
@@ -17,7 +17,11 @@ interface Product {
   printfulId: string;
 }
 
-export function ProductList() {
+interface ProductListProps {
+  sortOrder: string;
+}
+
+export function ProductList({ sortOrder }: ProductListProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -72,6 +76,25 @@ export function ProductList() {
     fetchProducts();
   }, [searchParams]);
 
+  const sortedProducts = useMemo(() => {
+    let sorted = [...products];
+    switch (sortOrder) {
+      case 'price_asc':
+        sorted.sort((a, b) => a.price - b.price);
+        break;
+      case 'price_desc':
+        sorted.sort((a, b) => b.price - a.price);
+        break;
+      case 'name_asc':
+        sorted.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      default:
+        // 'default' order is the order from the API
+        break;
+    }
+    return sorted;
+  }, [products, sortOrder]);
+
   if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -100,7 +123,7 @@ export function ProductList() {
     );
   }
 
-  if (products.length === 0) {
+  if (sortedProducts.length === 0) {
     return (
       <div className="text-center py-8">
         <p className="text-gray-500">Nenašli sa žiadne produkty</p>
@@ -110,7 +133,7 @@ export function ProductList() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {products.map((product) => (
+      {sortedProducts.map((product) => (
         <div key={product.id} className="bg-white/5 backdrop-blur-md rounded-lg overflow-hidden transition-transform hover:scale-105">
           <div className="relative aspect-square">
             <img

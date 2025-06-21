@@ -1,7 +1,7 @@
 "use client";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
+// import Image from "next/image"; // We'll use the standard <img> tag
 import { useState } from "react";
 import { useTranslation } from "next-i18next";
 
@@ -14,12 +14,11 @@ export default function Hero() {
   return (
     <div className="max-w-2xl mx-auto text-center">
       <div className="relative w-full h-64 mb-8 rounded-lg overflow-hidden shadow-lg flex items-center justify-center">
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           src="/images/tropical-jungle.jpg"
           alt={t('about.hero_alt')}
-          fill
-          className="object-cover object-center"
-          priority
+          className="absolute inset-0 w-full h-full object-cover object-center"
         />
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <h1 className="text-5xl md:text-6xl font-extrabold text-white drop-shadow-2xl mb-2" style={{textShadow: '0 4px 24px #000, 0 1px 2px #000'}}>HappyWilderness</h1>

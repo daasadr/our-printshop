@@ -1,21 +1,28 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
 
 const NewsletterSignup: React.FC = () => {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [message, setMessage] = useState('');
+  const [messageKey, setMessageKey] = useState('');
+  
+  useEffect(() => {
+    if (status !== 'idle') {
+      setStatus('idle');
+      setMessageKey('');
+    }
+  }, [i18n.language]);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!email) {
       setStatus('error');
-      setMessage(t('newsletter.error.email_required'));
+      setMessageKey('newsletter.error.email_required');
       return;
     }
     
@@ -23,11 +30,12 @@ const NewsletterSignup: React.FC = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setStatus('error');
-      setMessage(t('newsletter.error.invalid_email'));
+      setMessageKey('newsletter.error.invalid_email');
       return;
     }
     
     setStatus('loading');
+    setMessageKey('');
     
     try {
       // Zde by bylo připojení k vašemu API pro odběr novinek
@@ -36,20 +44,24 @@ const NewsletterSignup: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, lang: i18n.language }),
       });
       
+      const data = await response.json();
+      
       if (!response.ok) {
-        throw new Error(t('newsletter.error.subscription_failed'));
+        setStatus('error');
+        setMessageKey(data.messageKey || 'newsletter.error.subscription_failed');
+        return;
       }
       
       setStatus('success');
-      setMessage(t('newsletter.success'));
+      setMessageKey(data.messageKey || 'newsletter.success');
       setEmail('');
     } catch (error) {
       console.error('Newsletter subscription error:', error);
       setStatus('error');
-      setMessage(t('newsletter.error.generic'));
+      setMessageKey('newsletter.error.generic');
     }
   };
   
@@ -78,12 +90,12 @@ const NewsletterSignup: React.FC = () => {
           </button>
         </div>
         
-        {status === 'success' && (
-          <p className="mt-2 text-sm text-green-600">{message}</p>
+        {status === 'success' && messageKey && (
+          <p className="mt-2 text-sm text-green-600">{t(messageKey)}</p>
         )}
         
-        {status === 'error' && (
-          <p className="mt-2 text-sm text-red-600">{message}</p>
+        {status === 'error' && messageKey && (
+          <p className="mt-2 text-sm text-red-600">{t(messageKey)}</p>
         )}
         
         <p className="mt-3 text-xs text-gray-500">
