@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
-// import Image from 'next/image'; // We'll use the standard <img> tag
+import Image from 'next/image';
 import { useTranslation } from 'next-i18next';
 
 interface Category {
@@ -69,11 +69,12 @@ const CategoryTiles: React.FC<CategoryTilesProps> = ({
             className="group relative rounded-lg overflow-hidden aspect-[4/3] bg-black/40 backdrop-blur-sm 
                      transition-transform hover:scale-105 hover:shadow-xl"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={category.image}
               alt={t(`category_${category.name}`)}
-              className="absolute inset-0 w-full h-full object-cover group-hover:opacity-75 transition-opacity"
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover group-hover:opacity-75 transition-opacity"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-6">
