@@ -16,13 +16,22 @@ const directus = createDirectus(DIRECTUS_URL)
   .with(staticToken(DIRECTUS_TOKEN))
   .with(rest());
 
+type PrintfulFile = {
+  type: string;
+  url: string;
+  preview_url: string;
+};
+
 type PrintfulVariant = {
   id: number;
   name: string;
   retail_price: string;
   sku: string;
   in_stock?: boolean;
-  files?: Array<{ url?: string; type?: string }>;
+  files?: PrintfulFile[];
+  product?: {
+    description?: string;
+  };
 };
 
 type PrintfulProduct = {
@@ -34,122 +43,127 @@ type PrintfulProduct = {
 
 async function fetchPrintfulProducts() {
   const res = await fetch('https://api.printful.com/store/products', {
-    headers: { Authorization: `Bearer ${PRINTFUL_API_KEY}` },
+    headers: {
+      'Authorization': `Bearer ${PRINTFUL_API_KEY}`
+    }
   });
-  if (!res.ok) throw new Error('Chyba při načítání produktů z Printful');
-  const data = await res.json();
-  return (data as any).result as PrintfulProduct[];
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`Failed to fetch from Printful: ${res.statusText} - ${errorText}`);
+  }
+  const data: any = await res.json();
+  return data.result as PrintfulProduct[];
 }
 
-async function fetchPrintfulProductDetails(id: number) {
-  const res = await fetch(`https://api.printful.com/store/products/${id}`, {
-    headers: { Authorization: `Bearer ${PRINTFUL_API_KEY}` },
+async function fetchPrintfulProductDetails(productId: number) {
+  const res = await fetch(`https://api.printful.com/store/products/${productId}`, {
+    headers: {
+      'Authorization': `Bearer ${PRINTFUL_API_KEY}`
+    }
   });
-  if (!res.ok) throw new Error('Chyba při načítání detailu produktu z Printful');
-  const data = await res.json();
-  return (data as any).result;
+  if (!res.ok) {
+    return null;
+  }
+  const data: any = await res.json();
+  return data.result as { sync_product: PrintfulProduct['sync_product'], sync_variants: PrintfulVariant[] };
 }
 
-async function upsertCategory(name: string) {
-  const categories = await directus.request(readItems('categories', { filter: { name: { _eq: name } } }));
-  if (categories && categories.length > 0) return categories[0].id;
-  const created = await directus.request(createItem('categories', { name }));
-  return created.id;
+function determineCategories(name: string): string[] {
+    const lowerName = name.toLowerCase();
+    const categories = new Set<string>();
+
+    if (lowerName.includes('dress') || lowerName.includes('šaty')) categories.add('women');
+    if (lowerName.includes('bikini') || lowerName.includes('swimsuit')) categories.add('women');
+    if (lowerName.includes('tričko') || lowerName.includes('t-shirt') || lowerName.includes('top')) {
+        categories.add('women');
+        categories.add('men');
+    }
+    if (lowerName.includes('pánsk')) categories.add('men');
+    if (lowerName.includes('dámsk')) categories.add('women');
+    if (lowerName.includes('dětsk') || lowerName.includes('kids') || lowerName.includes('youth')) categories.add('kids');
+    if (lowerName.includes('mikina') || lowerName.includes('hoodie') || lowerName.includes('sweatshirt')) {
+        categories.add('men');
+        categories.add('women');
+    }
+    if (lowerName.includes('plakát') || lowerName.includes('poster')) categories.add('domov-a-dekorace');
+    if (lowerName.includes('hrnek') || lowerName.includes('mug')) categories.add('domov-a-dekorace');
+
+    if (categories.size === 0) {
+        categories.add('other');
+    }
+
+    return Array.from(categories);
 }
 
-function determineCategory(productName: string): string {
-  if (!productName || typeof productName !== 'string') return 'other';
-  const name = productName.toLowerCase();
-  if (name.includes('dress') || name.includes('šaty') || name.includes('dámsk')) return 'women';
-  if (name.includes('tričko') || name.includes('t-shirt')) return 'men';
-  if (name.includes('dětsk') || name.includes('kids')) return 'kids';
-  if (name.includes('mikina') || name.includes('hoodie')) return 'men';
-  if (name.includes('plakát') || name.includes('poster')) return 'home-decor';
-  return 'other';
+
+async function upsertCategory(name: string, slug: string) {
+    let items = await directus.request(readItems('categories', { filter: { slug: { _eq: slug } } }));
+
+    if (items && items.length > 0) {
+        return items[0];
+    } else {
+        return await directus.request(createItem('categories', { name, slug }));
+    }
 }
 
 async function sync() {
-  console.log('Začínám synchronizaci produktů z Printful do Directus...');
-  const products = await fetchPrintfulProducts();
-  console.log(`Načteno ${products.length} produktů z Printful`);
+  try {
+    console.log('SKRIPT SPUŠTĚN: Začínám synchronizaci produktů z Printful do Directus...');
+    const printfulProducts = await fetchPrintfulProducts();
+    console.log(`Načteno ${printfulProducts.length} produktů z Printful`);
 
-  for (const pf of products) {
-    try {
-      const details = await fetchPrintfulProductDetails(pf.id);
-      
-      if (!details.sync_product || !details.sync_product.name) {
-        console.warn(`Produkt ID ${pf.id} nemá název, přeskakuji...`);
-        continue;
-      }
-
-      const categoryName = determineCategory(details.sync_product.name);
-      const categoryId = await upsertCategory(categoryName);
-
-      const existing = await directus.request(readItems('products', { 
-        filter: { printful_id: { _eq: pf.id.toString() } } 
-      }));
-
-      const mockups = [
-        (pf && pf.sync_product && pf.sync_product.thumbnail_url) || 
-        pf?.thumbnail_url || 
-        ''
-      ].filter(Boolean);
-
-      const productData = {
-        name: details.sync_product.name,
-        description: details.description || '',
-        price: details.sync_variants?.[0]?.retail_price || '0',
-        printful_id: pf.id.toString(),
-        mockup_images: mockups, 
-        categories: [categoryId],
-        is_active: true
-      };
-
-      let productId;
-      if (existing && existing.length > 0) {
-        productId = existing[0].id;
-        console.log(`Aktualizuji produkt: ${details.sync_product.name}`);
-        await directus.request(updateItem('products', productId, productData));
-      } else {
-        console.log(`Vytvářím nový produkt: ${details.name}`);
-        const created = await directus.request(createItem('products', productData));
-        productId = created.id;
-      }
-
-      if (details.sync_variants) {
-        for (const v of details.sync_variants) {
-          const existingVar = await directus.request(readItems('variants', { 
-            filter: { printful_variant_id: { _eq: v.id.toString() } } 
-          }));
-
-          const variantData = {
-            name: v.name,
-            price: v.retail_price,
-            sku: v.sku,
-            printful_variant_id: v.id.toString(),
-            product: productId,
-            is_active: true
-          };
-
-          if (existingVar && existingVar.length > 0) {
-            await directus.request(updateItem('variants', existingVar[0].id, variantData));
-          } else {
-            await directus.request(createItem('variants', variantData));
-          }
+    for (const pf of printfulProducts) {
+      try {
+        const details = await fetchPrintfulProductDetails(pf.id);
+        if (!details) {
+          console.log(`- Přeskakuji produkt ${pf.name} (nelze načíst detaily)`);
+          continue;
         }
-      }
 
-      console.log(`✓ Synchronizován produkt: ${details.sync_product.name}`);
-    } catch (error) {
-      console.error(`Chyba při synchronizaci produktu ID ${pf.id}:`, error);
+        const categoryNames = determineCategories(details.sync_product.name);
+        const categoryInfos = await Promise.all(categoryNames.map(catName => {
+          const catSlug = catName.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-');
+          return upsertCategory(catName.charAt(0).toUpperCase() + catName.slice(1), catSlug);
+        }));
+        
+        const description = details.sync_variants[0]?.product?.description || 'Popis není k dispozici.';
+        
+        const productData = {
+          name: details.sync_product.name,
+          description: description,
+          price: parseFloat(details.sync_variants[0]?.retail_price || '0'),
+          stock: details.sync_variants.reduce((acc, v) => acc + (v.in_stock ? 1 : 0), 0),
+          printful_id: pf.id.toString(),
+          image: details.sync_product.thumbnail_url,
+          // Správný formát pro aktualizaci M2M vztahu v Directus
+          categories: categoryInfos.map(c => ({categories_id: c.id}))
+        };
+
+        let existing = await directus.request(readItems('products', {
+          filter: { printful_id: { _eq: pf.id.toString() } },
+          fields: ['id']
+        }));
+        
+        if (existing && existing.length > 0) {
+          let productId = existing[0].id;
+          console.log(`Aktualizuji produkt: ${details.sync_product.name} s kategoriemi: ${categoryNames.join(', ')}`);
+          await directus.request(updateItem('products', productId, productData));
+        } else {
+          console.log(`Vytvářím nový produkt: ${details.sync_product.name} s kategoriemi: ${categoryNames.join(', ')}`);
+          await directus.request(createItem('products', productData));
+        }
+
+      } catch (error: any) {
+          const errorDetail = error.errors ? JSON.stringify(error.errors, null, 2) : error;
+          console.error(`Chyba při synchronizaci produktu ID ${pf.id}:`, errorDetail);
+      }
     }
+
+    console.log('Synchronizace dokončena.');
+  } catch (error) {
+    console.error("Došlo k fatální chybě při spouštění synchronizace:", error);
+    process.exit(1);
   }
 }
 
-sync().then(() => {
-  console.log('Synchronizace dokončena.');
-  process.exit(0);
-}).catch(e => {
-  console.error('Chyba při synchronizaci:', e);
-  process.exit(1);
-});
+sync();

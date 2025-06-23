@@ -36,6 +36,7 @@ export interface Category {
   name: string;
   description?: string;
   slug?: string;
+  displayName?: string;
   parentId?: string | null;
   isActive: boolean;
   date_created: string;
@@ -45,7 +46,8 @@ export interface Category {
 export interface ProductWithRelations extends Omit<Product, 'categories'> {
   variants: (Variant & { price: number })[];
   designs: Design[];
-  categories: { category: Category; categoryId: string }[];
+  // Prozatím odstraníme kategorie, dokud nevyřešíme oprávnění
+  // categories: { category: Category; categoryId: string }[];
 }
 
 export interface Order {

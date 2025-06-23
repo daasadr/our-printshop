@@ -5,6 +5,7 @@ import Image from 'next/image';
 import LatestProducts from '@/components/LatestProducts';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import CategoryTiles from '@/components/CategoryTiles';
+import { Suspense } from 'react';
 
 export default function Home() {
   return (
@@ -52,36 +53,9 @@ export default function Home() {
       <div className="bg-gradient-to-br from-[#1a2a1b] via-[#3a4a3b] to-[#1a2a1b] text-white py-16">
         {/* Kategorie */}
         <div className="mb-24">
-          <CategoryTiles categories={[
-            {
-              id: 'home-decor',
-              name: 'home-decor',
-              displayName: 'Domov a dekorace',
-              imagePlaceholder: 'Domov',
-              image: '/images/home.jpg'
-            },
-            {
-              id: 'women',
-              name: 'women',
-              displayName: 'Stylově pro dámy',
-              imagePlaceholder: 'Ženy',
-              image: '/images/women.jpeg'
-            },
-            {
-              id: 'men',
-              name: 'men',
-              displayName: 'Pánská kolekce',
-              imagePlaceholder: 'Muži',
-              image: '/images/men.jpg'
-            },
-            {
-              id: 'kids',
-              name: 'kids',
-              displayName: 'Pro malé objevitele',
-              imagePlaceholder: 'Děti',
-              image: '/images/kids.jpeg'
-            }
-          ]} />
+          <Suspense fallback={<div className="text-center text-white">Načítám kategorie...</div>}>
+            <CategoryTiles />
+          </Suspense>
         </div>
 
         {/* Nejnovější produkty */}

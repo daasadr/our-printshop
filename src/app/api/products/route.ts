@@ -10,18 +10,19 @@ export async function GET(req: Request) {
     const params: any = {
       fields: [
         '*',
-        'categories.category_id.*', // join na kategorie
         'variants.*'
       ],
       limit,
       sort
     };
-    if (category) {
-      // Filtrujeme produkty, které mají přiřazenou danou kategorii
-      params.filter = {
-        'categories.category_id.name': { _eq: category }
-      };
-    }
+    
+    // Prozatím odstraníme filtrování podle kategorie, dokud nevyřešíme oprávnění
+    // if (category) {
+    //   params.filter = {
+    //     'categories.category_id.name': { _eq: category }
+    //   };
+    // }
+    
     const response = await readProducts(params);
     return NextResponse.json(response);
   } catch (error) {

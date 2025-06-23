@@ -1,9 +1,12 @@
-"use client";
+'use client';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
 import { formatPriceCZK } from '@/utils/currency';
+import { getProductImages } from '@/utils/productImage';
+
+const fallbackImage = '/images/placeholder.jpg';
 
 const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
   const [products, setProducts] = useState<any[]>([]);
@@ -22,43 +25,15 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
         }
         
         const data = await response.json();
-        console.log('Načtená data z API:', data);
         
-        // Kontrola a zpracování URL adres obrázků
         const processedData = data.map((product: any) => {
-          console.log(`Zpracovávám produkt: ${product.name}`);
-          console.log(`Původní URL obrázku: ${product.previewUrl}`);
-          
-          let processedUrl = product.previewUrl;
-          
-          // Pokud URL neexistuje nebo je prázdná
-          if (!processedUrl) {
-            console.log(`Produkt ${product.name} nemá URL obrázku`);
-            return {
-              ...product,
-              previewUrl: '/images/placeholder.jpg'
-            };
-          }
-
-          // Kontrola, zda URL začíná protokolem
-          if (!processedUrl.startsWith('http')) {
-            processedUrl = `https://${processedUrl}`;
-            console.log(`Upravená URL: ${processedUrl}`);
-          }
-
-          // Kontrola, zda URL není relativní cesta
-          if (processedUrl.startsWith('/')) {
-            processedUrl = `${window.location.origin}${processedUrl}`;
-            console.log(`Převedeno na absolutní URL: ${processedUrl}`);
-          }
-
+          const { main } = getProductImages(product);
           return {
             ...product,
-            previewUrl: processedUrl
+            previewUrl: main,
           };
         });
         
-        console.log('Zpracovaná data produktů:', processedData);
         setProducts(processedData);
       } catch (error) {
         console.error('Chyba při načítání nejnovějších produktů:', error);
@@ -72,7 +47,6 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
   }, [limit]);
 
   const handleAddToCart = (product: any) => {
-    // Přidáme produkt do košíku pouze pokud má varianty
     if (product.variants && product.variants.length > 0) {
       addToCart({
         variantId: product.variants[0].id,
@@ -81,23 +55,6 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
         price: product.price,
         image: product.previewUrl || ''
       });
-    }
-  };
-
-  const processImageUrl = (url: string | null): string => {
-    if (!url) {
-      console.log('Chybí URL obrázku, používám placeholder');
-      return '/images/placeholder.jpg';
-    }
-
-    try {
-      // Zajistíme, že URL začíná na https://
-      const processedUrl = url.startsWith('http') ? url : `https://${url}`;
-      console.log(`Zpracovaná URL obrázku: ${processedUrl}`);
-      return processedUrl;
-    } catch (error) {
-      console.error('Chyba při zpracování URL obrázku:', error);
-      return '/images/placeholder.jpg';
     }
   };
 
@@ -113,7 +70,6 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
     );
   }
 
-  // Pokud nemáme žádné produkty, zobrazíme placeholdery
   if (!products || products.length === 0) {
     return <ProductPlaceholders />;
   }
@@ -124,15 +80,16 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
         <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
           <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
             <Image
-              src={processImageUrl(product.previewUrl)}
+              src={product.previewUrl}
               alt={product.name}
               width={500}
               height={500}
               className="h-full w-full object-cover object-center group-hover:opacity-75"
               onError={(e) => {
-                console.error(`Chyba při načítání obrázku pro produkt ${product.name}:`, e);
                 const target = e.target as HTMLImageElement;
-                target.src = '/images/placeholder.jpg';
+                if (target.src !== fallbackImage) {
+                  target.src = fallbackImage;
+                }
               }}
             />
           </div>
@@ -178,7 +135,6 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
   );
 };
 
-// Komponenta pro načítání produktů
 const ProductsLoading: React.FC = () => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -195,32 +151,13 @@ const ProductsLoading: React.FC = () => {
   );
 };
 
-// Placeholder pro produkt, když nemáme data
 const ProductPlaceholders: React.FC = () => {
-  // Ukázkové produkty
   const placeholders = [
-    {
-      id: 'placeholder-1',
-      name: 'Tričko "Minimalistický design"',
-      price: 599,
-    },
-    {
-      id: 'placeholder-2',
-      name: 'Mikina "Urban Style"',
-      price: 1299,
-    },
-    {
-      id: 'placeholder-3',
-      name: 'Plakát "Geometric Art"',
-      price: 349,
-    },
-    {
-      id: 'placeholder-4',
-      name: 'Hrnek "Morning Coffee"',
-      price: 299,
-    },
+    { id: 'placeholder-1', name: 'Tričko "Minimalistický design"', price: 599, },
+    { id: 'placeholder-2', name: 'Mikina "Urban Style"', price: 1299, },
+    { id: 'placeholder-3', name: 'Plakát "Geometric Art"', price: 349, },
+    { id: 'placeholder-4', name: 'Hrnek "Morning Coffee"', price: 299, },
   ];
-
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {placeholders.map((product) => (
@@ -230,7 +167,6 @@ const ProductPlaceholders: React.FC = () => {
               Obrázek produktu
             </div>
           </div>
-         
           <div className="p-4">
             <h3 className="text-sm font-medium text-gray-900">{product.name}</h3>
             <p className="mt-1 text-sm text-gray-500">Více variant</p>
@@ -238,9 +174,7 @@ const ProductPlaceholders: React.FC = () => {
               <p className="text-lg font-medium text-gray-900">
                 {formatPriceCZK(product.price)}
               </p>
-              <button
-                className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
-              >
+              <button className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
                 Do košíku
               </button>
             </div>

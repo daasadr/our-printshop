@@ -4,7 +4,7 @@ import { readProducts } from "@/lib/directus";
 export async function GET() {
   try {
     const response = await readProducts({
-      fields: ['*', 'categories.*', 'variants.*'],
+      fields: ['*', 'variants.*'],
       sort: ['-date_created'],
       limit: 8
     });

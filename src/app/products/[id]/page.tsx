@@ -15,9 +15,10 @@ async function getProduct(id: string): Promise<ProductWithRelations | null> {
         '*',
         'variants.*',
         'variants.images.*',
-        'images.*',
-        'categories.*',
-        'categories.category.*'
+        'images.*'
+        // Prozatím odstraníme kategorie, dokud nevyřešíme oprávnění
+        // 'categories.*',
+        // 'categories.category.*'
       ]
     }) as ProductWithRelations;
 

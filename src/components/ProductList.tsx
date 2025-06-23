@@ -6,11 +6,13 @@ import Image from 'next/image';
 import { formatPriceCZK } from '@/utils/currency';
 import { useCart } from '@/hooks/useCart';
 import { ProductWithRelations } from '@/types';
-import { getProductImages } from '@/utils/productImage';
+import { getProductImages, getProductImageUrl } from '@/utils/productImage';
 
 interface ProductListProps {
   products: ProductWithRelations[];
 }
+
+const fallbackImage = '/images/placeholder.jpg';
 
 export function ProductList({ products }: ProductListProps) {
   const { addToCart } = useCart();
@@ -49,9 +51,10 @@ export function ProductList({ products }: ProductListProps) {
                 height={500}
                 className="h-full w-full object-cover object-center group-hover:opacity-75"
                 onError={(e) => {
-                  console.error(`Chyba při načítání obrázku pro produkt ${product.name}:`, e);
                   const target = e.target as HTMLImageElement;
-                  target.src = '/images/placeholder.jpg';
+                  if(target.src !== fallbackImage) {
+                    target.src = fallbackImage;
+                  }
                 }}
               />
             </div>
