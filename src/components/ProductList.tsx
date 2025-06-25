@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { formatPriceCZK } from '@/utils/currency';
 import { useCart } from '@/hooks/useCart';
 import { ProductWithRelations } from '@/types';
-import { getProductImages, getProductImageUrl } from '@/utils/productImage';
+import { getProductImages } from '@/utils/productImage';
 
 interface ProductListProps {
   products: ProductWithRelations[];
