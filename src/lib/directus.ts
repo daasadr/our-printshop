@@ -89,4 +89,37 @@ export const deleteProductCategory = (id: string) => directus.request(deleteItem
 
 export { readItem, updateItem };
 
+// Get four latest products sorted by creation date
+export const getLatestProducts = async (limit: number = 4) => 
+  await directus.request(readItems('products', {
+    sort: ['-date_created'],
+    limit: limit,
+    fields: [
+      'id',
+      'name',
+      'description', 
+      'price',
+      'thumbnail_url',
+      'mockup_images',
+      'printful_id',
+      'external_id',
+      'date_created',
+      'category.id',
+      'category.name',
+      'variants.id',
+      'variants.name',
+      'variants.sku',
+      'variants.price',
+      'variants.is_active',
+      'variants.printful_variant_id'
+    ]
+  }));
+
+// Get categories for category tiles
+export const getCategories = async (limit: number = 4) => 
+  await directus.request(readItems('categories', {
+    fields: ['id', 'name', 'slug', 'image_url'],
+    limit: limit,
+  }));
+
 // Pokud budeš chtít přidat další kolekce (např. product_categories), stačí přidat obdobné CRUD funkce. 

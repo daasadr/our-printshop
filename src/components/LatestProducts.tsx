@@ -4,47 +4,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
 import { formatPriceCZK } from '@/utils/currency';
-import { getProductImages } from '@/utils/productImage';
+// import { getProductImages } from '@/utils/productImage';
 
 const fallbackImage = '/images/placeholder.jpg';
 
-const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
-  const [products, setProducts] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+const LatestProducts: React.FC<{ products?: any[] }> = ({ products }) => {
   const { addToCart } = useCart();
 
-  useEffect(() => {
-    const fetchLatestProducts = async () => {
-      try {
-        setError(null);
-        const response = await fetch(`/api/products?limit=${limit}`);
-        
-        if (!response.ok) {
-          throw new Error(`Chyba serveru: ${response.status} ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        
-        const processedData = data.map((product: any) => {
-          const { main } = getProductImages(product);
-          return {
-            ...product,
-            previewUrl: main,
-          };
-        });
-        
-        setProducts(processedData);
-      } catch (error) {
-        console.error('Chyba při načítání nejnovějších produktů:', error);
-        setError('Nepodařilo se načíst nejnovější produkty. Zkuste to prosím později.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchLatestProducts();
-  }, [limit]);
 
   const handleAddToCart = (product: any) => {
     if (product.variants && product.variants.length > 0) {
@@ -58,17 +24,6 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
     }
   };
 
-  if (isLoading) {
-    return <ProductsLoading />;
-  }
-
-  if (error) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-red-500">{error}</p>
-      </div>
-    );
-  }
 
   if (!products || products.length === 0) {
     return <ProductPlaceholders />;
@@ -80,17 +35,17 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
         <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
           <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
             <Image
-              src={product.previewUrl}
+              src={product.thumbnail_url}
               alt={product.name}
               width={500}
               height={500}
               className="h-full w-full object-cover object-center group-hover:opacity-75"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                if (target.src !== fallbackImage) {
-                  target.src = fallbackImage;
-                }
-              }}
+              // onError={(e) => {
+              //   const target = e.target as HTMLImageElement;
+              //   if (target.src !== fallbackImage) {
+              //     target.src = fallbackImage;
+              //   }
+              // }}
             />
           </div>
          
