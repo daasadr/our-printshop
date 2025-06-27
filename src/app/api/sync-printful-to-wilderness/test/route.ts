@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { directus } from '../directus';
+import { directus } from "@/lib/directus";
 import { readItems } from '@directus/sdk';
 import { fetchPrintfulProducts } from "../products/fetchPrintfulProducts";
 

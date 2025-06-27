@@ -1,5 +1,5 @@
 import { fetchPrintfulProducts, PrintfulProduct } from "./fetchPrintfulProducts";
-import { directus } from "../directus";
+import { directus } from "@/lib/directus";
 import { readItems, createItem, updateItem } from '@directus/sdk';
 import { fetchPrintfulProductDetails } from "./fetchPrintfulProductDetails";
 import type { Result, SyncProduct, SyncVariant } from "./printfulProductDetail";
