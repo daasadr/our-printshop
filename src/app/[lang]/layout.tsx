@@ -1,10 +1,12 @@
+'use client';
 import '../globals.css';
 import { Inter } from 'next/font/google';
 import { dir } from 'i18next';
 import { languages } from '../i18n/settings';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import Providers from '@/app/providers';
+
+console.log('Layout component loading...');
 
 // Nastavení písma
 const inter = Inter({ subsets: ['latin'] });
@@ -29,16 +31,16 @@ export default function RootLayout({
     lang: string
   }
 }) {
+  console.log('Layout render function called, lang:', lang);
+  
   return (
     <html lang={lang} dir={dir(lang)}>
       <body className={inter.className}>
-        <Providers>
-          <Header />
-          <main className="flex-grow">
-            {children}
-          </main>
-          <Footer />
-        </Providers>
+        <Header />
+        <main className="flex-grow">
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   );

@@ -3,8 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
-import { useCart } from '@/hooks/useCart';
-import { FiMenu, FiX, FiUser, FiHeart, FiShoppingCart, FiSearch } from 'react-icons/fi';
+import { FiMenu, FiX, FiHeart, FiSearch } from 'react-icons/fi';
 import { signOut, useSession } from 'next-auth/react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useTranslation } from 'next-i18next';
@@ -15,23 +14,19 @@ const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const pathname = usePathname();
-  const { items } = useCart();
   const session = useSession();
   const params = useParams();
   const lang = (params?.lang as string) || "cs";
   const { t } = useTranslation('common');
 
-  // Sledování scrollu pro změnu stylu headeru
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Funkce pro zjištění, zda je odkaz aktivní
   const isActive = (path: string) => {
     return pathname === `/${lang}${path}`;
   };
@@ -72,7 +67,7 @@ const Header: React.FC = () => {
               )}
             </nav>
 
-            {/* Akce uživatele + jazykový prepínač */}
+            {/* Akce uživatele + jazykový přepínač */}
             <div className="flex items-center space-x-4">
               <button onClick={() => setIsFilterModalOpen(true)} className="p-2 text-gray-700 hover:text-blue-600" aria-label="Vyhľadať produkty">
                 <FiSearch className="w-5 h-5" />
@@ -80,18 +75,9 @@ const Header: React.FC = () => {
               <Link href={`/${lang}/wishlist`} className="p-2 text-gray-700 hover:text-blue-600" aria-label="Obľúbené">
                 <FiHeart className="w-5 h-5" />
               </Link>
-              <Link href={`/${lang}/cart`} className="relative p-2 text-gray-700 hover:text-blue-600" aria-label="Nákupný košík">
-                <FiShoppingCart className="w-5 h-5" />
-                {items.length > 0 && (
-                  <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                    {items.length}
-                  </span>
-                )}
-              </Link>
               <div className="hidden sm:block">
                 <LanguageSwitcher />
               </div>
-
               {/* Mobilní menu toggle */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
