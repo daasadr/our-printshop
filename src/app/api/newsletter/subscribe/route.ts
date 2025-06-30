@@ -1,3 +1,4 @@
+// import { createNewsletterSubscriber, readNewsletterSubscribers } from '@/lib/directus';
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import path from 'path';

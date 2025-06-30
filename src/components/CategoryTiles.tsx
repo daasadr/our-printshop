@@ -65,9 +65,8 @@ const CategoryTiles: React.FC<CategoryTilesProps> = ({
         {categories.map((category) => (
           <Link
             key={category.id}
-            href={`/products?category=${category.name}`}
-            className="group relative rounded-lg overflow-hidden aspect-[4/3] bg-black/40 backdrop-blur-sm 
-                     transition-transform hover:scale-105 hover:shadow-xl"
+            href={`/products?category=${category.slug || category.name}`}
+            className="group relative rounded-lg overflow-hidden aspect-[4/3] bg-black/40 backdrop-blur-sm transition-transform hover:scale-105 hover:shadow-xl"
           >
             <Image
               src={category.image}

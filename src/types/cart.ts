@@ -1,9 +1,23 @@
 export interface CartItem {
-  variantId: string;
+  id: string;
+  variant_id: string;
   quantity: number;
-  name: string;
-  price: number;
-  image?: string;
+  variant?: {
+    id: string;
+    name: string;
+    price: number;
+    product?: {
+      id: string;
+      name: string;
+      mockups?: string[];
+    };
+  };
+}
+
+export interface Cart {
+  id: string;
+  user_id: string;
+  items: CartItem[];
 }
 
 export interface CartState {

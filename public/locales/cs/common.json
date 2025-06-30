@@ -159,5 +159,10 @@
   "sort_default": "Výchozí",
   "sort_price_asc": "Ceny: od nejlevnější",
   "sort_price_desc": "Ceny: od nejdražší",
-  "sort_name_asc": "Názvu: A-Z"
+  "sort_name_asc": "Názvu: A-Z",
+  "cookie": {
+    "text": "Tento web používá cookies ke zlepšení vašeho zážitku.",
+    "accept": "Souhlasím",
+    "reject": "Odmítnout"
+  }
 }

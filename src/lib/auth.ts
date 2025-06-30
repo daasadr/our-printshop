@@ -1,74 +1,90 @@
-// @ts-expect-error - NextAuthOptions is not exported from next-auth
-import type { NextAuthOptions } from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
-import prisma from "./prisma";
 import bcrypt from "bcryptjs";
-import { JWT } from "next-auth/jwt";
+import { readUsers } from '@/lib/directus';
+import type { User } from '@/lib/directus';
 
-export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+type AuthConfig = {
+  session: {
+    strategy: "jwt";
+  };
+  pages: {
+    signIn: string;
+  };
+  providers: any[];
+  callbacks: {
+    session: (params: { token: any; session: any }) => Promise<any>;
+    jwt: (params: { token: any; user: any }) => Promise<any>;
+  };
+};
+
+export const authConfig: AuthConfig = {
+  session: {
+    strategy: "jwt",
+  },
+  pages: {
+    signIn: "/login",
+  },
   providers: [
     CredentialsProvider({
-      name: "credentials",
+      name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Heslo", type: "password" }
+        password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error('Vyplňte prosím email a heslo');
+          return null;
         }
 
-        const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email
+        try {
+          const users = await readUsers({
+            filter: {
+              email: {
+                _eq: credentials.email
+              }
+            }
+          }) as User[];
+          const user = users?.[0] as User | undefined;
+          if (!user) {
+            return null;
           }
-        });
 
-        if (!user || !user?.hashedPassword) {
-          throw new Error('Uživatel nenalezen');
+          const isValid = await bcrypt.compare(credentials.password, user.password);
+          if (!isValid) {
+            return null;
+          }
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name
+          };
+        } catch (error) {
+          console.error('Auth error:', error);
+          return null;
         }
-
-        const isCorrectPassword = await bcrypt.compare(
-          credentials.password,
-          user.hashedPassword
-        );
-
-        if (!isCorrectPassword) {
-          throw new Error('Nesprávné heslo');
-        }
-
-        return user;
       }
     })
   ],
-  session: {
-    strategy: "jwt"
-  },
-  secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === "development",
-  pages: {
-    signIn: '/login',
-  },
   callbacks: {
-    async jwt({ token, user }: { token: JWT, user: any }) {
-      if (user) {
-        return {
-          ...token,
-          id: user.id
-        };
+    async session({ token, session }) {
+      if (token) {
+        session.user.id = token.id;
+        session.user.name = token.name;
+        session.user.email = token.email;
       }
-      return token;
+
+      return session;
     },
-    async session({ session, token }: { session: any, token: JWT }) {
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: token.id
-        }
-      };
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+
+      return token;
     }
   }
 };
+
+// Backward compatibility for existing imports
+export const authOptions = authConfig;

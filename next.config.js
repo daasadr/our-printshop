@@ -10,11 +10,18 @@ module.exports = {
         pathname: '/**',
       },
       {
+        protocol: 'https',
+        hostname: 'placeholder.co',
+        pathname: '/**',
+      },
+      {
         protocol: 'http',
         hostname: 'localhost',
         port: '3000',
         pathname: '/**',
-      }
+      },
     ],
   },
 };
+
+module.exports = nextConfig;

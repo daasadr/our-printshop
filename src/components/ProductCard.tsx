@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 
 interface ProductCardProps {
-  product: FormattedProduct;
+  product: any;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
@@ -28,7 +28,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       <div className="bg-white/5 backdrop-blur-md rounded-lg overflow-hidden transition-transform hover:scale-105">
         <div className="relative aspect-square">
           <Image
-            src={previewUrl}
+            src={getProductImages(product).main}
             alt={product.name}
             fill
             className="object-cover"

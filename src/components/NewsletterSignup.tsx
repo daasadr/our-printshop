@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useTranslation } from 'next-i18next';
 
 const NewsletterSignup: React.FC = () => {
   const { t, i18n } = useTranslation('common');
@@ -17,7 +16,7 @@ const NewsletterSignup: React.FC = () => {
     }
   }, [i18n.language]);
   
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     
     if (!email) {

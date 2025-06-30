@@ -2,13 +2,12 @@
 
 import { SessionProvider } from 'next-auth/react';
 import { CartProvider } from '@/hooks/useCart';
+import { CartProvider } from '@/hooks/useCart';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
-      <CartProvider>
-        {children}
-      </CartProvider>
+      <CartProvider>{children}</CartProvider>
     </SessionProvider>
   );
 } 

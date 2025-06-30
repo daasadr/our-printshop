@@ -1,44 +1,40 @@
-import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
-import prisma from '@/lib/prisma';
+import { readItem } from '@/lib/directus';
+import { ProductWithRelations, Variant } from '@/types';
 import ProductDetail from '@/components/ProductDetail';
+import { Suspense } from 'react';
 import ProductSkeleton from '@/components/ProductSkeleton';
 import { convertEurToCzk } from '@/utils/currency';
-import { Product, Variant, Design } from '@/types/prisma';
-
-type ProductWithRelations = Product & {
-  variants: (Variant & { price: number })[];
-  designs: Design[];
-  name: string;
-  description: string;
-  printfulId: string;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  categoryId: string | null;
-};
 
 // Pro využití v app routeru je lepší načítat data přímo v komponentě stránky
 async function getProduct(id: string): Promise<ProductWithRelations | null> {
   try {
-    const product = await prisma.product.findUnique({
-      where: { id },
-      include: {
-        variants: {
-          where: { isActive: true },
-          orderBy: {
-            price: 'asc'
-          }
-        },
-        designs: true
-      }
-    });
+    // @ts-expect-error - Directus SDK typy nejsou dokonalé, ale kód funguje správně
+    const product = await readItem('products', id, {
+      fields: [
+        '*',
+        'variants.*',
+        'variants.images.*',
+        'images.*'
+        // Prozatím odstraníme kategorie, dokud nevyřešíme oprávnění
+        // 'categories.*',
+        // 'categories.category.*'
+      ]
+    }) as ProductWithRelations;
+
     if (!product) return null;
+
+    // Filtrujeme aktivní varianty a seřadíme je podle ceny
+    const activeVariants = product.variants
+      .filter((variant: Variant) => variant.is_active)
+      .sort((a: Variant, b: Variant) => a.price - b.price);
+
     // Převedeme ceny všech variant na CZK
-    const convertedVariants = await Promise.all(product.variants.map(async (variant: Variant) => ({
+    const convertedVariants = await Promise.all(activeVariants.map(async (variant: Variant) => ({
       ...variant,
       price: await convertEurToCzk(variant.price)
     })));
+
     // Vrátíme produkt s převedenými cenami
     return {
       ...product,

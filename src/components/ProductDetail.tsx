@@ -158,14 +158,16 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   // Zkontrolujeme, zda máme varianty
   const hasVariants = product.variants && product.variants.length > 0;
   
+  const { main: mainImage, others: otherImages } = getProductImages(product);
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       {/* Obrázek produktu */}
       <div className="rounded-lg overflow-hidden">
-        {previewImage ? (
+        {mainImage ? (
           <div className="relative aspect-square bg-white">
             <Image 
-              src={previewImage} 
+              src={mainImage} 
               alt={product.name} 
               fill
               className="object-contain"
@@ -174,6 +176,15 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         ) : (
           <div className="aspect-square bg-gray-200 flex items-center justify-center">
             <span className="text-gray-400">Obrázek není k dispozici</span>
+          </div>
+        )}
+        {otherImages.length > 0 && (
+          <div className="flex gap-2 mt-2">
+            {otherImages.map((img, idx) => (
+              <div key={idx} className="relative w-24 h-24 rounded overflow-hidden border">
+                <Image src={img} alt={product.name + ' mockup ' + (idx+1)} fill className="object-cover" />
+              </div>
+            ))}
           </div>
         )}
       </div>

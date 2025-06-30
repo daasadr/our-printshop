@@ -163,5 +163,10 @@
   "sort_default": "Standard",
   "sort_price_asc": "Preis: Aufsteigend",
   "sort_price_desc": "Preis: Absteigend",
-  "sort_name_asc": "Name: A-Z"
+  "sort_name_asc": "Name: A-Z",
+  "cookie": {
+    "text": "Diese Website verwendet Cookies, um Ihr Erlebnis zu verbessern.",
+    "accept": "Akzeptieren",
+    "reject": "Ablehnen"
+  }
 }
