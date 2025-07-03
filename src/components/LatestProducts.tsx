@@ -11,11 +11,15 @@ type LatestProductsProps = {
   limit?: number;
 };
 
-const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
+const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 8 }) => {
+  const { t } = useTranslation();
+  const { locale = 'cs' } = useRouter();
+  const country = detectUserCountry();
+  console.log('country:', country, typeof country);
+  const countryCode = String(country || 'CZ').toUpperCase();
   const [products, setProducts] = useState<FormattedProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchLatestProducts = async () => {
@@ -77,24 +81,15 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
     fetchLatestProducts();
   }, [limit]);
 
-  const handleAddToCart = (product: FormattedProduct) => {
-    // Přidáme produkt do košíku pouze pokud má varianty
-    if (product.variants && product.variants.length > 0) {
-      addToCart({
-        variantId: product.variants[0].id,
-        quantity: 1,
-        name: `${product.name}`,
-        price: product.price,
-        image: product.previewUrl || ''
-      });
-    }, 8000);
-    return () => clearInterval(interval);
-  }, [products, limit, getRandomProducts]);
-
   const processImageUrl = (url: string | null): string => {
     if (!url) {
       console.log('Chybí URL obrázku, používám placeholder');
       return '/images/placeholder.jpg';
+    }
+
+    // Ak je to lokálny obrázok (začína na /), vráť ho bez úpravy
+    if (url.startsWith('/')) {
+      return url;
     }
 
     try {
@@ -125,42 +120,66 @@ const LatestProducts: React.FC<{ limit?: number }> = ({ limit = 4 }) => {
     return <ProductPlaceholders />;
   }
 
+  // Zobrazíme iba prvé 4 produkty
+  const visibleProducts = products.slice(0, 4);
+
+  // Funkcia na získanie textu o doprave podľa jazyka
+  const getShippingInfo = () => {
+    switch (locale) {
+      case 'cs':
+        return 'Doprava 151 Kč – 252 Kč';
+      case 'sk':
+        return 'Doprava €5,99 – €9,99';
+      case 'en':
+        return 'Shipping €5.99 – €9.99';
+      case 'de':
+        return 'Versand €5,99 – €9,99';
+      default:
+        return 'Shipping €5.99 – €9.99';
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {products.map((product) => (
-        <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
-          <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
-            <Image
-              src={processImageUrl(product.previewUrl)}
-              alt={product.name}
-              width={500}
-              height={500}
-              className="h-full w-full object-cover object-center group-hover:opacity-75"
-              onError={(e) => {
-                console.error(`Chyba při načítání obrázku pro produkt ${product.name}:`, e);
-                const target = e.target as HTMLImageElement;
-                target.src = '/images/placeholder.jpg';
-              }}
-            />
-          </div>
-         
-          <div className="p-4">
-            <Link href={`/products/${product.id}`}>
-              <h3 className="text-sm font-medium text-gray-900 hover:text-blue-600">
-                {product.name}
-              </h3>
-            </Link>
-            <div className="mt-auto pt-4 flex justify-between items-center">
-              <p className="text-lg font-bold text-gray-900">
-                {formatPriceByLocale(product.price, locale, country || undefined)}
-              </p>
-              <button className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors">
-                {t('product.add_to_cart')}
-              </button>
+      {visibleProducts.map((product) => {
+        const imageUrl = product.previewUrl && product.previewUrl.startsWith('http')
+          ? product.previewUrl
+          : '/images/placeholder.jpg';
+        return (
+          <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
+            <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
+              <Image
+                src={imageUrl}
+                alt={product.name}
+                width={500}
+                height={500}
+                className="h-full w-full object-cover object-center group-hover:opacity-75"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = '/images/placeholder.jpg';
+                }}
+              />
+            </div>
+           
+            <div className="p-4">
+              <Link href={`/products/${product.id}`}>
+                <h3 className="text-sm font-medium text-gray-900 hover:text-blue-600">
+                  {product.name}
+                </h3>
+              </Link>
+              <div className="mt-2 text-gray-500 text-sm">{getShippingInfo()}</div>
+              <div className="mt-auto pt-4 flex justify-between items-center">
+                <p className="text-lg font-bold text-gray-900">
+                  {formatPriceByLocale(product.price, locale, countryCode)}
+                </p>
+                <button className="px-3 py-1.5 bg-gray-300 hover:bg-gray-400 text-gray-900 text-sm font-medium rounded-md transition-colors">
+                  {t('product.add_to_cart')}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };

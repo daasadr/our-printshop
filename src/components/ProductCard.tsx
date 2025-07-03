@@ -21,7 +21,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const previewUrl =
     product.designs[0]?.previewUrl && product.designs[0]?.previewUrl.startsWith('http')
       ? product.designs[0].previewUrl
-      : product.image || '/placeholder.jpg';
+      : product.image || '/images/placeholder.jpg';
   
   return (
     <Link href={`/products/${product.id}`} className="group">

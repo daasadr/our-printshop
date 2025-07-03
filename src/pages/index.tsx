@@ -1,8 +1,8 @@
 import { GetStaticProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Head from 'next/head';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 import Hero from '@/components/Hero';
 import CategoryTiles from '@/components/CategoryTiles';
 import LatestProducts from '@/components/LatestProducts';

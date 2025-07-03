@@ -3,7 +3,7 @@ import '../globals.css';
 import { Inter } from 'next/font/google';
 import { dir } from 'i18next';
 import { languages } from '../i18n/settings';
-import { Header } from '@/components/layout/Header';
+import Header from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 
 console.log('Layout component loading...');

@@ -116,6 +116,16 @@ const processProduct = async (
     // Extract mockup images
     const mockupImages = extractMockupImages(syncProduct, syncVariants);
 
+    // Zabezpeč, že thumbnail_url bude vždy obrázok, ak je dostupný
+    let thumbnailUrl = syncProduct.thumbnail_url || null;
+    if (!thumbnailUrl && mockupImages.length > 0) {
+      thumbnailUrl = mockupImages[0];
+      console.log(`Používam prvý mockup obrázok ako thumbnail_url: ${thumbnailUrl}`);
+    }
+    if (!thumbnailUrl) {
+      console.warn(`Produkt ${syncProduct.name} nemá žiadny obrázok!`);
+    }
+
     // Map Printful product to Directus schema
     const productData: ProductData = {
       printful_id: printfulProductId,
@@ -124,7 +134,7 @@ const processProduct = async (
       description: null, // No description in sync_product
       price:
         syncVariants.length > 0 ? parseFloat(syncVariants[0].retail_price) : 0, // Use first variant price as base price
-      thumbnail_url: syncProduct.thumbnail_url || null,
+      thumbnail_url: thumbnailUrl,
       mockup_images: mockupImages,
       category: categoryId,
       date_updated: new Date().toISOString(),
