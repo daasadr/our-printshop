@@ -1,12 +1,13 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
 import { formatPriceCZK } from '@/utils/currency';
+import { Button, QuantityButton } from '@/components/ui/Button';
 
 export default function CartContent() {
-  const { items, updateQuantity, removeFromCart, totalPrice } = useCart();
+  const { items, removeFromCart, updateQuantity, totalPrice } = useCart();
 
   if (items.length === 0) {
     return (
@@ -46,26 +47,29 @@ export default function CartContent() {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <button
+              <QuantityButton
                 onClick={() => updateQuantity(item.variantId, Math.max(0, item.quantity - 1))}
-                className="text-white hover:text-green-300"
+                variant="light"
+                size="sm"
               >
                 -
-              </button>
+              </QuantityButton>
               <span className="text-white w-8 text-center">{item.quantity}</span>
-              <button
+              <QuantityButton
                 onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
-                className="text-white hover:text-green-300"
+                variant="light"
+                size="sm"
               >
                 +
-              </button>
+              </QuantityButton>
             </div>
-            <button
+            <Button
               onClick={() => removeFromCart(item.variantId)}
-              className="text-red-400 hover:text-red-300"
+              variant="danger"
+              size="sm"
             >
               Odstranit
-            </button>
+            </Button>
           </div>
         ))}
       </div>

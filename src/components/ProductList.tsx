@@ -7,6 +7,7 @@ import { formatPriceCZK } from '@/utils/currency';
 import { useCart } from '@/hooks/useCart';
 import { ProductWithRelations } from '@/types';
 import { getProductImages } from '@/utils/productImage';
+import { Button } from '@/components/ui/Button';
 
 interface ProductListProps {
   products: ProductWithRelations[];
@@ -81,17 +82,14 @@ export function ProductList({ products }: ProductListProps) {
                   </p>
                 )}
                 
-                <button
+                <Button
                   onClick={() => handleAddToCart(product)}
-                  className={`px-3 py-1.5 ${
-                    firstVariant
-                      ? 'bg-blue-600 hover:bg-blue-700' 
-                      : 'bg-gray-400 cursor-not-allowed'
-                  } text-white text-sm font-medium rounded-md transition-colors`}
+                  variant={firstVariant ? "primary" : "secondary"}
+                  size="sm"
                   disabled={!firstVariant}
                 >
                   Do košíku
-                </button>
+                </Button>
               </div>
             </div>
           </div>

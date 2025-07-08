@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
 import { formatPriceCZK, convertEurToCzkSync } from '@/utils/currency';
 import { getProductImages } from '@/utils/productImage';
+import { Button, SelectionButton, QuantityButton } from '@/components/ui/Button';
 
 interface Variant {
   id: string;
@@ -202,17 +203,13 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             <h2 className="text-lg font-medium mb-2">Velikost</h2>
             <div className="flex flex-wrap gap-2">
               {availableSizes.map(size => (
-                <button
+                <SelectionButton
                   key={size}
                   onClick={() => handleSizeChange(size)}
-                  className={`px-4 py-2 border rounded-md ${
-                    selectedSize === size
-                      ? 'border-blue-600 bg-blue-600 text-white'
-                      : 'border-gray-300 hover:border-blue-600'
-                  }`}
+                  selected={selectedSize === size}
                 >
                   {size}
-                </button>
+                </SelectionButton>
               ))}
             </div>
           </div>
@@ -224,17 +221,13 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             <h2 className="text-lg font-medium mb-2">Barva</h2>
             <div className="flex flex-wrap gap-2">
               {availableColors.map(color => (
-                <button
+                <SelectionButton
                   key={color}
                   onClick={() => handleColorChange(color)}
-                  className={`px-4 py-2 border rounded-md ${
-                    selectedColor === color
-                      ? 'border-blue-600 bg-blue-600 text-white'
-                      : 'border-gray-300 hover:border-blue-600'
-                  }`}
+                  selected={selectedColor === color}
                 >
                   {color}
-                </button>
+                </SelectionButton>
               ))}
             </div>
           </div>
@@ -244,12 +237,14 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         <div className="mb-6">
           <h2 className="text-lg font-medium mb-2">Množství</h2>
           <div className="flex items-center border border-gray-300 rounded-md w-32">
-            <button
+            <QuantityButton
               onClick={() => handleQuantityChange(quantity - 1)}
-              className="w-10 h-10 flex items-center justify-center border-r border-gray-300"
+              variant="default"
+              size="md"
+              className="border-r border-gray-300"
             >
               -
-            </button>
+            </QuantityButton>
             <input
               type="number"
               value={quantity}
@@ -257,28 +252,29 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
               className="w-12 h-10 text-center focus:outline-none"
               min="1"
             />
-            <button
+            <QuantityButton
               onClick={() => handleQuantityChange(quantity + 1)}
-              className="w-10 h-10 flex items-center justify-center border-l border-gray-300"
+              variant="default"
+              size="md"
+              className="border-l border-gray-300"
             >
               +
-            </button>
+            </QuantityButton>
           </div>
         </div>
         
         {/* Tlačítko pro přidání do košíku */}
         <div className="mb-8">
-          <button
+          <Button
             onClick={handleAddToCart}
             disabled={!selectedVariant || isAddingToCart}
-            className={`w-full py-3 rounded-md font-medium ${
-              selectedVariant && !isAddingToCart
-                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
+            variant={selectedVariant && !isAddingToCart ? "primary" : "secondary"}
+            size="lg"
+            width="full"
+            state={isAddingToCart ? "loading" : "default"}
           >
             {isAddingToCart ? 'Přidávám...' : 'Přidat do košíku'}
-          </button>
+          </Button>
           
           {!hasVariants && (
             <p className="text-red-500 text-sm mt-2">

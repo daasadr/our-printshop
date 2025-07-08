@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { CartItem } from '@/types/cart';
+import { Button } from '@/components/ui/Button';
 
 interface BuyButtonProps {
   items: CartItem[];
@@ -51,12 +52,15 @@ export default function BuyButton({ items, className = '' }: BuyButtonProps) {
   };
 
   return (
-    <button
+    <Button
       onClick={handleBuy}
       disabled={isLoading || items.length === 0}
-      className={`bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+      variant="success"
+      size="lg"
+      state={isLoading ? 'loading' : 'default'}
+      className={className}
     >
       {isLoading ? 'Zpracovávám...' : 'Koupit'}
-    </button>
+    </Button>
   );
 } 

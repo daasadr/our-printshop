@@ -4,6 +4,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
 import { formatPriceCZK } from '@/utils/currency';
+import { getProductImages } from '@/utils/productImage';
+import { Button } from '@/components/ui/Button';
 // import { getProductImages } from '@/utils/productImage';
 
 const fallbackImage = '/images/placeholder.jpg';
@@ -17,9 +19,9 @@ const LatestProducts: React.FC<{ products?: any[] }> = ({ products }) => {
       addToCart({
         variantId: product.variants[0].id,
         quantity: 1,
-        name: `${product.name}`,
-        price: product.price,
-        image: product.previewUrl || ''
+        name: product.name,
+        price: product.variants[0].price,
+        image: product.designs && product.designs.length > 0 ? product.designs[0].previewUrl : ''
       });
     }
   };
@@ -35,17 +37,17 @@ const LatestProducts: React.FC<{ products?: any[] }> = ({ products }) => {
         <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
           <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
             <Image
-              src={product.thumbnail_url}
+              src={getProductImages(product).main}
               alt={product.name}
               width={500}
               height={500}
               className="h-full w-full object-cover object-center group-hover:opacity-75"
-              // onError={(e) => {
-              //   const target = e.target as HTMLImageElement;
-              //   if (target.src !== fallbackImage) {
-              //     target.src = fallbackImage;
-              //   }
-              // }}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                if (target.src !== '/images/placeholder.jpg') {
+                  target.src = '/images/placeholder.jpg';
+                }
+              }}
             />
           </div>
          
@@ -71,17 +73,14 @@ const LatestProducts: React.FC<{ products?: any[] }> = ({ products }) => {
                 </p>
               )}
               
-              <button
+              <Button
                 onClick={() => handleAddToCart(product)}
-                className={`px-3 py-1.5 ${
-                  product.variants && product.variants.length > 0 
-                    ? 'bg-blue-600 hover:bg-blue-700' 
-                    : 'bg-gray-400 cursor-not-allowed'
-                } text-white text-sm font-medium rounded-md transition-colors`}
+                variant={product.variants && product.variants.length > 0 ? "primary" : "secondary"}
+                size="sm"
                 disabled={!product.variants || product.variants.length === 0}
               >
                 Do košíku
-              </button>
+              </Button>
             </div>
           </div>
         </div>

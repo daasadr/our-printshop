@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import { Button } from '@/components/ui/Button';
 import type { IConfettiOptions } from 'react-confetti';
 
 // Dynamicky importujeme Confetti komponentu, aby fungovala na klientovi
@@ -181,17 +182,17 @@ const ContactForm = () => {
           />
         </div>
 
-        <button
+        <Button
           type="submit"
-          className={`w-full px-6 py-3 text-white font-medium rounded-full ${
-            status === 'loading'
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-green-800 hover:bg-green-700 shadow-[0_4px_0_0_rgba(0,0,0,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3)] active:translate-y-1 transition-all duration-200 bg-gradient-to-b from-green-800 to-green-900 border border-green-700'
-          }`}
+          variant="gradient"
+          size="lg"
+          width="full"
+          roundness="full"
+          state={status === 'loading' ? 'loading' : 'default'}
           disabled={status === 'loading'}
         >
           {status === 'loading' ? 'Odesílání...' : 'Odeslat zprávu'}
-        </button>
+        </Button>
 
         {status === 'success' && (
           <p className="mt-4 text-sm text-green-600">{message}</p>

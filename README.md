@@ -14,6 +14,33 @@ Modern e-commerce platform for custom printed products with Directus CMS integra
 - Order management
 - Design upload functionality
 
+## Component Design System
+
+This project uses **Class Variance Authority (CVA)** for type-safe, maintainable component variants with Tailwind CSS.
+
+### Core Components
+- **Button System**: `Button`, `SelectionButton`, `QuantityButton` with variants for size, color, state
+- **Card System**: Layout components with consistent spacing and styling
+- **Form System**: Input components with error/success states
+
+### Usage Example
+```tsx
+// Type-safe variants instead of conditional className concatenation
+<Button variant="primary" size="lg" state="loading">
+  Submit Order
+</Button>
+
+<SelectionButton selected={isSelected} onClick={handleSelect}>
+  Size M
+</SelectionButton>
+```
+
+### Benefits
+- **Type Safety**: Compile-time checks for variant combinations
+- **Consistency**: Standardized design tokens across components  
+- **Maintainability**: Centralized variant definitions
+- **Performance**: Optimized CSS bundling
+
 ## Prerequisites
 
 - Node.js 18.x or later
