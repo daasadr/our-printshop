@@ -97,6 +97,9 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  loading?: boolean;
+  loadingText?: string;
+  srOnlyText?: string;
 }
 
 export interface SelectionButtonProps
@@ -112,14 +115,38 @@ export interface QuantityButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, width, state, roundness, asChild = false, ...props }, ref) => {
+  ({ 
+    className, 
+    variant, 
+    size, 
+    width, 
+    state, 
+    roundness, 
+    asChild = false, 
+    loading = false,
+    loadingText = "Načítání...",
+    srOnlyText,
+    children,
+    disabled,
+    ...props 
+  }, ref) => {
     const Comp = asChild ? Slot : "button";
+    const isDisabled = disabled || loading;
+    const finalState = loading ? "loading" : state;
+    
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, width, state, roundness, className }))}
+        className={cn(buttonVariants({ variant, size, width, state: finalState, roundness, className }))}
         ref={ref}
+        disabled={isDisabled}
+        aria-disabled={isDisabled}
         {...props}
-      />
+      >
+        {loading ? loadingText : children}
+        {srOnlyText && (
+          <span className="sr-only">{srOnlyText}</span>
+        )}
+      </Comp>
     );
   }
 );

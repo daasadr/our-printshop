@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/Button';
+import { Input, Textarea, Label } from '@/components/ui/Form';
+import { useAccessibility } from '@/hooks/useAccessibility';
 import type { IConfettiOptions } from 'react-confetti';
 
 // Dynamicky importujeme Confetti komponentu, aby fungovala na klientovi
@@ -25,10 +27,12 @@ const ContactForm = () => {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
   const [showConfetti, setShowConfetti] = useState(false);
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [windowSize, setWindowSize] = useState({
     width: typeof window !== 'undefined' ? window.innerWidth : 0,
     height: typeof window !== 'undefined' ? window.innerHeight : 0
   });
+  const { announce, LiveRegionElement } = useAccessibility();
 
   useEffect(() => {
     const handleResize = () => {
@@ -52,19 +56,37 @@ const ContactForm = () => {
     }
   }, [status]);
 
+  const validateForm = () => {
+    const newErrors: {[key: string]: string} = {};
+    
+    if (!formData.name.trim()) {
+      newErrors.name = 'Jméno je povinné.';
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = 'E-mail je povinný.';
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        newErrors.email = 'Zadejte prosím platnou e-mailovou adresu.';
+      }
+    }
+    
+    if (!formData.message.trim()) {
+      newErrors.message = 'Zpráva je povinná.';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.email || !formData.message) {
+    if (!validateForm()) {
       setStatus('error');
-      setMessage('Prosím vyplňte všechna pole.');
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setStatus('error');
-      setMessage('Zadejte prosím platnou e-mailovou adresu.');
+      setMessage('Prosím opravte chyby ve formuláři.');
+      announce('Formulář obsahuje chyby. Prosím opravte je.', 'assertive');
       return;
     }
 
@@ -86,10 +108,13 @@ const ContactForm = () => {
       setStatus('success');
       setMessage('Děkujeme za vaši zprávu! Budeme vás kontaktovat co nejdříve.');
       setFormData({ name: '', email: '', message: '' });
+      setErrors({});
+      announce('Zpráva byla úspěšně odeslána!', 'assertive');
     } catch (error) {
       console.error('Contact form error:', error);
       setStatus('error');
       setMessage('Omlouváme se, nastala chyba. Zkuste to prosím znovu později.');
+      announce('Nastala chyba při odesílání zprávy.', 'assertive');
     }
   };
 
@@ -135,50 +160,57 @@ const ContactForm = () => {
 
   return (
     <>
+      <LiveRegionElement />
       {showConfetti && <Confetti {...confettiProps} />}
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6" noValidate>
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-            Jméno
-          </label>
-          <input
+          <Label htmlFor="name" size="md">
+            Jméno *
+          </Label>
+          <Input
             type="text"
             id="name"
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             disabled={status === 'loading'}
+            required
+            error={errors.name}
+            aria-required="true"
           />
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-            E-mail
-          </label>
-          <input
+          <Label htmlFor="email" size="md">
+            E-mail *
+          </Label>
+          <Input
             type="email"
             id="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             disabled={status === 'loading'}
+            required
+            error={errors.email}
+            aria-required="true"
           />
         </div>
 
         <div>
-          <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-            Zpráva
-          </label>
-          <textarea
+          <Label htmlFor="message" size="md">
+            Zpráva *
+          </Label>
+          <Textarea
             id="message"
             name="message"
             value={formData.message}
             onChange={handleChange}
             rows={5}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             disabled={status === 'loading'}
+            required
+            error={errors.message}
+            aria-required="true"
           />
         </div>
 
@@ -188,10 +220,11 @@ const ContactForm = () => {
           size="lg"
           width="full"
           roundness="full"
-          state={status === 'loading' ? 'loading' : 'default'}
+          loading={status === 'loading'}
+          loadingText="Odesílání..."
           disabled={status === 'loading'}
         >
-          {status === 'loading' ? 'Odesílání...' : 'Odeslat zprávu'}
+          Odeslat zprávu
         </Button>
 
         {status === 'success' && (

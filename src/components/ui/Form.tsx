@@ -80,11 +80,17 @@ const helperTextVariants = cva(
 
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'>,
-    VariantProps<typeof inputVariants> {}
+    VariantProps<typeof inputVariants> {
+  error?: string;
+  helpText?: string;
+}
 
 export interface TextareaProps
   extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'size'>,
-    VariantProps<typeof inputVariants> {}
+    VariantProps<typeof inputVariants> {
+  error?: string;
+  helpText?: string;
+}
 
 export interface LabelProps
   extends React.LabelHTMLAttributes<HTMLLabelElement>,
@@ -99,25 +105,67 @@ export interface HelperTextProps
     VariantProps<typeof helperTextVariants> {}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, variant, size, ...props }, ref) => {
+  ({ className, variant, size, error, helpText, id, ...props }, ref) => {
+    const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
+    const errorId = error ? `${inputId}-error` : undefined;
+    const helpId = helpText ? `${inputId}-help` : undefined;
+    
+    const finalVariant = error ? 'error' : variant;
+    
     return (
-      <input
-        className={cn(inputVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
+      <div>
+        <input
+          id={inputId}
+          className={cn(inputVariants({ variant: finalVariant, size, className }))}
+          ref={ref}
+          aria-invalid={error ? 'true' : 'false'}
+          aria-describedby={[errorId, helpId].filter(Boolean).join(' ') || undefined}
+          {...props}
+        />
+        {helpText && (
+          <HelperText id={helpId} variant="default">
+            {helpText}
+          </HelperText>
+        )}
+        {error && (
+          <HelperText id={errorId} variant="error" role="alert">
+            {error}
+          </HelperText>
+        )}
+      </div>
     );
   }
 );
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ className, variant, size, ...props }, ref) => {
+  ({ className, variant, size, error, helpText, id, ...props }, ref) => {
+    const textareaId = id || `textarea-${Math.random().toString(36).substr(2, 9)}`;
+    const errorId = error ? `${textareaId}-error` : undefined;
+    const helpId = helpText ? `${textareaId}-help` : undefined;
+    
+    const finalVariant = error ? 'error' : variant;
+    
     return (
-      <textarea
-        className={cn(inputVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
+      <div>
+        <textarea
+          id={textareaId}
+          className={cn(inputVariants({ variant: finalVariant, size, className }))}
+          ref={ref}
+          aria-invalid={error ? 'true' : 'false'}
+          aria-describedby={[errorId, helpId].filter(Boolean).join(' ') || undefined}
+          {...props}
+        />
+        {helpText && (
+          <HelperText id={helpId} variant="default">
+            {helpText}
+          </HelperText>
+        )}
+        {error && (
+          <HelperText id={errorId} variant="error" role="alert">
+            {error}
+          </HelperText>
+        )}
+      </div>
     );
   }
 );
