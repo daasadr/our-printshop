@@ -24,9 +24,13 @@ async function getProduct(id: string): Promise<ProductWithRelations | null> {
 
     if (!product) return null;
 
+    // Ošetření chybějících variant/designů
+    const variants = Array.isArray(product.variants) ? product.variants : [];
+    const designs = Array.isArray(product.designs) ? product.designs : [];
+
     // Filtrujeme aktivní varianty a seřadíme je podle ceny
-    const activeVariants = product.variants
-      .filter((variant: Variant) => variant.is_active)
+    const activeVariants = variants
+      .filter((variant: Variant) => variant && variant.is_active)
       .sort((a: Variant, b: Variant) => a.price - b.price);
 
     // Převedeme ceny všech variant na CZK
@@ -35,10 +39,10 @@ async function getProduct(id: string): Promise<ProductWithRelations | null> {
       price: await convertEurToCzk(variant.price)
     })));
 
-    // Vrátíme produkt s převedenými cenami
     return {
       ...product,
-      variants: convertedVariants
+      variants: convertedVariants,
+      designs: designs
     };
   } catch (error) {
     console.error('Error fetching product:', error);
@@ -80,11 +84,16 @@ type ProductPageProps = {
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const product = await getProduct(params.id);
- 
-  if (!product) {
-    notFound();
+
+  if (!product || !Array.isArray(product.variants) || product.variants.length === 0) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-2xl font-bold mb-4">Produkt není dostupný</h1>
+        <p className="text-gray-600">Omlouváme se, tento produkt není aktuálně k dispozici.</p>
+      </div>
+    );
   }
- 
+
   return (
     <div className="container mx-auto px-4 py-8">
       <Suspense fallback={<ProductSkeleton />}>

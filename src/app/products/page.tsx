@@ -6,6 +6,19 @@ interface ProductsPageProps {
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
+// Mapa slugů na main_category hodnoty
+const SLUG_TO_MAIN_CATEGORY: Record<string, string> = {
+  'men': 'Men',
+  'women': 'Women',
+  'kids': 'Kids',
+  'kids-youth-clothing': 'Kids',
+  'home-decor': 'Home/Decor',
+  'accessories': 'Home/Decor',
+  'unisex': 'Unisex',
+  'mens-clothing': 'Men',
+  'womens-clothing': 'Women',
+};
+
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const category = typeof searchParams?.category === 'string' ? searchParams.category : undefined;
   const params: any = {
@@ -16,15 +29,21 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     ]
   };
   
-  // Prozatím odstraníme filtrování podle kategorie, dokud nevyřešíme oprávnění
-  // if (category) {
-  //   params.filter = {
-  //     'categories.category_id.slug': { _eq: category }
-  //   };
-  // }
-  
   const response = await readProducts(params) as unknown as ProductWithRelations[];
-  const products = Array.isArray(response) ? response : [];
+  let products = Array.isArray(response) ? response : [];
+
+  // Filtrování podle main_category a unisex s mapou slugů
+  if (category) {
+    const mainCategory = SLUG_TO_MAIN_CATEGORY[category.toLowerCase()] || category;
+    const normalizedMainCategory = mainCategory.toLowerCase();
+    products = products.filter((product) => {
+      const mainCat = (product.main_category || '').toLowerCase();
+      if (normalizedMainCategory === 'men' || normalizedMainCategory === 'women') {
+        return mainCat === normalizedMainCategory || mainCat === 'unisex';
+      }
+      return mainCat === normalizedMainCategory;
+    });
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">

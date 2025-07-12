@@ -37,6 +37,10 @@ export function ProductList({ products }: ProductListProps) {
     }
   };
 
+  if (!safeProducts.length) {
+    return <div className="text-center text-gray-500">Žádné produkty k zobrazení.</div>;
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {safeProducts.map((product) => {
@@ -46,7 +50,7 @@ export function ProductList({ products }: ProductListProps) {
           <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
             <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
               <Image
-                src={getProductImages(product).main}
+                src={getProductImages(product).main || fallbackImage}
                 alt={product.name}
                 width={500}
                 height={500}
@@ -59,38 +63,32 @@ export function ProductList({ products }: ProductListProps) {
                 }}
               />
             </div>
-           
-            <div className="p-4">
-              <Link href={`/products/${product.id}`}>
-                <h3 className="text-sm font-medium text-gray-900 hover:text-blue-600">
-                  {product.name}
-                </h3>
-              </Link>
-              
-              <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                {product.description}
-              </p>
-              
-              <div className="mt-4 flex justify-between items-center">
-                {firstVariant ? (
-                  <p className="text-lg font-medium text-gray-900">
-                    {formatPriceCZK(firstVariant.price)}
-                  </p>
-                ) : (
-                  <p className="text-sm text-gray-500">
-                    Cena není k dispozici
-                  </p>
-                )}
-                
-                <Button
-                  onClick={() => handleAddToCart(product)}
-                  variant={firstVariant ? "primary" : "secondary"}
-                  size="sm"
-                  disabled={!firstVariant}
-                >
-                  Do košíku
-                </Button>
-              </div>
+            <Link href={`/products/${product.id}`}>
+              <h3 className="text-sm font-medium text-gray-900 hover:text-blue-600">
+                {product.name}
+              </h3>
+            </Link>
+            <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+              {product.description || 'Bez popisu'}
+            </p>
+            <div className="mt-4 flex justify-between items-center">
+              {firstVariant ? (
+                <p className="text-lg font-medium text-gray-900">
+                  {formatPriceCZK(firstVariant.price)}
+                </p>
+              ) : (
+                <p className="text-sm text-gray-500">
+                  Cena není k dispozici
+                </p>
+              )}
+              <Button
+                onClick={() => handleAddToCart(product)}
+                variant={firstVariant ? "primary" : "secondary"}
+                size="sm"
+                disabled={!firstVariant}
+              >
+                Do košíku
+              </Button>
             </div>
           </div>
         );
