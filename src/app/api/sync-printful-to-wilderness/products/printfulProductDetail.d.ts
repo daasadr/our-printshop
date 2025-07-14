@@ -17,6 +17,7 @@ export interface SyncProduct {
   synced: number;
   thumbnail_url: string;
   is_ignored: boolean;
+  description?: string; // Přidáno pole pro popis produktu
 }
 
 export interface SyncVariant {
