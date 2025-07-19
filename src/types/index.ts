@@ -46,6 +46,7 @@ export interface Category {
 export interface ProductWithRelations extends Omit<Product, 'categories'> {
   variants: (Variant & { price: number })[];
   designs: Design[];
+  main_category?: string;
   // Prozatím odstraníme kategorie, dokud nevyřešíme oprávnění
   // categories: { category: Category; categoryId: string }[];
 }
