@@ -14,8 +14,7 @@ async function getProduct(id: string): Promise<ProductWithRelations | null> {
       fields: [
         '*',
         'variants.*',
-        'variants.images.*',
-        'images.*'
+        'designs.*'
         // Prozatím odstraníme kategorie, dokud nevyřešíme oprávnění
         // 'categories.*',
         // 'categories.category.*'

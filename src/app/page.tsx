@@ -7,7 +7,7 @@ import { getLatestProducts, getCategories } from '@/lib/directus';
 export default async function Home() {
 
   const categories = await getCategories();
-  const products = await getLatestProducts();
+  const products = await getLatestProducts(4); // Explicitně 4 nejnovější produkty
 
   return (
     <div className="bg-gradient-to-b from-emerald-50 via-amber-50 to-teal-50">

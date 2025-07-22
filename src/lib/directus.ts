@@ -40,7 +40,10 @@ export const createUser = (data: Partial<User>) => directus.request(createItem('
 export const updateUser = (id: string, data: Partial<User>) => directus.request(updateItem('users', id, data));
 export const deleteUser = (id: string) => directus.request(deleteItem('users', id));
 
-export const readProducts = (params?: any) => directus.request(readItems('products', params));
+export const readProducts = (params?: any) => {
+  console.log('Directus readProducts - params:', params);
+  return directus.request(readItems('products', params));
+};
 export const createProduct = (data: Partial<Product>) => directus.request(createItem('products', data));
 export const updateProduct = (id: string, data: Partial<Product>) => directus.request(updateItem('products', id, data));
 export const deleteProduct = (id: string) => directus.request(deleteItem('products', id));
@@ -90,9 +93,11 @@ export const deleteProductCategory = (id: string) => directus.request(deleteItem
 export { readItem, updateItem };
 
 // Get four latest products sorted by creation date
-export const getLatestProducts = async (limit: number = 4) => 
-  await directus.request(readItems('products', {
-    sort: ['-date_created'],
+export const getLatestProducts = async (limit: number = 8) => {
+  console.log('getLatestProducts - called with limit:', limit);
+  
+  const result = await directus.request(readItems('products', {
+    sort: ['-id'], // Změna na -id místo -date_created
     limit: limit,
     fields: [
       'id',
@@ -103,6 +108,7 @@ export const getLatestProducts = async (limit: number = 4) =>
       'mockup_images',
       'printful_id',
       'external_id',
+      'main_category',
       'date_created',
       'category.id',
       'category.name',
@@ -111,15 +117,52 @@ export const getLatestProducts = async (limit: number = 4) =>
       'variants.sku',
       'variants.price',
       'variants.is_active',
-      'variants.printful_variant_id'
+      'variants.printful_variant_id',
+      'designs.id',
+      'designs.name',
+      'designs.previewUrl'
     ]
   }));
+  
+  console.log('getLatestProducts - result count:', result.length);
+  if (result.length > 0) {
+    console.log('getLatestProducts - first 3 products:', 
+      result.slice(0, 3).map(p => ({ id: p.id, name: p.name, date_created: p.date_created }))
+    );
+  }
+  
+  return result;
+};
 
 // Get categories for category tiles
-export const getCategories = async (limit: number = 4) => 
-  await directus.request(readItems('categories', {
-    fields: ['id', 'name', 'slug', 'image_url'],
-    limit: limit,
-  }));
+export const getCategories = async (limit: number = 4) => {
+  // Statické kategorie místo načítání z Directusu
+  return [
+    {
+      id: 'men',
+      name: 'Men',
+      slug: 'men',
+      image_url: '/images/men.jpg'
+    },
+    {
+      id: 'women', 
+      name: 'Women',
+      slug: 'women',
+      image_url: '/images/women.jpeg'
+    },
+    {
+      id: 'kids',
+      name: 'Kids',
+      slug: 'kids',
+      image_url: '/images/kids.jpeg'
+    },
+    {
+      id: 'home-decor',
+      name: 'Home/Decor',
+      slug: 'home-decor',
+      image_url: '/images/home.jpg'
+    }
+  ];
+};
 
 // Pokud budeš chtít přidat další kolekce (např. product_categories), stačí přidat obdobné CRUD funkce. 
