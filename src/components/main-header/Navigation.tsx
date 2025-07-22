@@ -27,9 +27,6 @@ const Navigation: React.FC<NavigationProps> = ({ isMenuOpen, setIsMenuOpen }) =>
         <Link href="/products" className="p-2 text-gray-700 hover:text-blue-600">
           Produkty
         </Link>
-        <Link href="/about" className="p-2 text-gray-700 hover:text-blue-600">
-          O nás
-        </Link>
         <Link href="/kontakt" className="p-2 text-gray-700 hover:text-blue-600">
           Kontakt
         </Link>
@@ -82,15 +79,6 @@ const Navigation: React.FC<NavigationProps> = ({ isMenuOpen, setIsMenuOpen }) =>
               Produkty
             </Link>
             <Link
-              href="/about"
-              className={`text-base ${
-                isActive('/about') ? 'text-blue-600 font-medium' : 'text-gray-700'
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              O nás
-            </Link>
-            <Link
               href="/kontakt"
               className={`block px-3 py-2 rounded-md text-base font-medium ${
                 isActive('/kontakt') ? 'text-blue-600 font-medium' : 'text-gray-700'
@@ -99,22 +87,24 @@ const Navigation: React.FC<NavigationProps> = ({ isMenuOpen, setIsMenuOpen }) =>
             >
               Kontakt
             </Link>
-            <div className="pt-2 flex space-x-4 sm:hidden">
-              <Link
-                href="/account"
-                className="flex items-center text-gray-700"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <FiUser className="w-5 h-5 mr-2" /> Můj účet
-              </Link>
-              <Link
-                href="/wishlist"
-                className="flex items-center text-gray-700"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <FiHeart className="w-5 h-5 mr-2" /> Oblíbené
-              </Link>
-            </div>
+            {session?.data && (
+              <div className="space-y-2">
+                <Link
+                  href="/account"
+                  className="flex items-center text-gray-700"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <FiUser className="w-5 h-5 mr-2" /> Můj účet
+                </Link>
+                <Link
+                  href="/wishlist"
+                  className="flex items-center text-gray-700"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <FiHeart className="w-5 h-5 mr-2" /> Oblíbené
+                </Link>
+              </div>
+            )}
           </nav>
         </div>
       )}
@@ -122,4 +112,4 @@ const Navigation: React.FC<NavigationProps> = ({ isMenuOpen, setIsMenuOpen }) =>
   );
 };
 
-export { Navigation }; 
+export default Navigation; 

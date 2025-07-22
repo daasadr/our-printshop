@@ -9,10 +9,7 @@ const Footer: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* O nás */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">O nás</h3>
-              <p className="text-gray-600 mb-4">
-                Originální oblečení s autorskými potisky. Každý kus je vyroben na míru podle vašich požadavků.
-              </p>
+              
               <div className="flex space-x-4">
                 <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
                   <svg className="w-6 h-6 text-gray-600 hover:text-blue-600" fill="currentColor" viewBox="0 0 24 24">
@@ -34,9 +31,7 @@ const Footer: React.FC = () => {
   
             {/* Rychlé odkazy */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Rychlé odkazy</h3>
               <nav className="flex flex-col space-y-2">
-                <Link href="/products" className="text-gray-600 hover:text-blue-600">Produkty</Link>
                 <Link href="/about" className="text-gray-600 hover:text-blue-600">O nás</Link>
                 <Link href="/kontakt" className="text-gray-600 hover:text-blue-600">Kontakt</Link>
                 <Link href="/terms" className="text-gray-600 hover:text-blue-600">Obchodní podmínky</Link>
@@ -44,22 +39,17 @@ const Footer: React.FC = () => {
               </nav>
             </div>
   
-            {/* Kategorie */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Kategorie</h3>
-              <nav className="flex flex-col space-y-2">
-                <Link href="/products?category=tshirts" className="text-gray-600 hover:text-blue-600">Trička</Link>
-                <Link href="/products?category=hoodies" className="text-gray-600 hover:text-blue-600">Mikiny</Link>
-                <Link href="/products?category=posters" className="text-gray-600 hover:text-blue-600">Plakáty</Link>
-                <Link href="/products?category=mugs" className="text-gray-600 hover:text-blue-600">Hrnky</Link>
-                <Link href="/products?category=accessories" className="text-gray-600 hover:text-blue-600">Doplňky</Link>
-              </nav>
-            </div>
-  
             {/* Kontakt */}
             <div>
+            <h3 className="text-lg font-semibold mb-4">O nás</h3>
+            <p className="text-gray-700 mb-4">
+              HappyWilderness
+            </p>
+              <p className="text-gray-600 mb-4">
+                Originální oblečení s autorskými potisky. 
+              </p>
               <div className="space-y-2 text-gray-600">
-                <p>Email:happyones@happywilderness.cz</p>
+                <p>Email: happyones@happywilderness.cz</p>
               </div>
             </div>
           </div>

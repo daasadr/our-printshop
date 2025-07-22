@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Logo } from './Logo';
-import { Navigation } from './Navigation';
+import Navigation from './Navigation';
 import { HeaderActions } from './HeaderActions';
 
 const Header: React.FC = () => {

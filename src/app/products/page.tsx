@@ -1,4 +1,7 @@
 import { ProductList } from '@/components/ProductList';
+import CategoryTiles from '@/components/CategoryTiles';
+import Pagination from '@/components/Pagination';
+import { getCategories } from '@/lib/directus';
 import { ProductWithRelations } from '@/types';
 
 interface ProductsPageProps {
@@ -7,9 +10,15 @@ interface ProductsPageProps {
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const category = typeof searchParams?.category === 'string' ? searchParams.category : undefined;
+  const page = typeof searchParams?.page === 'string' ? parseInt(searchParams.page, 10) : 1;
+  const productsPerPage = 12;
   
   console.log('ProductsPage - searchParams:', searchParams);
   console.log('ProductsPage - category:', category);
+  console.log('ProductsPage - page:', page);
+  
+  // Načítání kategorií pro tiles
+  const categories = await getCategories();
   
   // Načítání produktů z API endpoint
   // Automaticky detekuje prostředí a port
@@ -54,6 +63,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://happywilderness.cz';
   }
   
+  // Načítáme všechny produkty pro kategorii (bez limitu pro paginaci)
   const apiUrl = category 
     ? `${baseUrl}/api/products?category=${encodeURIComponent(category)}&limit=1000`
     : `${baseUrl}/api/products?limit=1000`;
@@ -61,7 +71,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   console.log('ProductsPage - apiUrl:', apiUrl);
   console.log('ProductsPage - isLocalhost:', isLocalhost);
   
-  let products: ProductWithRelations[] = [];
+  let allProducts: ProductWithRelations[] = [];
   
   try {
     const response = await fetch(apiUrl, { 
@@ -71,9 +81,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       }
     });
     if (response.ok) {
-      products = await response.json();
-      console.log('ProductsPage - fetched products count:', products.length);
-      console.log('ProductsPage - first 3 products:', products.slice(0, 3).map(p => ({ id: p.id, name: p.name, main_category: p.main_category })));
+      allProducts = await response.json();
+      console.log('ProductsPage - fetched all products count:', allProducts.length);
+      console.log('ProductsPage - first 3 products:', allProducts.slice(0, 3).map(p => ({ id: p.id, name: p.name, main_category: p.main_category })));
     } else {
       console.error('Failed to fetch products:', response.status, response.statusText);
     }
@@ -81,12 +91,64 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     console.error('Error fetching products:', error);
   }
 
+  // Paginace
+  const totalProducts = allProducts.length;
+  const totalPages = Math.ceil(totalProducts / productsPerPage);
+  const startIndex = (page - 1) * productsPerPage;
+  const endIndex = startIndex + productsPerPage;
+  const currentProducts = allProducts.slice(startIndex, endIndex);
+
+  console.log('ProductsPage - pagination:', {
+    totalProducts,
+    totalPages,
+    currentPage: page,
+    productsPerPage,
+    startIndex,
+    endIndex,
+    currentProductsCount: currentProducts.length
+  });
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">
-        {category ? `Produkty - ${category}` : 'Všechny produkty'}
-      </h1>
-      <ProductList products={products} />
+    <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-amber-50 to-teal-50">
+      {/* Kategorie tiles nahoře */}
+      <div className="bg-gradient-to-br from-[#1a2a1b] via-[#3a4a3b] to-[#1a2a1b] text-white py-16">
+        <CategoryTiles categories={categories} />
+      </div>
+
+      {/* Produkty s paginací */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">
+            {category ? `Produkty - ${category}` : 'Všechny produkty'}
+          </h1>
+          <div className="text-sm text-gray-600">
+            Zobrazeno {startIndex + 1}-{Math.min(endIndex, totalProducts)} z {totalProducts} produktů
+          </div>
+        </div>
+        
+        {currentProducts.length > 0 ? (
+          <>
+            <ProductList products={currentProducts} />
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              totalProducts={totalProducts}
+              productsPerPage={productsPerPage}
+              category={category}
+            />
+          </>
+        ) : (
+          <div className="text-center py-12">
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Žádné produkty nenalezeny</h3>
+            <p className="text-gray-600">
+              {category 
+                ? `V kategorii "${category}" nebyly nalezeny žádné produkty.`
+                : 'Momentálně nejsou k dispozici žádné produkty.'
+              }
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 } 

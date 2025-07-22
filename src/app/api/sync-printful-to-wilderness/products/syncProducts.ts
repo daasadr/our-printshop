@@ -28,24 +28,6 @@ interface VariantData {
   printful_variant_id: string;
 }
 
-// Mapování Printful kategorií na hlavní kategorie
-const CATEGORY_MAP: Record<string, string> = {
-  "Men's clothing": "Men",
-  "Women's clothing": "Women",
-  "Kids' & youth clothing": "Kids",
-  "Accessories": "Home/Decor",
-  "Home & living": "Home/Decor",
-  "All hoodies & sweatshirts": "Unisex",
-  "All shirts": "Unisex",
-  "T-shirts": "Unisex",
-  "Tank tops": "Unisex",
-  "Leggings": "Women",
-  "Dresses": "Women",
-  "Bags": "Home/Decor",
-  "Wall art": "Home/Decor",
-  // ...další mapování podle potřeby
-};
-
 // Helper function to generate slug from title
 function generateSlug(title: string): string {
   return title
@@ -120,45 +102,29 @@ const processProduct = async (
       `Processing product: ${syncProduct.name} with ${syncVariants.length} variants`
     );
 
-    // Find the category ID from the first variant's main_category_id
+    // Find the category ID from the first variant's main_category_id (for reference only)
     let categoryId = null;
-    let mainCategory = null;
     if (syncVariants.length > 0 && syncVariants[0].main_category_id) {
       categoryId = await findCategoryId(syncVariants[0].main_category_id);
-      // Získám název kategorie z Directusu podle printful_id
-      let categoryName = null;
-      try {
-        const cat = await directus.request(readItems('categories', {
-          filter: { printful_id: { _eq: syncVariants[0].main_category_id } },
-          fields: ['name']
-        }));
-        if (cat && cat.length > 0) {
-          categoryName = cat[0].name;
-        }
-      } catch (e) {
-        console.warn('Nepodařilo se načíst název kategorie pro main_category_id:', syncVariants[0].main_category_id);
-      }
-      if (categoryName && CATEGORY_MAP[categoryName]) {
-        mainCategory = CATEGORY_MAP[categoryName];
-      }
     }
 
     // Extract mockup images
     const mockupImages = extractMockupImages(syncProduct, syncVariants);
 
     // Map Printful product to Directus schema
+    // main_category bude null - uživatel si ho přiřadí ručně v Directus
     const productData: ProductData & { main_category?: string | null } = {
       printful_id: printfulProductId,
       external_id: syncProduct.external_id || null,
       name: syncProduct.name,
-      description: productDetail?.sync_product?.description || null, // Nově načítáme description
+      description: productDetail?.sync_product?.description || null,
       price:
-        syncVariants.length > 0 ? parseFloat(syncVariants[0].retail_price) : 0, // Use first variant price as base price
+        syncVariants.length > 0 ? parseFloat(syncVariants[0].retail_price) : 0,
       thumbnail_url: syncProduct.thumbnail_url || null,
       mockup_images: mockupImages,
       category: categoryId,
       date_updated: new Date().toISOString(),
-      main_category: mainCategory,
+      main_category: null, // Necháme null - uživatel si přiřadí ručně
     };
 
     // Check if product exists

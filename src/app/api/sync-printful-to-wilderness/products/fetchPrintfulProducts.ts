@@ -14,7 +14,8 @@ export async function fetchPrintfulProducts() {
   let total = 0;
 
   do {
-    const res = await fetch(`https://api.printful.com/store/products?offset=${offset}&limit=${limit}`,
+    // Zkusíme načíst všechny produkty včetně draftů a skrytých
+    const res = await fetch(`https://api.printful.com/store/products?offset=${offset}&limit=${limit}&status=all`,
       {
         headers: { Authorization: `Bearer ${PRINTFUL_API_KEY}` },
       }
@@ -25,7 +26,16 @@ export async function fetchPrintfulProducts() {
     allProducts = allProducts.concat(products);
     total = data.paging?.total || products.length;
     offset += limit;
+    
+    console.log(`Fetched ${products.length} products (offset: ${offset}, total: ${total})`);
   } while (allProducts.length < total);
+
+  console.log(`Total products fetched: ${allProducts.length}`);
+  
+  // Logujeme všechny produkty pro debugging
+  allProducts.forEach((product, index) => {
+    console.log(`${index + 1}. ID: ${product.id}, Name: ${product.name}`);
+  });
 
   return allProducts;
 }
