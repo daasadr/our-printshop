@@ -17,8 +17,10 @@ const SlovakFlag = () => (
     <rect width="16" height="4" fill="#fff"/>
     <rect y="4" width="16" height="4" fill="#0B4EA2"/>
     <rect y="8" width="16" height="4" fill="#EE1C25"/>
-    <path d="M0 0L8 6L0 12V0Z" fill="#fff"/>
-    <path d="M2 2L6 6L2 10V2Z" fill="#0B4EA2"/>
+    {/* Dvojitý kříž uprostřed */}
+    <path d="M6 3L7 3L7 4L8 4L8 5L7 5L7 6L6 6L6 5L5 5L5 4L6 4Z" fill="#0B4EA2"/>
+    <path d="M6 2L7 2L7 3L6 3Z" fill="#0B4EA2"/>
+    <path d="M6 6L7 6L7 7L6 7Z" fill="#0B4EA2"/>
   </svg>
 );
 
