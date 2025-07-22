@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'cs_CZ',
-    url: 'https://www.vasbrand.cz',
+    url: 'https://www.happywilderness.cz',
     siteName: 'Wild Shop',
     title: 'Wild Shop | Originální oblečení s autorskými potisky',
     description: 'Objevte unikátní kolekci oblečení s autorskými potisky. Každý kus je vyroben na míru podle vašich požadavků.',

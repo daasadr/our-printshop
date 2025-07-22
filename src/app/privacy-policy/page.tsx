@@ -94,7 +94,7 @@ export default function PrivacyPolicy() {
               <h2 className="text-xl font-semibold mb-4 text-gray-800">7. Kontaktujte nás</h2>
               <p className="text-gray-700 mb-4">
                 Pokud máte jakékoliv dotazy ohledně zpracování vašich osobních údajů, 
-                neváhejte nás kontaktovat na e-mailu: info@happywilderness.cz
+                neváhejte nás kontaktovat na e-mailu: happyones@happywilderness.cz
               </p>
             </section>
 

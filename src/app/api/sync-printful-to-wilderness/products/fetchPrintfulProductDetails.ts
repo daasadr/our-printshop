@@ -11,15 +11,22 @@ export type PrintfulVariant = {
   files?: Array<{ url?: string; type?: string }>;
 };
 
-export async function fetchPrintfulProductDetails(id: number): Promise<Result> {
+export async function fetchPrintfulProductDetails(id: number, locale?: string): Promise<Result> {
   try {
-    const res = await fetch(`https://api.printful.com/store/products/${id}`, {
+    // Zkusíme přidat jazykový parametr, pokud je specifikován
+    const url = locale 
+      ? `https://api.printful.com/store/products/${id}?locale=${locale}`
+      : `https://api.printful.com/store/products/${id}`;
+    
+    console.log(`Fetching Printful product details with URL: ${url}`);
+    
+    const res = await fetch(url, {
       headers: { Authorization: `Bearer ${PRINTFUL_API_KEY}` },
     });
 
     if (!res.ok)
       throw new Error(
-        `Chyba při načítání detailu produktu z Printful https://api.printful.com/store/products/${id} l ${PRINTFUL_API_KEY} l ${res.status} ${res.statusText}`
+        `Chyba při načítání detailu produktu z Printful ${url} l ${res.status} ${res.statusText}`
       );
 
     const data: ProductDetailApiResponse = await res.json();

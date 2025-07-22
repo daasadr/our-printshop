@@ -58,20 +58,17 @@ const Footer: React.FC = () => {
   
             {/* Kontakt */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Kontaktujte nás</h3>
               <div className="space-y-2 text-gray-600">
-                <p>Email: info@vasbrand.cz</p>
-                <p>Telefon: +420 123 456 789</p>
-                <p>Adresa: Vaše ulice 123, 123 45 Praha</p>
+                <p>Email:happyones@happywilderness.cz</p>
               </div>
             </div>
           </div>
   
           {/* Copyright */}
           <div className="mt-12 pt-8 border-t border-gray-200 text-center text-gray-500 text-sm">
-            <p>&copy; {new Date().getFullYear()} VášBrand. Všechna práva vyhrazena.</p>
+            <p>&copy; {new Date().getFullYear()}AnnLibertas & LuGo všechna práva vyhrazena.</p>
             <p className="mt-2">
-              Vyrobeno s ❤️ v České republice. Powered by Next.js a Printful.
+              Vyrobeno s ❤️ Powered by Next.js a Printful.
             </p>
           </div>
         </div>
