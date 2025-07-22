@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { readItem } from '@/lib/directus';
+import { readItem, readProducts } from '@/lib/directus';
 import { ProductWithRelations, Variant } from '@/types';
 import ProductDetail from '@/components/ProductDetail';
 import { Suspense } from 'react';
@@ -8,29 +8,44 @@ import { convertEurToCzk } from '@/utils/currency';
 
 // Pro využití v app routeru je lepší načítat data přímo v komponentě stránky
 async function getProduct(id: string): Promise<ProductWithRelations | null> {
+  console.log('getProduct - called with id:', id);
+  
   try {
-    // @ts-expect-error - Directus SDK typy nejsou dokonalé, ale kód funguje správně
-    const product = await readItem('products', id, {
+    // Místo readItem použijeme readProducts s filtrem podle ID
+    const products = await readProducts({
       fields: [
         '*',
         'variants.*',
         'designs.*'
-        // Prozatím odstraníme kategorie, dokud nevyřešíme oprávnění
-        // 'categories.*',
-        // 'categories.category.*'
-      ]
-    }) as ProductWithRelations;
+      ],
+      filter: {
+        id: { _eq: id }
+      },
+      limit: 1
+    }) as ProductWithRelations[];
 
-    if (!product) return null;
+    const product = products && products.length > 0 ? products[0] : null;
+
+    console.log('getProduct - raw product from Directus:', product ? { id: product.id, name: product.name, variantsCount: product.variants?.length, designsCount: product.designs?.length } : 'null');
+
+    if (!product) {
+      console.log('getProduct - product is null');
+      return null;
+    }
 
     // Ošetření chybějících variant/designů
     const variants = Array.isArray(product.variants) ? product.variants : [];
     const designs = Array.isArray(product.designs) ? product.designs : [];
 
+    console.log('getProduct - variants count:', variants.length);
+    console.log('getProduct - designs count:', designs.length);
+
     // Filtrujeme aktivní varianty a seřadíme je podle ceny
     const activeVariants = variants
       .filter((variant: Variant) => variant && variant.is_active)
       .sort((a: Variant, b: Variant) => a.price - b.price);
+
+    console.log('getProduct - active variants count:', activeVariants.length);
 
     // Převedeme ceny všech variant na CZK
     const convertedVariants = await Promise.all(activeVariants.map(async (variant: Variant) => ({
@@ -38,11 +53,15 @@ async function getProduct(id: string): Promise<ProductWithRelations | null> {
       price: await convertEurToCzk(variant.price)
     })));
 
-    return {
+    const result = {
       ...product,
       variants: convertedVariants,
       designs: designs
     };
+
+    console.log('getProduct - final result:', { id: result.id, name: result.name, variantsCount: result.variants.length, designsCount: result.designs.length });
+
+    return result;
   } catch (error) {
     console.error('Error fetching product:', error);
     return null;
