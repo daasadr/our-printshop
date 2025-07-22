@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useCart } from '@/hooks/useCart';
 import { FiUser, FiHeart, FiMenu, FiX } from 'react-icons/fi';
 import { FaShoppingCart } from 'react-icons/fa';
+import LocaleSwitch from '@/components/LocaleSwitch';
 
 interface HeaderActionsProps {
   isMenuOpen: boolean;
@@ -14,6 +15,9 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({ isMenuOpen, setIsMenuOpen
 
   return (
     <div className="flex items-center space-x-4">
+      {/* Přepínač jazyka - viditelný na všech zařízeních */}
+      <LocaleSwitch />
+      
       <Link href="/account" className="hidden sm:block p-2 text-gray-700 hover:text-blue-600">
         <FiUser className="w-5 h-5" />
       </Link>

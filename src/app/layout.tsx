@@ -5,6 +5,8 @@ import { Providers } from './providers';
 import { Header } from '@/components/main-header';
 import { Footer } from '@/components/layout/Footer';
 import { CartProvider } from '@/context/CartContext';
+import { LocaleProvider } from '@/context/LocaleContext';
+import { refreshExchangeRate } from '@/utils/exchangeRate';
 
 // Add skip navigation styles
 const skipLinkStyles = `
@@ -50,9 +52,68 @@ const skipLinkStyles = `
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'HappyWilderness',
-  description: 'Originální oblečení s autorskými potisky',
+  title: 'HappyWilderness - Originální oblečení s autorskými potisky',
+  description: 'Objevte naši kolekci originálního oblečení s autorskými potisky. Trička, mikiny, plakáty a další produkty s jedinečnými designy.',
+  keywords: 'oblečení, trička, mikiny, plakáty, autorské potisky, design, fashion',
+  authors: [{ name: 'HappyWilderness' }],
+  creator: 'HappyWilderness',
+  publisher: 'HappyWilderness',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://happywilderness.cz'),
+  openGraph: {
+    title: 'HappyWilderness - Originální oblečení s autorskými potisky',
+    description: 'Objevte naši kolekci originálního oblečení s autorskými potisky. Trička, mikiny, plakáty a další produkty s jedinečnými designy.',
+    url: 'https://happywilderness.cz',
+    siteName: 'HappyWilderness',
+    images: [
+      {
+        url: '/images/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'HappyWilderness - Originální oblečení',
+      },
+    ],
+    locale: 'cs_CZ',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'HappyWilderness - Originální oblečení s autorskými potisky',
+    description: 'Objevte naši kolekci originálního oblečení s autorskými potisky.',
+    images: ['/images/og-image.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'your-google-verification-code',
+  },
 };
+
+// Inicializace kurzu měny při startu aplikace
+async function initializeExchangeRate() {
+  try {
+    await refreshExchangeRate();
+    console.log('Exchange rate initialized successfully');
+  } catch (error) {
+    console.warn('Failed to initialize exchange rate:', error);
+  }
+}
+
+// Spustíme inicializaci kurzu
+initializeExchangeRate();
 
 export default function RootLayout({
   children
@@ -71,15 +132,17 @@ export default function RootLayout({
         </a>
         
         <Providers>
-          <CartProvider>
-            <div className="min-h-screen bg-gray-50">
-              <Header />
-              <main id="main-content" role="main" className="flex-1">
-                {children}
-              </main>
-              <Footer />
-            </div>
-          </CartProvider>
+          <LocaleProvider>
+            <CartProvider>
+              <div className="min-h-screen bg-gray-50">
+                <Header />
+                <main id="main-content" role="main" className="flex-1">
+                  {children}
+                </main>
+                <Footer />
+              </div>
+            </CartProvider>
+          </LocaleProvider>
         </Providers>
       </body>
     </html>

@@ -3,11 +3,12 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { formatPriceCZK } from '@/utils/currency';
+import { formatPrice, convertCurrency } from '@/utils/currency';
 import { useCart } from '@/hooks/useCart';
 import { ProductWithRelations } from '@/types';
 import { getProductImages } from '@/utils/productImage';
 import { Button } from '@/components/ui/Button';
+import { useLocale } from '@/context/LocaleContext';
 
 interface ProductListProps {
   products: ProductWithRelations[];
@@ -17,6 +18,7 @@ const fallbackImage = '/images/placeholder.jpg';
 
 export function ProductList({ products }: ProductListProps) {
   const { addToCart } = useCart();
+  const { currency } = useLocale();
 
   // Filtrovat produkty bez názvu (např. ty, které mají jen cenu)
   const safeProducts = Array.isArray(products)
@@ -27,11 +29,13 @@ export function ProductList({ products }: ProductListProps) {
     const firstVariant = Array.isArray(product.variants) && product.variants.length > 0 ? product.variants[0] : null;
     const firstDesign = Array.isArray(product.designs) && product.designs.length > 0 ? product.designs[0] : null;
     if (firstVariant) {
+      // Převedeme cenu na správnou měnu pro košík
+      const priceConverted = convertCurrency(firstVariant.price, currency);
       addToCart({
         variantId: firstVariant.id,
         quantity: 1,
         name: product.name,
-        price: firstVariant.price,
+        price: priceConverted,
         image: firstDesign?.previewUrl || ''
       });
     }
@@ -46,6 +50,8 @@ export function ProductList({ products }: ProductListProps) {
       {safeProducts.map((product) => {
         const firstVariant = Array.isArray(product.variants) && product.variants.length > 0 ? product.variants[0] : null;
         const firstDesign = Array.isArray(product.designs) && product.designs.length > 0 ? product.designs[0] : null;
+        const priceConverted = firstVariant ? convertCurrency(firstVariant.price, currency) : 0;
+        
         return (
           <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
             <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
@@ -72,9 +78,9 @@ export function ProductList({ products }: ProductListProps) {
               {product.description || 'Bez popisu'}
             </p>
             <div className="mt-4 flex justify-between items-center">
-              {firstVariant ? (
+              {priceConverted > 0 ? (
                 <p className="text-lg font-medium text-gray-900">
-                  {formatPriceCZK(firstVariant.price)}
+                  {formatPrice(priceConverted, currency)}
                 </p>
               ) : (
                 <p className="text-sm text-gray-500">

@@ -1,4 +1,5 @@
 import { getCurrentRate, getCurrentRateSync } from './exchangeRate';
+import { Currency } from '@/context/LocaleContext';
 
 // Formátování ceny v CZK
 export function formatPriceCZK(price: number): string {
@@ -8,6 +9,24 @@ export function formatPriceCZK(price: number): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(price);
+}
+
+// Formátování ceny v EUR
+export function formatPriceEUR(price: number): string {
+  return new Intl.NumberFormat('sk-SK', {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(price);
+}
+
+// Univerzální formátování ceny podle měny
+export function formatPrice(price: number, currency: Currency): string {
+  if (currency === 'EUR') {
+    return formatPriceEUR(price);
+  }
+  return formatPriceCZK(price);
 }
 
 // Převod z EUR na CZK
@@ -35,6 +54,15 @@ export function convertEurToCzkSync(priceEur: number): number {
   }
 }
 
-export function formatPriceEUR(amount: number): string {
+// Univerzální převod měny
+export function convertCurrency(priceEur: number, targetCurrency: Currency): number {
+  if (targetCurrency === 'EUR') {
+    return priceEur;
+  }
+  return convertEurToCzkSync(priceEur);
+}
+
+// Stará funkce pro kompatibilitu
+export function formatPriceEUR_old(amount: number): string {
     return `€${amount.toLocaleString('cs-CZ')}`;
 } 

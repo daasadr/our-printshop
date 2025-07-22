@@ -3,29 +3,31 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
-import { formatPriceCZK } from '@/utils/currency';
+import { formatPrice, convertCurrency } from '@/utils/currency';
 import { getProductImages } from '@/utils/productImage';
 import { Button } from '@/components/ui/Button';
-// import { getProductImages } from '@/utils/productImage';
+import { useLocale } from '@/context/LocaleContext';
 
 const fallbackImage = '/images/placeholder.jpg';
 
 const LatestProducts: React.FC<{ products?: any[] }> = ({ products }) => {
   const { addToCart } = useCart();
-
+  const { currency } = useLocale();
 
   const handleAddToCart = (product: any) => {
     if (product.variants && product.variants.length > 0) {
+      // Převedeme cenu na správnou měnu pro košík
+      const priceEur = product.price || product.variants?.[0]?.price || 0;
+      const priceConverted = convertCurrency(priceEur, currency);
       addToCart({
         variantId: product.variants[0].id,
         quantity: 1,
         name: product.name,
-        price: product.variants[0].price,
+        price: priceConverted,
         image: product.designs && product.designs.length > 0 ? product.designs[0].previewUrl : ''
       });
     }
   };
-
 
   if (!products || products.length === 0) {
     return <ProductPlaceholders />;
@@ -33,58 +35,63 @@ const LatestProducts: React.FC<{ products?: any[] }> = ({ products }) => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {products.map((product) => (
-        <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
-          <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
-            <Image
-              src={getProductImages(product).main}
-              alt={product.name}
-              width={500}
-              height={500}
-              className="h-full w-full object-cover object-center group-hover:opacity-75"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                if (target.src !== '/images/placeholder.jpg') {
-                  target.src = '/images/placeholder.jpg';
-                }
-              }}
-            />
-          </div>
-         
-          <div className="p-4">
-            <Link href={`/products/${product.id}`}>
-              <h3 className="text-sm font-medium text-gray-900 hover:text-blue-600">
-                {product.name}
-              </h3>
-            </Link>
-            
-            <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-              {product.description}
-            </p>
-            
-            <div className="mt-4 flex justify-between items-center">
-              {product.price > 0 ? (
-                <p className="text-lg font-medium text-gray-900">
-                  {formatPriceCZK(product.price)}
-                </p>
-              ) : (
-                <p className="text-sm text-gray-500">
-                  Cena není k dispozici
-                </p>
-              )}
+      {products.map((product) => {
+        const priceEur = product.price || product.variants?.[0]?.price || 0;
+        const priceConverted = convertCurrency(priceEur, currency);
+        
+        return (
+          <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
+            <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
+              <Image
+                src={getProductImages(product).main}
+                alt={product.name}
+                width={500}
+                height={500}
+                className="h-full w-full object-cover object-center group-hover:opacity-75"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  if (target.src !== '/images/placeholder.jpg') {
+                    target.src = '/images/placeholder.jpg';
+                  }
+                }}
+              />
+            </div>
+           
+            <div className="p-4">
+              <Link href={`/products/${product.id}`}>
+                <h3 className="text-sm font-medium text-gray-900 hover:text-blue-600">
+                  {product.name}
+                </h3>
+              </Link>
               
-              <Button
-                onClick={() => handleAddToCart(product)}
-                variant={product.variants && product.variants.length > 0 ? "primary" : "secondary"}
-                size="sm"
-                disabled={!product.variants || product.variants.length === 0}
-              >
-                Do košíku
-              </Button>
+              <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+                {product.description}
+              </p>
+              
+              <div className="mt-4 flex justify-between items-center">
+                {priceConverted > 0 ? (
+                  <p className="text-lg font-medium text-gray-900">
+                    {formatPrice(priceConverted, currency)}
+                  </p>
+                ) : (
+                  <p className="text-sm text-gray-500">
+                    Cena není k dispozici
+                  </p>
+                )}
+                
+                <Button
+                  onClick={() => handleAddToCart(product)}
+                  variant={product.variants && product.variants.length > 0 ? "primary" : "secondary"}
+                  size="sm"
+                  disabled={!product.variants || product.variants.length === 0}
+                >
+                  Do košíku
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };
@@ -126,7 +133,7 @@ const ProductPlaceholders: React.FC = () => {
             <p className="mt-1 text-sm text-gray-500">Více variant</p>
             <div className="mt-4 flex justify-between items-center">
               <p className="text-lg font-medium text-gray-900">
-                {formatPriceCZK(product.price)}
+                {formatPrice(product.price, 'CZK')}
               </p>
               <button className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
                 Do košíku
