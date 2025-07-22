@@ -18,6 +18,7 @@ const SlovakFlag = () => (
     <rect y="4" width="16" height="4" fill="#0B4EA2"/>
     <rect y="8" width="16" height="4" fill="#EE1C25"/>
     <path d="M0 0L8 6L0 12V0Z" fill="#fff"/>
+    <path d="M2 2L6 6L2 10V2Z" fill="#0B4EA2"/>
   </svg>
 );
 
@@ -30,15 +31,18 @@ export default function LocaleSwitch() {
         onClick={() => setLocale('sk')}
         className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
           isSlovak
-            ? 'bg-green-600 text-white shadow-lg border-2 border-green-600'
-            : 'bg-transparent text-green-600 border-2 border-green-600 hover:bg-green-600/10'
+            ? 'text-white shadow-lg border-2 border-green-700'
+            : 'bg-transparent text-green-700 border-2 border-green-700 hover:bg-green-700/10'
         }`}
         style={{ 
           minWidth: '70px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '6px'
+          gap: '6px',
+          background: isSlovak 
+            ? 'linear-gradient(135deg, #1a5f3a 0%, #4a7c59 50%, #6b8e7a 100%)'
+            : 'transparent'
         }}
       >
         <SlovakFlag />
@@ -48,15 +52,18 @@ export default function LocaleSwitch() {
         onClick={() => setLocale('cs')}
         className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
           isCzech
-            ? 'bg-green-600 text-white shadow-lg border-2 border-green-600'
-            : 'bg-transparent text-green-600 border-2 border-green-600 hover:bg-green-600/10'
+            ? 'text-white shadow-lg border-2 border-green-700'
+            : 'bg-transparent text-green-700 border-2 border-green-700 hover:bg-green-700/10'
         }`}
         style={{ 
           minWidth: '70px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '6px'
+          gap: '6px',
+          background: isCzech 
+            ? 'linear-gradient(135deg, #1a5f3a 0%, #4a7c59 50%, #6b8e7a 100%)'
+            : 'transparent'
         }}
       >
         <CzechFlag />
