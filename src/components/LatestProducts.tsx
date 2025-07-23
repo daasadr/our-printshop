@@ -10,7 +10,13 @@ import { useLocale } from '@/context/LocaleContext';
 
 const fallbackImage = '/images/placeholder.jpg';
 
-const LatestProducts: React.FC<{ products?: any[] }> = ({ products }) => {
+interface LatestProductsProps {
+  products?: any[];
+  dictionary?: any;
+  lang?: string;
+}
+
+const LatestProducts: React.FC<LatestProductsProps> = ({ products = [], dictionary, lang = 'cs' }) => {
   const { addToCart } = useCart();
   const { currency } = useLocale();
 
@@ -30,7 +36,7 @@ const LatestProducts: React.FC<{ products?: any[] }> = ({ products }) => {
   };
 
   if (!products || products.length === 0) {
-    return <ProductPlaceholders />;
+    return <ProductPlaceholders dictionary={dictionary} />;
   }
 
   return (
@@ -58,7 +64,7 @@ const LatestProducts: React.FC<{ products?: any[] }> = ({ products }) => {
             </div>
            
             <div className="p-4">
-              <Link href={`/products/${product.id}`}>
+              <Link href={`/${lang}/products/${product.id}`}>
                 <h3 className="text-sm font-medium text-gray-900 hover:text-blue-600">
                   {product.name}
                 </h3>
@@ -75,7 +81,7 @@ const LatestProducts: React.FC<{ products?: any[] }> = ({ products }) => {
                   </p>
                 ) : (
                   <p className="text-sm text-gray-500">
-                    Cena není k dispozici
+                    {dictionary?.product?.price_not_available || "Cena není k dispozici"}
                   </p>
                 )}
                 
@@ -85,7 +91,7 @@ const LatestProducts: React.FC<{ products?: any[] }> = ({ products }) => {
                   size="sm"
                   disabled={!product.variants || product.variants.length === 0}
                 >
-                  Do košíku
+                  {dictionary?.product?.add_to_cart || "Do košíku"}
                 </Button>
               </div>
             </div>
@@ -112,7 +118,11 @@ const ProductsLoading: React.FC = () => {
   );
 };
 
-const ProductPlaceholders: React.FC = () => {
+interface ProductPlaceholdersProps {
+  dictionary?: any;
+}
+
+const ProductPlaceholders: React.FC<ProductPlaceholdersProps> = ({ dictionary }) => {
   const placeholders = [
     { id: 'placeholder-1', name: 'Tričko "Minimalistický design"', price: 599, },
     { id: 'placeholder-2', name: 'Mikina "Urban Style"', price: 1299, },
@@ -136,7 +146,7 @@ const ProductPlaceholders: React.FC = () => {
                 {formatPrice(product.price, 'CZK')}
               </p>
               <button className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
-                Do košíku
+                {dictionary?.product?.add_to_cart || "Do košíku"}
               </button>
             </div>
           </div>
