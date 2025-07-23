@@ -1,14 +1,25 @@
 import { NextResponse } from "next/server";
-import { readProducts } from "@/lib/directus";
+import { readProducts, translateProducts } from "@/lib/directus";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const locale = searchParams.get('locale') || 'cs'; // Jazyk pre preklady
+    
     const response = await readProducts({
-      fields: ['*', 'variants.*'],
+      fields: [
+        '*', 
+        'variants.*'
+        // Prekladové polia budú pridané neskôr: 'name_cs', 'name_sk', 'name_en', 'name_de', 'description_cs', 'description_sk', 'description_en', 'description_de'
+      ],
       sort: ['-date_created'],
       limit: 8
     });
-    return NextResponse.json(response);
+    
+    // Preklad produktov podľa jazyka
+    const translatedProducts = translateProducts(response, locale);
+    
+    return NextResponse.json(translatedProducts);
   } catch (error) {
     console.error('Error fetching latest products:', error);
     return NextResponse.json(

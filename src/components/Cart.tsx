@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/hooks/useCart';
 import { useAccessibility } from '@/hooks/useAccessibility';
+import { useLocale } from '@/context/LocaleContext';
 import { FaShoppingCart, FaTrash } from 'react-icons/fa';
 
 interface CartProps {
@@ -13,18 +14,34 @@ interface CartProps {
 
 const Cart: React.FC<CartProps> = ({ className = '' }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [dictionary, setDictionary] = useState<any>(null);
   const { items, updateQuantity, removeFromCart, totalItems, totalPrice } = useCart();
   const { announce, trapFocus, LiveRegionElement } = useAccessibility();
+  const { locale } = useLocale();
   const cartPanelRef = useRef<HTMLDivElement>(null);
   const cartButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Načtení dictionary pro aktuální jazyk
+  useEffect(() => {
+    const loadDictionary = async () => {
+      try {
+        const dict = await import(`../../public/locales/${locale}/common.json`);
+        setDictionary(dict.default);
+      } catch (error) {
+        console.warn('Failed to load dictionary:', error);
+      }
+    };
+
+    loadDictionary();
+  }, [locale]);
 
   const toggleCart = () => {
     setIsOpen(!isOpen);
     
     if (!isOpen) {
-      announce(`Košík otevřen. ${totalItems} položek v košíku.`);
+      announce(`${dictionary?.cart?.opened || 'Košík otevřen'}. ${totalItems} ${dictionary?.cart?.items_count || 'položek v košíku'}.`);
     } else {
-      announce("Košík zavřen.");
+      announce(dictionary?.cart?.closed || "Košík zavřen");
       // Return focus to cart button when closing
       setTimeout(() => cartButtonRef.current?.focus(), 100);
     }
@@ -60,12 +77,12 @@ const Cart: React.FC<CartProps> = ({ className = '' }) => {
 
   const handleQuantityChange = (variantId: string, newQuantity: number, itemName: string) => {
     updateQuantity(variantId, newQuantity);
-    announce(`${itemName} množství změněno na ${newQuantity}`);
+    announce(`${itemName} ${dictionary?.cart?.quantity?.toLowerCase() || 'množství'} změněno na ${newQuantity}`);
   };
 
   const handleRemoveItem = (variantId: string, itemName: string) => {
     removeFromCart(variantId);
-    announce(`${itemName} odstraněn z košíku`, 'assertive');
+    announce(`${itemName} ${dictionary?.cart?.remove?.toLowerCase() || 'odstraněn'} z košíku`, 'assertive');
   };
 
   return (
@@ -77,7 +94,7 @@ const Cart: React.FC<CartProps> = ({ className = '' }) => {
         ref={cartButtonRef}
         onClick={toggleCart}
         className="relative p-2 text-gray-700 transition-colors hover:text-blue-600"
-        aria-label={`Košík, ${totalItems} položek`}
+        aria-label={`${dictionary?.cart?.title || 'Košík'}, ${totalItems} ${dictionary?.cart?.items_count || 'položek'}`}
         aria-expanded={isOpen}
         aria-haspopup="dialog"
       >
@@ -113,11 +130,11 @@ const Cart: React.FC<CartProps> = ({ className = '' }) => {
           >
             <div className="p-4 border-b border-gray-200">
               <div className="flex justify-between items-center">
-                <h2 id="cart-title" className="text-lg font-semibold">Košík</h2>
+                <h2 id="cart-title" className="text-lg font-semibold">{dictionary?.cart?.title || 'Košík'}</h2>
                 <button
                   onClick={() => setIsOpen(false)}
                   className="text-gray-400 hover:text-gray-600 p-1"
-                  aria-label="Zavřít košík"
+                  aria-label={dictionary?.cart?.close || "Zavřít košík"}
                 >
                   <span aria-hidden="true">✕</span>
                 </button>
@@ -129,7 +146,7 @@ const Cart: React.FC<CartProps> = ({ className = '' }) => {
 
             <div className="max-h-96 overflow-y-auto" role="region" aria-label="Položky v košíku">
               {items.length === 0 ? (
-                <p className="text-center text-gray-500 py-6">Váš košík je prázdný</p>
+                <p className="text-center text-gray-500 py-6">{dictionary?.cart?.empty || 'Váš košík je prázdný'}</p>
               ) : (
                 <ul className="divide-y divide-gray-200" role="list">
                   {items.map((item) => (
@@ -157,22 +174,22 @@ const Cart: React.FC<CartProps> = ({ className = '' }) => {
                         </p>
 
                         {/* Úprava množství */}
-                        <div className="flex items-center mt-1" role="group" aria-label={`Množství pro ${item.name}`}>
+                        <div className="flex items-center mt-1" role="group" aria-label={`${dictionary?.cart?.quantity || 'Množství'} pro ${item.name}`}>
                           <button
                             onClick={() => handleQuantityChange(item.variantId, item.quantity - 1, item.name)}
                             className="text-gray-500 hover:text-gray-700 p-1"
-                            aria-label={`Snížit množství ${item.name}`}
+                            aria-label={`Snížit ${dictionary?.cart?.quantity?.toLowerCase() || 'množství'} ${item.name}`}
                             disabled={item.quantity <= 1}
                           >
                             <span aria-hidden="true">-</span>
                           </button>
-                          <span className="mx-2 text-sm" aria-label={`Množství: ${item.quantity}`}>
+                          <span className="mx-2 text-sm" aria-label={`${dictionary?.cart?.quantity || 'Množství'}: ${item.quantity}`}>
                             {item.quantity}
                           </span>
                           <button
                             onClick={() => handleQuantityChange(item.variantId, item.quantity + 1, item.name)}
                             className="text-gray-500 hover:text-gray-700 p-1"
-                            aria-label={`Zvýšit množství ${item.name}`}
+                            aria-label={`Zvýšit ${dictionary?.cart?.quantity?.toLowerCase() || 'množství'} ${item.name}`}
                           >
                             <span aria-hidden="true">+</span>
                           </button>
@@ -183,7 +200,7 @@ const Cart: React.FC<CartProps> = ({ className = '' }) => {
                       <button
                         onClick={() => handleRemoveItem(item.variantId, item.name)}
                         className="text-gray-400 hover:text-red-500 p-2"
-                        aria-label={`Odebrat ${item.name} z košíku`}
+                        aria-label={`${dictionary?.cart?.remove || 'Odebrat'} ${item.name} z košíku`}
                       >
                         <FaTrash aria-hidden="true" />
                       </button>
@@ -196,7 +213,7 @@ const Cart: React.FC<CartProps> = ({ className = '' }) => {
             {items.length > 0 && (
               <div className="p-4 border-t border-gray-200">
                 <div className="flex justify-between font-semibold mb-4">
-                  <span>Celkem:</span>
+                  <span>{dictionary?.cart?.total || 'Celkem:'}</span>
                   <span>{totalPrice.toFixed(2)} Kč</span>
                 </div>
                 <div className="space-y-2">
@@ -205,14 +222,14 @@ const Cart: React.FC<CartProps> = ({ className = '' }) => {
                     onClick={() => setIsOpen(false)}
                     className="block w-full py-2 text-center bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200 transition-colors"
                   >
-                    Zobrazit košík
+                    {dictionary?.cart?.view_cart || 'Zobrazit košík'}
                   </Link>
                   <Link
                     href="/checkout"
                     onClick={() => setIsOpen(false)}
                     className="block w-full py-2 text-center bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                   >
-                    Pokračovat k pokladně
+                    {dictionary?.cart?.checkout || 'Pokračovat k pokladně'}
                   </Link>
                 </div>
               </div>

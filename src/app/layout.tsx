@@ -2,11 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Inter } from 'next/font/google';
 import { Providers } from './providers';
-import { Header } from '@/components/main-header';
-import { Footer } from '@/components/layout/Footer';
 import { CartProvider } from '@/context/CartContext';
-import { LocaleProvider } from '@/context/LocaleContext';
-import { refreshExchangeRate } from '@/utils/exchangeRate';
 
 // Add skip navigation styles
 const skipLinkStyles = `
@@ -102,19 +98,6 @@ export const metadata: Metadata = {
   },
 };
 
-// Inicializace kurzu měny při startu aplikace
-async function initializeExchangeRate() {
-  try {
-    await refreshExchangeRate();
-    console.log('Exchange rate initialized successfully');
-  } catch (error) {
-    console.warn('Failed to initialize exchange rate:', error);
-  }
-}
-
-// Spustíme inicializaci kurzu
-initializeExchangeRate();
-
 export default function RootLayout({
   children
 }: {
@@ -132,17 +115,9 @@ export default function RootLayout({
         </a>
         
         <Providers>
-          <LocaleProvider>
-            <CartProvider>
-              <div className="min-h-screen bg-gray-50">
-                <Header />
-                <main id="main-content" role="main" className="flex-1">
-                  {children}
-                </main>
-                <Footer />
-              </div>
-            </CartProvider>
-          </LocaleProvider>
+          <CartProvider>
+            {children}
+          </CartProvider>
         </Providers>
       </body>
     </html>

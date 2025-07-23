@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useParams } from 'next/navigation';
 
 interface PaginationProps {
   currentPage: number;
@@ -20,6 +20,23 @@ export default function Pagination({
   category 
 }: PaginationProps) {
   const searchParams = useSearchParams();
+  const params = useParams();
+  const [dictionary, setDictionary] = useState<any>(null);
+  
+  // Načtení dictionary pro aktuální jazyk
+  useEffect(() => {
+    const loadDictionary = async () => {
+      try {
+        const lang = params.lang as string;
+        const dict = await import(`../../public/locales/${lang}/common.json`);
+        setDictionary(dict.default);
+      } catch (error) {
+        console.warn('Failed to load dictionary:', error);
+      }
+    };
+
+    loadDictionary();
+  }, [params.lang]);
   
   // Funkce pro vytvoření URL s parametry
   const createPageUrl = (page: number) => {
@@ -66,7 +83,7 @@ export default function Pagination({
           href={category ? createCategoryUrl(currentPage - 1) : createPageUrl(currentPage - 1)}
           className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-gray-700"
         >
-          Předchozí
+          {dictionary?.pagination?.previous || 'Předchozí'}
         </Link>
       )}
 
@@ -121,7 +138,7 @@ export default function Pagination({
           href={category ? createCategoryUrl(currentPage + 1) : createPageUrl(currentPage + 1)}
           className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-gray-700"
         >
-          Následující
+          {dictionary?.pagination?.next || 'Následující'}
         </Link>
       )}
     </div>

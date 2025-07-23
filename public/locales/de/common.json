@@ -1,0 +1,186 @@
+{
+  "welcome": "Originelle Kleidung mit Designer-Prints",
+  "subtitle": "Drücken Sie Ihren einzigartigen Stil mit unseren kreativen Designs aus.",
+  "cta_collection": "Kollektion ansehen",
+  "cta_story": "Unsere Geschichte",
+  "cta_ready": "Bereit, Ihren Stil auszudrücken?",
+  "cta_subtitle": "Entdecken Sie unsere Kollektion und finden Sie ein Design, das zu Ihnen passt. Jedes Produkt wird mit Sorgfalt und Liebe zum Detail hergestellt.",
+  "cta_shop_now": "Jetzt einkaufen",
+  "latest_products": "Neueste Produkte",
+  "view_all_products": "Alle Produkte anzeigen",
+  "categories": "Kategorien",
+  "category_home-decor": "Zuhause & Dekoration",
+  "category_women": "Stilvoll für Damen",
+  "category_men": "Herrenkollektion",
+  "category_kids": "Für kleine Entdecker",
+  "product": {
+    "add_to_cart": "In den Warenkorb",
+    "price_not_available": "Preis nicht verfügbar",
+    "view_product": "Produkt anzeigen",
+    "out_of_stock": "Nicht auf Lager",
+    "in_stock": "Auf Lager"
+  },
+  "cart": {
+    "title": "Warenkorb",
+    "empty": "Ihr Warenkorb ist leer",
+    "total": "Gesamt:",
+    "view_cart": "Warenkorb anzeigen",
+    "checkout": "Zur Kasse",
+    "close": "Warenkorb schließen",
+    "quantity": "Menge",
+    "remove": "Entfernen",
+    "items_count": "Artikel im Warenkorb",
+    "opened": "Warenkorb geöffnet",
+    "closed": "Warenkorb geschlossen"
+  },
+  "products": {
+    "title": "Produkte",
+    "all_products": "Alle Produkte",
+    "showing": "Angezeigt",
+    "of": "von",
+    "products": "Produkten",
+    "no_products_found": "Keine Produkte gefunden",
+    "no_products_in_category": "In Kategorie",
+    "no_products_found_in_category": "wurden keine Produkte gefunden.",
+    "no_products_available": "Derzeit sind keine Produkte verfügbar."
+  },
+  "pagination": {
+    "previous": "Vorherige",
+    "next": "Nächste"
+  },
+  "newsletter": {
+    "title": "Bleiben Sie auf dem Laufenden",
+    "subtitle": "Abonnieren Sie unseren Newsletter und seien Sie der Erste, der von neuen Designs und Sonderangeboten erfährt.",
+    "placeholder": "Ihre E-Mail",
+    "button": "Abonnieren",
+    "success": "Erfolgreich abonniert!",
+    "error": "Fehler beim Abonnieren.",
+    "already_subscribed": "Sie sind bereits abonniert.",
+    "invalid_email": "Ungültige E-Mail.",
+    "subscribing": "Abonnieren..."
+  },
+  "navigation": {
+    "home": "Startseite",
+    "products": "Produkte",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "logout": "Abmelden",
+    "welcome_user": "Willkommen, {{name}}",
+    "my_account": "Mein Konto",
+    "favorites": "Favoriten"
+  },
+  "footer": {
+    "about_title": "Über uns",
+    "about_text": "Originelle Kleidung mit Designer-Prints. Jedes Stück wird nach Ihren Wünschen maßgefertigt.",
+    "quick_links": "Schnelllinks",
+    "products": "Produkte",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "terms": "AGB",
+    "privacy": "Datenschutz",
+    "categories": "Kategorien",
+    "tshirts": "T-Shirts",
+    "hoodies": "Kapuzenpullover",
+    "posters": "Poster",
+    "mugs": "Tassen",
+    "accessories": "Accessoires",
+    "contact_title": "Kontaktieren Sie uns",
+    "email": "E-Mail: happyones@happywilderness.de",
+    "phone": "Telefon: +49 123 456 789",
+    "address": "Adresse: Ihre Straße 123, 12345 Stadt",
+    "brand": "HappyWilderness",
+    "rights": "Alle Rechte vorbehalten.",
+    "made_in_country": "Hergestellt mit ❤️ Powered by Next.js und Printful.",
+    "made_in": "Hergestellt in der Tschechischen Republik/Slowakischen Republik",
+    "all_rights_reserved": "Alle Rechte vorbehalten",
+    "copyright": "©{{year}} AnnLibertas & LuGo alle Rechte vorbehalten."
+  },
+  "newsletter": {
+    "title": "Bleiben Sie auf dem Laufenden",
+    "subtitle": "Abonnieren Sie unseren Newsletter und seien Sie der Erste, der von neuen Designs und Sonderangeboten erfährt.",
+    "placeholder": "Ihre E-Mail",
+    "button": "Abonnieren",
+    "success": "Erfolgreich abonniert!",
+    "error": "Fehler beim Abonnieren.",
+    "already_subscribed": "Sie sind bereits abonniert.",
+    "invalid_email": "Ungültige E-Mail.",
+    "subscribing": "Abonnieren...",
+    "email_subject": "Willkommen in unserem Newsletter!",
+    "email_greeting": "Hallo,",
+    "email_body": "Vielen Dank für Ihr Abonnement unseres Newsletters! Freuen Sie sich auf exklusive Angebote, Neuigkeiten aus der Designwelt und Inspiration direkt in Ihren Posteingang.",
+    "email_unsubscribe_info": "Wenn Sie Ihr Abonnement kündigen möchten, klicken Sie auf den Link unten:",
+    "email_unsubscribe_link": "Newsletter abbestellen",
+    "unsubscribe_title": "Es tut uns leid, dass Sie gehen",
+    "unsubscribe_subtitle": "Lassen Sie uns bitte wissen, warum Sie Ihr Abonnement kündigen möchten.",
+    "unsubscribe_reason_label": "Grund für die Kündigung (optional)",
+    "unsubscribe_reason_too_many": "Ich erhalte zu viele E-Mails",
+    "unsubscribe_reason_not_relevant": "Inhalt ist nicht relevant",
+    "unsubscribe_reason_other": "Anderer Grund",
+    "unsubscribe_button": "Abbestellen",
+    "unsubscribe_success": "Sie wurden erfolgreich abgemeldet.",
+    "unsubscribing": "Abmelden..."
+  },
+  
+  "error": {
+    "server_error": "Serverfehler: {{status}} {{statusText}}",
+    "load_products": "Neueste Produkte konnten nicht geladen werden. Bitte versuchen Sie es später erneut.",
+    "image_load": "Fehler beim Laden des Bildes für Produkt {{product}}:"
+  },
+  
+  "about": {
+    "title": "Willkommen im Dschungel !(★ ω ★)",
+    "hero_alt": "Dschungel",
+    "intro": "Willkommen in der Welt von HappyWilderness, wo Fantasie auf Mode trifft und jedes Stück ein einzigartiger Ausdruck von Originalität und Kreativität ist.",
+    "team": "Vier verschiedene kreative Persönlichkeiten, jede völlig anders, haben sich zusammengeschlossen, um Ihnen ein vielfältiges Spektrum an Designs und Ideen zu bieten, die Sie und Ihre Umgebung begeistern werden. Sie werden so zur Inspirationsquelle für andere.",
+    "inspiration_alt": "Unsere Inspiration",
+    "philosophy": "Wir glauben, dass Mode mehr als nur Kleidung sein sollte - sie sollte ein Ausdruck Ihres einzigartigen Stils und Ihrer Werte sein. Deshalb bemühen wir uns, Produkte zu schaffen, die nicht nur großartig aussehen, sondern auch eine Geschichte haben.",
+    "values_title": "Unsere Werte",
+    "values": {
+      "originality": {
+        "title": "Originalität",
+        "description": "Jedes Design ist einzigartig und mit Liebe zum Detail erstellt."
+      },
+      "quality": {
+        "title": "Qualität",
+        "description": "Wir verwenden nur Premium-Materialien, die angenehm zu tragen sind und lange halten."
+      },
+      "sustainability": {
+        "title": "Nachhaltigkeit",
+        "description": "Produktion auf Anfrage bedeutet minimaler Abfall und umweltfreundlicher Ansatz."
+      }
+    },
+    "story_title": "Ihre Geschichte",
+    "story": "Wenn Sie jemals an einem magischen Ort waren, wissen Sie sehr gut, dass die Magie dieses Ortes nicht nur in der physischen Präsenz selbst liegt, sondern darin, dass der Ort Teil von Ihnen wird und sich in Ihnen eine Verbindung zu diesem Ort bildet, so dass Sie jederzeit in Gedanken dorthin zurückkehren und diese Verzauberung immer wieder erleben können. Aus diesem Grund haben wir uns entschieden, HappyWilderness zu schaffen, um Ihnen ein Stück dieser Magie zu vermitteln und Ihnen zu helfen, aus Ihrem eigenen Zuhause einen außergewöhnlichen Ort zu schaffen, an dem Sie sich glücklich und erfüllt fühlen werden.",
+    "quote": "Wir glauben, dass Mode mehr als nur Kleidung sein sollte - sie sollte ein Ausdruck Ihres einzigartigen Stils und Ihrer Werte sein."
+  },
+  
+  "title": "Willkommen in unserer Druckerei",
+  "description": "Professionelle Druckerei für alle Ihre Bedürfnisse",
+  
+  "Index": {
+    "description": "Professionelle Druckerei für alle Ihre Bedürfnisse"
+  },
+  
+  "product_filter_title": "Produktfilter",
+  "category": "Kategorie",
+  "all_categories": "Alle Kategorien",
+  "color": "Farbe",
+  "all_colors": "Alle Farben",
+  "size": "Größe",
+  "all_sizes": "Alle Größen",
+  "price_from": "Preis ab (€)",
+  "price_to": "Preis bis (€)",
+  "product_name": "Produktname",
+  "show_results": "Ergebnisse anzeigen",
+  "reset_filters": "Filter zurücksetzen",
+  "min_placeholder": "Min",
+  "max_placeholder": "Max",
+  "search_placeholder": "Suchen...",
+  "sort_by": "Sortieren nach",
+  "sort_default": "Standard",
+  "sort_price_asc": "Preis: niedrigste zuerst",
+  "sort_price_desc": "Preis: höchste zuerst",
+  "sort_name_asc": "Name: A-Z"
+} 
