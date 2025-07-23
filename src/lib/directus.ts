@@ -90,6 +90,38 @@ export const createProductCategory = (data: any) => directus.request(createItem(
 export const updateProductCategory = (id: string, data: any) => directus.request(updateItem('product_categories', id, data));
 export const deleteProductCategory = (id: string) => directus.request(deleteItem('product_categories', id));
 
+/**
+ * Načíta odberateľov newsletteru z kolekcie newsletter_subscribers v Directuse.
+ * @param params - Voliteľné parametre pre filtrovanie, zoradenie atď.
+ * @returns Promise s poľom odberateľov
+ */
+export const readNewsletterSubscribers = (params?: any) =>
+  directus.request(readItems('newsletter_subscribers', params));
+
+/**
+ * Vytvorí nového odberateľa newsletteru v kolekcii newsletter_subscribers v Directuse.
+ * @param data - Objekt s emailom (napr. { email: 'test@example.com' })
+ * @returns Promise s vytvoreným záznamom
+ */
+export const createNewsletterSubscriber = (data: { email: string }) =>
+  directus.request(createItem('newsletter_subscribers', data));
+
+/**
+ * Odhlási odberateľa newsletteru z kolekcie newsletter_subscribers v Directuse.
+ * @param email - Email adresa na odhlásenie
+ * @returns Promise s výsledkom operácie
+ */
+export const deleteNewsletterSubscriber = (email: string) => {
+  return directus.request(readItems('newsletter_subscribers', {
+    filter: { email: { _eq: email } }
+  })).then(subscribers => {
+    if (subscribers && subscribers.length > 0) {
+      return directus.request(deleteItem('newsletter_subscribers', subscribers[0].id));
+    }
+    throw new Error('Subscriber not found');
+  });
+};
+
 export { readItem, updateItem };
 
 // Get four latest products sorted by creation date
