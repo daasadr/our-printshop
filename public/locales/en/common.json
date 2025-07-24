@@ -182,5 +182,6 @@
   "sort_default": "Default",
   "sort_price_asc": "Price: lowest first",
   "sort_price_desc": "Price: highest first",
-  "sort_name_asc": "Name: A-Z"
+  "sort_name_asc": "Name: A-Z",
+  "search_button": "Search"
 } 

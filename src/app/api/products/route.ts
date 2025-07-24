@@ -9,6 +9,12 @@ export async function GET(req: Request) {
     const sort = searchParams.get('sort') || '-id'; // Změna na -id místo -date_created
     const locale = searchParams.get('locale') || 'cs'; // Jazyk pre preklady
     
+    // Nové filtre
+    const search = searchParams.get('search');
+    const priceFrom = searchParams.get('priceFrom');
+    const priceTo = searchParams.get('priceTo');
+    const sortBy = searchParams.get('sortBy');
+    
     const params: any = {
       fields: [
         '*',
@@ -21,7 +27,7 @@ export async function GET(req: Request) {
       limit: limit // Vždy nastavit limit
     };
     
-    console.log('API Products - Request params:', { category, limit, sort, locale });
+    console.log('API Products - Request params:', { category, limit, sort, locale, search, priceFrom, priceTo, sortBy });
     
     // Filtrování podle main_category
     if (category) {
@@ -61,7 +67,53 @@ export async function GET(req: Request) {
     console.log('API Products - Response count:', response.length);
     
     // Preklad produktov podľa jazyka
-    const translatedProducts = translateProducts(response, locale);
+    let translatedProducts = translateProducts(response, locale);
+    
+    // Aplikovanie dodatočných filtrov na preložené produkty
+    if (search) {
+      const searchLower = search.toLowerCase();
+      translatedProducts = translatedProducts.filter(product => 
+        product.name?.toLowerCase().includes(searchLower) ||
+        product.description?.toLowerCase().includes(searchLower)
+      );
+    }
+    
+    // Filtrovanie podľa ceny
+    if (priceFrom || priceTo) {
+      translatedProducts = translatedProducts.filter(product => {
+        const minPrice = product.variants?.[0]?.price || 0;
+        const maxPrice = Math.max(...(product.variants?.map(v => v.price) || [0]));
+        
+        if (priceFrom && minPrice < parseFloat(priceFrom)) return false;
+        if (priceTo && maxPrice > parseFloat(priceTo)) return false;
+        return true;
+      });
+    }
+    
+    // Zoradenie
+    if (sortBy) {
+      switch (sortBy) {
+        case 'price_asc':
+          translatedProducts.sort((a, b) => {
+            const priceA = a.variants?.[0]?.price || 0;
+            const priceB = b.variants?.[0]?.price || 0;
+            return priceA - priceB;
+          });
+          break;
+        case 'price_desc':
+          translatedProducts.sort((a, b) => {
+            const priceA = a.variants?.[0]?.price || 0;
+            const priceB = b.variants?.[0]?.price || 0;
+            return priceB - priceA;
+          });
+          break;
+        case 'name_asc':
+          translatedProducts.sort((a, b) => 
+            (a.name || '').localeCompare(b.name || '')
+          );
+          break;
+      }
+    }
     
     // Debug: vypíšu main_category prvních 5 produktů
     if (translatedProducts.length > 0) {

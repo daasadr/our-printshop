@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useParams } from 'next/navigation';
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
 interface PaginationProps {
   currentPage: number;
@@ -38,23 +39,28 @@ export default function Pagination({
     loadDictionary();
   }, [params.lang]);
   
-  // Funkce pro vytvoření URL s parametry
+  // Funkce pro vytvoření URL s parametry (zachová všetky existujúce parametre)
   const createPageUrl = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('page', page.toString());
-    return `?${params.toString()}`;
+    const newParams = new URLSearchParams(searchParams.toString());
+    newParams.set('page', page.toString());
+    return `?${newParams.toString()}`;
   };
 
-  // Funkce pro vytvoření URL pro kategorii
+  // Funkce pro vytvoření URL pro kategorii (zachová všetky existujúce parametre)
   const createCategoryUrl = (page: number) => {
-    const params = new URLSearchParams();
-    if (category) {
-      params.set('category', category);
-    }
+    const newParams = new URLSearchParams();
+    
+    // Zachová všetky existujúce parametre
+    if (category) newParams.set('category', category);
+    if (searchParams.get('search')) newParams.set('search', searchParams.get('search')!);
+    if (searchParams.get('priceFrom')) newParams.set('priceFrom', searchParams.get('priceFrom')!);
+    if (searchParams.get('priceTo')) newParams.set('priceTo', searchParams.get('priceTo')!);
+    if (searchParams.get('sortBy')) newParams.set('sortBy', searchParams.get('sortBy')!);
+    
     if (page > 1) {
-      params.set('page', page.toString());
+      newParams.set('page', page.toString());
     }
-    return `?${params.toString()}`;
+    return `?${newParams.toString()}`;
   };
 
   if (totalPages <= 1) {
@@ -76,71 +82,77 @@ export default function Pagination({
   }
 
   return (
-    <div className="flex items-center justify-center space-x-2 mt-8">
-      {/* Předchozí stránka */}
-      {currentPage > 1 && (
-        <Link
-          href={category ? createCategoryUrl(currentPage - 1) : createPageUrl(currentPage - 1)}
-          className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-gray-700"
-        >
-          {dictionary?.pagination?.previous || 'Předchozí'}
-        </Link>
-      )}
-
-      {/* První stránka */}
-      {startPage > 1 && (
-        <>
+    <div className="flex items-center justify-between mt-8">
+      <div className="text-sm text-gray-700">
+        {dictionary?.pagination?.showing || 'Zobrazeno'} {((currentPage - 1) * productsPerPage) + 1}-{Math.min(currentPage * productsPerPage, totalProducts)} {dictionary?.pagination?.of || 'z'} {totalProducts} {dictionary?.pagination?.products || 'produktů'}
+      </div>
+      
+      <div className="flex items-center space-x-2">
+        {/* Předchozí stránka */}
+        {currentPage > 1 && (
           <Link
-            href={category ? createCategoryUrl(1) : createPageUrl(1)}
-            className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-gray-700"
+            href={category ? createCategoryUrl(currentPage - 1) : createPageUrl(currentPage - 1)}
+            className="flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
           >
-            1
+            <FiChevronLeft className="w-4 h-4 mr-1" />
+            {dictionary?.pagination?.previous || 'Předchozí'}
           </Link>
-          {startPage > 2 && (
-            <span className="px-3 py-2 text-sm text-gray-500">...</span>
-          )}
-        </>
-      )}
+        )}
 
-      {/* Stránky */}
-      {pages.map((page) => (
-        <Link
-          key={page}
-          href={category ? createCategoryUrl(page) : createPageUrl(page)}
-          className={`px-3 py-2 text-sm font-medium rounded-md ${
-            page === currentPage
-              ? 'bg-blue-600 text-white border border-blue-600'
-              : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50 hover:text-gray-700'
-          }`}
-        >
-          {page}
-        </Link>
-      ))}
+        {/* Čísla stránek */}
+        {startPage > 1 && (
+          <>
+            <Link
+              href={category ? createCategoryUrl(1) : createPageUrl(1)}
+              className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              1
+            </Link>
+            {startPage > 2 && (
+              <span className="px-3 py-2 text-sm text-gray-500">...</span>
+            )}
+          </>
+        )}
 
-      {/* Poslední stránka */}
-      {endPage < totalPages && (
-        <>
-          {endPage < totalPages - 1 && (
-            <span className="px-3 py-2 text-sm text-gray-500">...</span>
-          )}
+        {pages.map((page) => (
           <Link
-            href={category ? createCategoryUrl(totalPages) : createPageUrl(totalPages)}
-            className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-gray-700"
+            key={page}
+            href={category ? createCategoryUrl(page) : createPageUrl(page)}
+            className={`px-3 py-2 text-sm font-medium rounded-md ${
+              page === currentPage
+                ? 'bg-blue-600 text-white'
+                : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50'
+            }`}
           >
-            {totalPages}
+            {page}
           </Link>
-        </>
-      )}
+        ))}
 
-      {/* Následující stránka */}
-      {currentPage < totalPages && (
-        <Link
-          href={category ? createCategoryUrl(currentPage + 1) : createPageUrl(currentPage + 1)}
-          className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-gray-700"
-        >
-          {dictionary?.pagination?.next || 'Následující'}
-        </Link>
-      )}
+        {endPage < totalPages && (
+          <>
+            {endPage < totalPages - 1 && (
+              <span className="px-3 py-2 text-sm text-gray-500">...</span>
+            )}
+            <Link
+              href={category ? createCategoryUrl(totalPages) : createPageUrl(totalPages)}
+              className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              {totalPages}
+            </Link>
+          </>
+        )}
+
+        {/* Následující stránka */}
+        {currentPage < totalPages && (
+          <Link
+            href={category ? createCategoryUrl(currentPage + 1) : createPageUrl(currentPage + 1)}
+            className="flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+          >
+            {dictionary?.pagination?.next || 'Následující'}
+            <FiChevronRight className="w-4 h-4 ml-1" />
+          </Link>
+        )}
+      </div>
     </div>
   );
 } 
