@@ -47,6 +47,7 @@ export interface VariantProduct {
   product_id: number;
   image: string;
   name: string;
+  description?: string; // Přidáno pole pro popis produktu
 }
 
 export interface VariantFile {

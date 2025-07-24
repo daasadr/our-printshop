@@ -26,7 +26,15 @@ async function getProduct(id: string): Promise<ProductWithRelations | null> {
 
     const product = products && products.length > 0 ? products[0] : null;
 
-    console.log('getProduct - raw product from Directus:', product ? { id: product.id, name: product.name, variantsCount: product.variants?.length, designsCount: product.designs?.length } : 'null');
+    console.log('getProduct - raw product from Directus:', product ? { 
+      id: product.id, 
+      name: product.name, 
+      variantsCount: product.variants?.length, 
+      designsCount: product.designs?.length,
+      design_info: product.design_info,
+      hasDesignInfo: !!product.design_info,
+      designInfoLength: product.design_info?.length || 0
+    } : 'null');
 
     if (!product) {
       console.log('getProduct - product is null');
@@ -59,7 +67,15 @@ async function getProduct(id: string): Promise<ProductWithRelations | null> {
       designs: designs
     };
 
-    console.log('getProduct - final result:', { id: result.id, name: result.name, variantsCount: result.variants.length, designsCount: result.designs.length });
+    console.log('getProduct - final result:', { 
+      id: result.id, 
+      name: result.name, 
+      variantsCount: result.variants.length, 
+      designsCount: result.designs.length,
+      design_info: result.design_info,
+      hasDesignInfo: !!result.design_info,
+      designInfoLength: result.design_info?.length || 0
+    });
 
     return result;
   } catch (error) {

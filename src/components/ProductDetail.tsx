@@ -24,6 +24,7 @@ interface Product {
   id: string;
   name: string;
   description: string;
+  design_info?: string;
   variants: Variant[];
   designs: Design[];
   category?: string;
@@ -35,6 +36,17 @@ interface ProductDetailProps {
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   const { addToCart } = useCart();
+  
+  // Debug logging
+  console.log('ProductDetail - received product data:', {
+    id: product.id,
+    name: product.name,
+    description: product.description,
+    design_info: product.design_info,
+    hasDesignInfo: !!product.design_info,
+    designInfoLength: product.design_info?.length || 0
+  });
+  
   const [selectedVariant, setSelectedVariant] = useState<Variant | null>(
     product.variants && product.variants.length > 0 ? product.variants[0] : null
   );
@@ -187,7 +199,18 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
       {/* Informace o produktu */}
       <div>
         <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
-        <p className="text-gray-600 mb-6">{product.description}</p>
+        
+        {/* Design info od návrháře */}
+        {product.design_info && (
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg border-l-4 border-blue-500">
+            <p className="text-gray-700 leading-relaxed">{product.design_info}</p>
+          </div>
+        )}
+        
+        {/* Základní popis produktu */}
+        {product.description && (
+          <p className="text-gray-600 mb-6">{product.description}</p>
+        )}
         
         {/* Cena */}
         <div className="mb-6">

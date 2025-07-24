@@ -2,6 +2,7 @@ export interface Product {
   id: string;
   name: string;
   description: string;
+  design_info?: string;
   printful_id: string;
   is_active: boolean;
   date_created: string;

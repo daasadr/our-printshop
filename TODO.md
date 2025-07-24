@@ -21,3 +21,9 @@ ujištění se, že se produkty správně zobrazují v kategoriích(Done), trán
 # USKUTEČNĚNÉ ZMĚNY
 
 ## Sk/Cz verze s možností EUR/CZK
+
+## Implementace design_info pole pro produkty
+- **Přidáno pole `design_info`** do produktů v Directus pro návrháře
+- **Frontend zobrazení**: Nová vizuálně oddělená sekce s modrým borderem na stránce produktu
+- **Logika**: Zobrazuje se design_info (pokud existuje) + description z Printful
+- **Backend**: Upraveny TypeScript typy a synchronizace pro podporu nového pole

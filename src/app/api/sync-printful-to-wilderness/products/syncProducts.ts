@@ -2,6 +2,7 @@ import { fetchPrintfulProducts, PrintfulProduct } from "./fetchPrintfulProducts"
 import { directus } from "@/lib/directus";
 import { readItems, createItem, updateItem } from '@directus/sdk';
 import { fetchPrintfulProductDetails } from "./fetchPrintfulProductDetails";
+import { fetchPrintfulCatalogProduct } from "./fetchPrintfulCatalogProduct";
 import type { Result, SyncProduct, SyncVariant } from "./printfulProductDetail";
 
 // Types based on the attached schema
@@ -10,6 +11,7 @@ interface ProductData {
   external_id?: string | null;
   name: string;
   description?: string | null;
+  design_info?: string | null;
   price: number;
   thumbnail_url?: string | null;
   mockup_images: string[];
@@ -102,6 +104,62 @@ const processProduct = async (
       `Processing product: ${syncProduct.name} with ${syncVariants.length} variants`
     );
 
+    // Zkusíme načíst catalog produkt pro dlouhý popis
+    let catalogDescription = null;
+    
+    console.log(`🔍 Debug: syncProduct data:`, {
+      id: syncProduct.id,
+      external_id: syncProduct.external_id,
+      name: syncProduct.name,
+      description: syncProduct.description
+    });
+    
+    if (syncVariants.length > 0) {
+      console.log(`🔍 Debug: First variant data:`, {
+        id: syncVariants[0].id,
+        variant_id: syncVariants[0].variant_id,
+        product: syncVariants[0].product,
+        external_id: syncVariants[0].external_id
+      });
+      
+      // Zkusíme různé způsoby získání catalog product ID
+      const catalogProductId = syncVariants[0].product?.product_id || 
+                              syncVariants[0].variant_id || 
+                              syncVariants[0].id;
+      
+      console.log(`🔍 Trying catalog product ID: ${catalogProductId}`);
+      
+      if (catalogProductId) {
+        try {
+          console.log(`🔍 Fetching catalog product details for ID: ${catalogProductId}`);
+          
+          const catalogProduct = await fetchPrintfulCatalogProduct(catalogProductId);
+          console.log(`🔍 Catalog product response:`, catalogProduct);
+          
+          if (catalogProduct && catalogProduct.description) {
+            catalogDescription = catalogProduct.description;
+            console.log(`✅ Found catalog description: ${catalogDescription.substring(0, 100)}...`);
+          } else if (catalogProduct && catalogProduct.description_text) {
+            catalogDescription = catalogProduct.description_text;
+            console.log(`✅ Found catalog description_text: ${catalogDescription.substring(0, 100)}...`);
+          } else if (catalogProduct && catalogProduct.description_html) {
+            // Odstraníme HTML tagy pro čistý text
+            catalogDescription = catalogProduct.description_html.replace(/<[^>]*>/g, '');
+            console.log(`✅ Found catalog description_html (cleaned): ${catalogDescription.substring(0, 100)}...`);
+          } else {
+            console.log(`❌ No description found in catalog product:`, catalogProduct);
+          }
+        } catch (catalogError) {
+          console.error(`❌ Could not fetch catalog product details:`, catalogError);
+          // Pokračujeme bez catalog popisu
+        }
+      } else {
+        console.log(`❌ No catalog product ID found in variants`);
+      }
+    } else {
+      console.log(`❌ No variants found`);
+    }
+
     // Find the category ID from the first variant's main_category_id (for reference only)
     let categoryId = null;
     if (syncVariants.length > 0 && syncVariants[0].main_category_id) {
@@ -113,11 +171,25 @@ const processProduct = async (
 
     // Map Printful product to Directus schema
     // main_category bude null - uživatel si ho přiřadí ručně v Directus
+    
+    // Debug: zkontrolujeme, odkud se načítá description
+    const variantDescription = syncVariants.length > 0 ? syncVariants[0].product?.description : null;
+    const syncProductDescription = productDetail?.sync_product?.description;
+    
+    console.log(`🔍 Debug description sources for ${syncProduct.name}:`);
+    console.log(`  - variant[0].product.description: ${variantDescription ? variantDescription.substring(0, 100) + '...' : 'null'}`);
+    console.log(`  - sync_product.description: ${syncProductDescription ? syncProductDescription.substring(0, 100) + '...' : 'null'}`);
+    console.log(`  - catalogDescription: ${catalogDescription ? catalogDescription.substring(0, 100) + '...' : 'null'}`);
+    
     const productData: ProductData & { main_category?: string | null } = {
       printful_id: printfulProductId,
       external_id: syncProduct.external_id || null,
       name: syncProduct.name,
-      description: productDetail?.sync_product?.description || null,
+      description: (syncVariants.length > 0 ? syncVariants[0].product?.description : null) ||
+                  productDetail?.sync_product?.description || 
+                  catalogDescription ||
+                  null,
+      design_info: productDetail?.sync_product?.design_info || null,
       price:
         syncVariants.length > 0 ? parseFloat(syncVariants[0].retail_price) : 0,
       thumbnail_url: syncProduct.thumbnail_url || null,
@@ -126,29 +198,46 @@ const processProduct = async (
       date_updated: new Date().toISOString(),
       main_category: null, // Necháme null - uživatel si přiřadí ručně
     };
+    
+    console.log(`✅ Final description for ${syncProduct.name}: ${productData.description ? productData.description.substring(0, 100) + '...' : 'null'}`);
 
     // Check if product exists
     const existingProduct = existingProductsMap.get(printfulProductId);
     let productId: number;
 
     if (existingProduct) {
+      // Zachováme ručně vyplněná pole z existujícího produktu
+      const updateData = {
+        ...productData,
+        // Zachováme main_category pokud už existuje a není null
+        main_category: existingProduct.main_category || productData.main_category,
+        // Zachováme design_info pokud už existuje (i prázdný string)
+        design_info: existingProduct.design_info !== null && existingProduct.design_info !== undefined 
+          ? existingProduct.design_info 
+          : productData.design_info,
+        // Zachováme description pokud už existuje a není prázdný
+        description: existingProduct.description && existingProduct.description.trim() !== '' 
+          ? existingProduct.description 
+          : productData.description,
+      };
+
       // Check if update is needed
       const needsUpdate =
-        existingProduct.name !== productData.name ||
-        existingProduct.description !== productData.description ||
-        existingProduct.price !== productData.price ||
-        existingProduct.thumbnail_url !== productData.thumbnail_url ||
-        existingProduct.category !== productData.category ||
+        existingProduct.name !== updateData.name ||
+        existingProduct.description !== updateData.description ||
+        existingProduct.price !== updateData.price ||
+        existingProduct.thumbnail_url !== updateData.thumbnail_url ||
+        existingProduct.category !== updateData.category ||
         JSON.stringify(existingProduct.mockup_images) !==
-          JSON.stringify(productData.mockup_images);
+          JSON.stringify(updateData.mockup_images);
 
       if (needsUpdate) {
-        console.log(`Updating existing product: ${productData.name}`);
+        console.log(`Updating existing product: ${updateData.name}`);
         await directus.request(
-          updateItem("products", existingProduct.id, productData)
+          updateItem("products", existingProduct.id, updateData)
         );
         console.log(
-          `Updated product: ${productData.name} (ID: ${printfulProductId})`
+          `Updated product: ${updateData.name} (ID: ${printfulProductId})`
         );
       }
       productId = existingProduct.id;
@@ -385,6 +474,8 @@ export async function syncProducts() {
             "printful_id",
             "name",
             "description",
+            "design_info",
+            "main_category",
             "price",
             "thumbnail_url",
             "mockup_images",
