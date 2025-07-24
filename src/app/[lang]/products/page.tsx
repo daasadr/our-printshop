@@ -1,6 +1,7 @@
 import { ProductList } from '@/components/ProductList';
 import CategoryTiles from '@/components/CategoryTiles';
 import Pagination from '@/components/Pagination';
+import ProductFilter from '@/components/ProductFilter';
 import { getCategories } from '@/lib/directus';
 import { getDictionary } from '@/lib/getDictionary';
 import { ProductWithRelations } from '@/types';
@@ -20,11 +21,18 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
   const page = typeof searchParams?.page === 'string' ? parseInt(searchParams.page, 10) : 1;
   const productsPerPage = 12;
   
+  // Nové filtre
+  const search = typeof searchParams?.search === 'string' ? searchParams.search : undefined;
+  const priceFrom = typeof searchParams?.priceFrom === 'string' ? searchParams.priceFrom : undefined;
+  const priceTo = typeof searchParams?.priceTo === 'string' ? searchParams.priceTo : undefined;
+  const sortBy = typeof searchParams?.sortBy === 'string' ? searchParams.sortBy : undefined;
+  
   console.log('ProductsPage - searchParams:', searchParams);
   console.log('ProductsPage - category:', category);
   console.log('ProductsPage - page:', page);
+  console.log('ProductsPage - filters:', { search, priceFrom, priceTo, sortBy });
   
-  // Načítání kategorií pro tiles
+  // Načítání kategorií pro tiles a filtry
   const categories = await getCategories();
   
   // Načítání produktů z API endpoint
@@ -70,10 +78,18 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
     baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://happywilderness.cz';
   }
   
-  // Načítáme všechny produkty pro kategorii (bez limitu pro paginaci)
-  const apiUrl = category 
-    ? `${baseUrl}/api/products?category=${encodeURIComponent(category)}&limit=1000&locale=${lang}`
-    : `${baseUrl}/api/products?limit=1000&locale=${lang}`;
+  // Vytvorenie URL s filtrami
+  const apiParams = new URLSearchParams();
+  apiParams.set('limit', '1000');
+  apiParams.set('locale', lang);
+  
+  if (category) apiParams.set('category', category);
+  if (search) apiParams.set('search', search);
+  if (priceFrom) apiParams.set('priceFrom', priceFrom);
+  if (priceTo) apiParams.set('priceTo', priceTo);
+  if (sortBy) apiParams.set('sortBy', sortBy);
+  
+  const apiUrl = `${baseUrl}/api/products?${apiParams.toString()}`;
   
   console.log('ProductsPage - apiUrl:', apiUrl);
   console.log('ProductsPage - isLocalhost:', isLocalhost);
@@ -122,8 +138,11 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
         <CategoryTiles categories={categories} />
       </div>
 
-      {/* Produkty s paginací */}
+      {/* Produkty s filtry a paginací */}
       <div className="container mx-auto px-4 py-8">
+        {/* Filter komponent */}
+        <ProductFilter categories={categories} dictionary={dict} />
+        
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
             {category ? `${dict.products?.title || 'Produkty'} - ${category}` : dict.products?.all_products || 'Všechny produkty'}
