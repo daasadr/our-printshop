@@ -1,0 +1,187 @@
+{
+  "welcome": "Original clothing with designer prints",
+  "subtitle": "Express your unique style with our creative designs.",
+  "cta_collection": "View collection",
+  "cta_story": "Our story",
+  "cta_ready": "Ready to express your style?",
+  "cta_subtitle": "Explore our collection and find a design that suits you. Every product is made with care and love for detail.",
+  "cta_shop_now": "Shop Now",
+  "latest_products": "Latest products",
+  "view_all_products": "View all products",
+  "categories": "Categories",
+  "category_home-decor": "Home & Decor",
+  "category_women": "Style for Ladies",
+  "category_men": "Men's Collection",
+  "category_kids": "For Little Explorers",
+  "product": {
+    "add_to_cart": "Add to Cart",
+    "price_not_available": "Price not available",
+    "view_product": "View Product",
+    "out_of_stock": "Out of Stock",
+    "in_stock": "In Stock"
+  },
+  "cart": {
+    "title": "Cart",
+    "empty": "Your cart is empty",
+    "total": "Total:",
+    "view_cart": "View Cart",
+    "checkout": "Proceed to Checkout",
+    "close": "Close Cart",
+    "quantity": "Quantity",
+    "remove": "Remove",
+    "items_count": "items in cart",
+    "opened": "Cart opened",
+    "closed": "Cart closed"
+  },
+  "products": {
+    "title": "Products",
+    "all_products": "All Products",
+    "showing": "Showing",
+    "of": "of",
+    "products": "products",
+    "no_products_found": "No products found",
+    "no_products_in_category": "In category",
+    "no_products_found_in_category": "no products were found.",
+    "no_products_available": "No products are currently available."
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "newsletter": {
+    "title": "Stay in the loop",
+    "subtitle": "Subscribe to our newsletter and be the first to know about new designs and special offers.",
+    "placeholder": "Your email",
+    "button": "Subscribe",
+    "success": "Successfully subscribed!",
+    "error": "Error subscribing.",
+    "already_subscribed": "You are already subscribed.",
+    "invalid_email": "Invalid email.",
+    "subscribing": "Subscribing..."
+  },
+  "navigation": {
+    "home": "Home",
+    "products": "Products",
+    "about": "About Us",
+    "contact": "Contact",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "welcome_user": "Welcome, {{name}}",
+    "my_account": "My Account",
+    "favorites": "Favorites"
+  },
+  "footer": {
+    "about_title": "About Us",
+    "about_text": "Original clothing with designer prints. Each piece is custom-made to your requirements.",
+    "quick_links": "Quick Links",
+    "products": "Products",
+    "about": "About Us",
+    "contact": "Contact",
+    "terms": "Terms & Conditions",
+    "privacy": "Privacy Policy",
+    "categories": "Categories",
+    "tshirts": "T-shirts",
+    "hoodies": "Hoodies",
+    "posters": "Posters",
+    "mugs": "Mugs",
+    "accessories": "Accessories",
+    "contact_title": "Contact Us",
+    "email": "Email: happyones@happywilderness.com",
+    "phone": "Phone: +1 123 456 789",
+    "address": "Address: Your Street 123, 12345 City",
+    "brand": "HappyWilderness",
+    "rights": "All rights reserved.",
+    "made_in_country": "Made with ❤️ Powered by Next.js and Printful.",
+    "made_in": "Made in Czech Republic/Slovak Republic",
+    "all_rights_reserved": "All rights reserved",
+    "copyright": "©{{year}} AnnLibertas & LuGo all rights reserved."
+  },
+  "newsletter": {
+    "title": "Stay in the loop",
+    "subtitle": "Subscribe to our newsletter and be the first to know about new designs and special offers.",
+    "placeholder": "Your email",
+    "button": "Subscribe",
+    "success": "Successfully subscribed!",
+    "error": "Error subscribing.",
+    "already_subscribed": "You are already subscribed.",
+    "invalid_email": "Invalid email.",
+    "subscribing": "Subscribing...",
+    "email_subject": "Welcome to our newsletter!",
+    "email_greeting": "Hello,",
+    "email_body": "Thank you for subscribing to our newsletter! Look forward to exclusive offers, design world news and inspiration directly to your inbox.",
+    "email_unsubscribe_info": "If you wish to cancel your subscription, click the link below:",
+    "email_unsubscribe_link": "Unsubscribe from newsletter",
+    "unsubscribe_title": "We're sorry to see you go",
+    "unsubscribe_subtitle": "Please let us know why you want to cancel your subscription.",
+    "unsubscribe_reason_label": "Reason for unsubscribing (optional)",
+    "unsubscribe_reason_too_many": "I receive too many emails",
+    "unsubscribe_reason_not_relevant": "Content is not relevant",
+    "unsubscribe_reason_other": "Other reason",
+    "unsubscribe_button": "Unsubscribe",
+    "unsubscribe_success": "You have been successfully unsubscribed.",
+    "unsubscribing": "Unsubscribing..."
+  },
+  
+  "error": {
+    "server_error": "Server error: {{status}} {{statusText}}",
+    "load_products": "Failed to load latest products. Please try again later.",
+    "image_load": "Error loading image for product {{product}}:"
+  },
+  
+  "about": {
+    "title": "Welcome to the jungle !(★ ω ★)",
+    "hero_alt": "Jungle",
+    "intro": "Welcome to the world of HappyWilderness, where fantasy meets fashion and every piece is a unique expression of originality and creativity.",
+    "team": "Four different creative personalities, each completely different, we have joined together to offer you a diverse spectrum of designs and ideas that will captivate you and captivate your surroundings. You will thus become a source of inspiration for others.",
+    "inspiration_alt": "Our inspiration",
+    "philosophy": "We believe that fashion should be more than just clothing - it should be an expression of your unique style and values. That's why we strive to create products that not only look great but also have a story.",
+    "values_title": "Our values",
+    "values": {
+      "originality": {
+        "title": "Originality",
+        "description": "Every design is unique and created with attention to detail."
+      },
+      "quality": {
+        "title": "Quality",
+        "description": "We use only premium materials that are comfortable to wear and last long."
+      },
+      "sustainability": {
+        "title": "Sustainability",
+        "description": "On-demand production means minimal waste and environmentally friendly approach."
+      }
+    },
+    "story_title": "Your story",
+    "story": "If you've ever been to a magical place, you know very well that the magic of that place is not just in the physical presence itself, but in the fact that the place becomes part of you and that a connection with this place is formed within you, so you can return to it in your thoughts anytime and experience that enchantment over and over again. For this reason, we decided to create HappyWilderness to pass on a piece of this magic to you and help you create an extraordinary place from your own home where you will feel happy and fulfilled.",
+    "quote": "We believe that fashion should be more than just clothing - it should be an expression of your unique style and values."
+  },
+  
+  "title": "Welcome to our print shop",
+  "description": "Professional print shop for all your needs",
+  
+  "Index": {
+    "description": "Professional print shop for all your needs"
+  },
+  
+  "product_filter_title": "Product filter",
+  "category": "Category",
+  "all_categories": "All categories",
+  "color": "Color",
+  "all_colors": "All colors",
+  "size": "Size",
+  "all_sizes": "All sizes",
+  "price_from": "Price from ($)",
+  "price_to": "Price to ($)",
+  "product_name": "Product name",
+  "show_results": "Show results",
+  "reset_filters": "Reset filters",
+  "min_placeholder": "Min",
+  "max_placeholder": "Max",
+  "search_placeholder": "Search...",
+  "sort_by": "Sort by",
+  "sort_default": "Default",
+  "sort_price_asc": "Price: lowest first",
+  "sort_price_desc": "Price: highest first",
+  "sort_name_asc": "Name: A-Z",
+  "search_button": "Search"
+} 

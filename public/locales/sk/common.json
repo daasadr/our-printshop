@@ -1,0 +1,187 @@
+{
+  "welcome": "Originálne oblečenie s autorskými potlačami",
+  "subtitle": "Vyjadrite svoj jedinečný štýl s našimi kreatívnymi dizajnmi.",
+  "cta_collection": "Pozrieť kolekciu",
+  "cta_story": "Náš príbeh",
+  "cta_ready": "Pripravení vyjadriť svoj štýl?",
+  "cta_subtitle": "Preskúmajte našu kolekciu a nájdite dizajn, ktorý vás vystihuje. Každý produkt je vyrobený s starostlivosťou a láskou k detailu.",
+  "cta_shop_now": "Nakupovať teraz",
+  "latest_products": "Najnovšie produkty",
+  "view_all_products": "Zobraziť všetky produkty",
+  "categories": "Kategórie",
+  "category_home-decor": "Domov a dekorácie",
+  "category_women": "Štýlovo pre dámy",
+  "category_men": "Pánska kolekcia",
+  "category_kids": "Pre malých objaviteľov",
+  "product": {
+    "add_to_cart": "Do košíka",
+    "price_not_available": "Cena nie je k dispozícii",
+    "view_product": "Zobraziť produkt",
+    "out_of_stock": "Nie je skladom",
+    "in_stock": "Skladom"
+  },
+  "cart": {
+    "title": "Košík",
+    "empty": "Váš košík je prázdny",
+    "total": "Celkom:",
+    "view_cart": "Zobraziť košík",
+    "checkout": "Pokračovať k pokladni",
+    "close": "Zavrieť košík",
+    "quantity": "Množstvo",
+    "remove": "Odobrať",
+    "items_count": "položiek v košíku",
+    "opened": "Košík otvorený",
+    "closed": "Košík zatvorený"
+  },
+  "products": {
+    "title": "Produkty",
+    "all_products": "Všetky produkty",
+    "showing": "Zobrazené",
+    "of": "z",
+    "products": "produktov",
+    "no_products_found": "Žiadne produkty nenájdené",
+    "no_products_in_category": "V kategórii",
+    "no_products_found_in_category": "neboli nájdené žiadne produkty.",
+    "no_products_available": "Momentálne nie sú k dispozícii žiadne produkty."
+  },
+  "pagination": {
+    "previous": "Predchádzajúca",
+    "next": "Nasledujúca"
+  },
+  "newsletter": {
+    "title": "Zostaňte v obraze",
+    "subtitle": "Prihláste sa k odberu nášho newsletteru a buďte prví, ktorí sa dozvedia o nových dizajnoch a špeciálnych ponukách.",
+    "placeholder": "Váš e-mail",
+    "button": "Prihlásiť sa",
+    "success": "Úspešne prihlásené!",
+    "error": "Chyba pri prihlasovaní.",
+    "already_subscribed": "Už ste prihlásený k odberu.",
+    "invalid_email": "Neplatný e-mail.",
+    "subscribing": "Prihlasovanie..."
+  },
+  "navigation": {
+    "home": "Domov",
+    "products": "Produkty",
+    "about": "O nás",
+    "contact": "Kontakt",
+    "login": "Prihlásiť",
+    "register": "Registrovať",
+    "logout": "Odhlásiť",
+    "welcome_user": "Vitajte, {{name}}",
+    "my_account": "Môj účet",
+    "favorites": "Obľúbené"
+  },
+  "footer": {
+    "about_title": "O nás",
+    "about_text": "Originálne oblečenie s autorskými potlačami. Každý kus je vyrobený na mieru podľa vašich požiadaviek.",
+    "quick_links": "Rýchle odkazy",
+    "products": "Produkty",
+    "about": "O nás",
+    "contact": "Kontakt",
+    "terms": "Obchodné podmienky",
+    "privacy": "Ochrana súkromia",
+    "categories": "Kategórie",
+    "tshirts": "Tričká",
+    "hoodies": "Mikiny",
+    "posters": "Plagáty",
+    "mugs": "Hrnčeky",
+    "accessories": "Doplnky",
+    "contact_title": "Kontaktujte nás",
+    "email": "Email: happyones@happywilderness.sk",
+    "phone": "Telefón: +421 123 456 789",
+    "address": "Adresa: Vaša ulica 123, 123 45 Bratislava",
+    "brand": "HappyWilderness",
+    "rights": "Všetky práva vyhradené.",
+    "made_in_country": "Vyrobené s ❤️ Powered by Next.js a Printful.",
+    "made_in": "Vyrobené v Českej republike/Slovenskej republike",
+    "all_rights_reserved": "Všetky práva vyhradené",
+    "copyright": "©{{year}} AnnLibertas & LuGo všetky práva vyhradené."
+  },
+  "newsletter": {
+    "title": "Zostaňte v obraze",
+    "subtitle": "Prihláste sa k odberu nášho newsletteru a buďte prví, ktorí sa dozvedia o nových dizajnoch a špeciálnych ponukách.",
+    "placeholder": "Váš e-mail",
+    "button": "Prihlásiť sa",
+    "success": "Úspešne prihlásené!",
+    "error": "Chyba pri prihlasovaní.",
+    "already_subscribed": "Už ste prihlásený k odberu.",
+    "invalid_email": "Neplatný e-mail.",
+    "subscribing": "Prihlasovanie...",
+    "email_subject": "Vitajte v našom newsletteri!",
+    "email_greeting": "Dobrý deň,",
+    "email_body": "Ďakujeme za prihlásenie k odberu nášho newsletteru! Tešte sa na exkluzívne ponuky, novinky zo sveta dizajnu a inšpiráciu priamo do vašej schránky.",
+    "email_unsubscribe_info": "Ak si prajete odber zrušiť, kliknite na odkaz nižšie:",
+    "email_unsubscribe_link": "Zrušiť odber newslettra",
+    "unsubscribe_title": "Je nám ľúto, že odchádzate",
+    "unsubscribe_subtitle": "Dajte nám, prosím, vedieť, prečo si prajete zrušiť odber.",
+    "unsubscribe_reason_label": "Dôvod odhlásenia (nepovinné)",
+    "unsubscribe_reason_too_many": "Dostávam príliš veľa e-mailov",
+    "unsubscribe_reason_not_relevant": "Obsah nie je relevantný",
+    "unsubscribe_reason_other": "Iný dôvod",
+    "unsubscribe_button": "Zrušiť odber",
+    "unsubscribe_success": "Boli ste úspešne odhlásení.",
+    "unsubscribing": "Odhlasovanie..."
+  },
+  
+  "error": {
+    "server_error": "Chyba servera: {{status}} {{statusText}}",
+    "load_products": "Nepodarilo sa načítať najnovšie produkty. Skúste to prosím neskôr.",
+    "image_load": "Chyba pri načítaní obrázku pre produkt {{product}}:"
+  },
+  
+  "about": {
+    "title": "Vitajte v džungli !(★ ω ★)",
+    "hero_alt": "Džungľa",
+    "intro": "Vitajte vo svete HappyWilderness, kde sa fantázia stretáva s módou a každý kus je jedinečným vyjadrením originality a kreativity.",
+    "team": "Štyri rôzne tvorivé osobnosti, každá úplne iná, spoločne sme sa spojili aby sme vám ponúkli rozmanité spektrum dizajnov a nápadov, ktoré vás zaujmú a zaujmú vaše okolie. Stanete sa tak zdrojom inšpirácie pre ostatných.",
+    "inspiration_alt": "Naša inšpirácia",
+    "philosophy": "Veríme, že móda má byť viac než len oblečenie - má byť vyjadrením vášho jedinečného štýlu a hodnôt. Preto sa snažíme vytvárať produkty, ktoré nielen skvele vyzerajú, ale majú aj príbeh.",
+    "values_title": "Naše hodnoty",
+    "values": {
+      "originality": {
+        "title": "Originalita",
+        "description": "Každý dizajn je unikátny a vytvorený s dôrazom na detail."
+      },
+      "quality": {
+        "title": "Kvalita",
+        "description": "Používame len prémiové materiály, ktoré sú príjemné na nosenie a dlho vydržia."
+      },
+      "sustainability": {
+        "title": "Udržateľnosť",
+        "description": "Výroba na vyžiadanie znamená minimálny odpad a šetrný prístup k životnému prostrediu."
+      }
+    },
+    "story_title": "Váš príbeh",
+    "story": "Ak ste niekedy boli na nejakom kúzelnom mieste, veľmi dobre viete, že kúzlo toho miesta nie je len v samotnej fyzickej prítomnosti, ale v tom, že sa to miesto stane súčasťou vás samotných a že vo vás sa utvorí spojenie s týmto miestom, takže sa naň môžete v myšlienkach kedykoľvek vracať a prežívať to okúzlenie stále znova a znova. Z tohto dôvodu sme sa rozhodli vytvoriť HappyWilderness, aby sme vám mohli predať kúsok tohto kúzla a pomôcť vám vytvoriť si z vlastného domova nevšedné miesto, kde sa budete cítiť šťastní a naplnení.",
+    "quote": "Veríme, že móda má byť viac než len oblečenie - má byť vyjadrením vášho jedinečného štýlu a hodnôt."
+  },
+  
+  "title": "Vitajte v našej tlačiarni",
+  "description": "Profesionálna tlačiareň pre všetky vaše potreby",
+  
+  "Index": {
+    "description": "Profesionálna tlačiareň pre všetky vaše potreby"
+  },
+  
+  "product_filter_title": "Filter produktov",
+  "category": "Kategória",
+  "all_categories": "Všetky kategórie",
+  "color": "Farba",
+  "all_colors": "Všetky farby",
+  "size": "Veľkosť",
+  "all_sizes": "Všetky veľkosti",
+  "price_from": "Cena od (€)",
+  "price_to": "Cena do (€)",
+  "product_name": "Názov produktu",
+  "show_results": "Zobraziť výsledky",
+  "reset_filters": "Resetovať filtre",
+  "min_placeholder": "Min",
+  "max_placeholder": "Max",
+  "search_placeholder": "Hľadať...",
+  "sort_by": "Zoradiť podľa",
+  "sort_default": "Predvolené",
+  "sort_price_asc": "Ceny: od najlacnejších",
+  "sort_price_desc": "Ceny: od najdrahších",
+  "sort_name_asc": "Názvu: A-Z",
+  "search_button": "Hľadať"
+} 

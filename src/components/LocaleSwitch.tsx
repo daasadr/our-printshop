@@ -24,52 +24,82 @@ const SlovakFlag = () => (
   </svg>
 );
 
+const EnglishFlag = () => (
+  <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="16" height="12" fill="#012169"/>
+    <path d="M0 0L16 12M16 0L0 12" stroke="#fff" strokeWidth="2"/>
+    <path d="M0 0L16 12M16 0L0 12" stroke="#C8102E" strokeWidth="1"/>
+    <path d="M8 0V12M0 6H16" stroke="#fff" strokeWidth="3"/>
+    <path d="M8 0V12M0 6H16" stroke="#C8102E" strokeWidth="2"/>
+  </svg>
+);
+
+const GermanFlag = () => (
+  <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="16" height="4" fill="#000"/>
+    <rect y="4" width="16" height="4" fill="#DD0000"/>
+    <rect y="8" width="16" height="4" fill="#FFCE00"/>
+  </svg>
+);
+
 export default function LocaleSwitch() {
-  const { locale, setLocale, isCzech, isSlovak } = useLocale();
+  const { locale, setLocale, isCzech, isSlovak, isEnglish, isGerman } = useLocale();
+
+  const getButtonStyle = (isActive: boolean) => ({
+    minWidth: '50px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '4px',
+    padding: '8px 12px',
+    borderRadius: '6px',
+    fontSize: '12px',
+    fontWeight: '600',
+    transition: 'all 0.2s',
+    background: isActive 
+      ? 'linear-gradient(135deg, #1a5f3a 0%, #4a7c59 50%, #6b8e7a 100%)'
+      : 'transparent',
+    color: isActive ? 'white' : '#1a5f3a',
+    border: `2px solid #1a5f3a`,
+    cursor: 'pointer',
+  });
 
   return (
-    <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2">
-      <button
-        onClick={() => setLocale('sk')}
-        className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-          isSlovak
-            ? 'text-white shadow-lg border-2 border-green-700'
-            : 'bg-transparent text-green-700 border-2 border-green-700 hover:bg-green-700/10'
-        }`}
-        style={{ 
-          minWidth: '70px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '6px',
-          background: isSlovak 
-            ? 'linear-gradient(135deg, #1a5f3a 0%, #4a7c59 50%, #6b8e7a 100%)'
-            : 'transparent'
-        }}
-      >
-        <SlovakFlag />
-        <span className="font-semibold">SK</span>
-      </button>
+    <div className="flex items-center space-x-1 bg-white/10 backdrop-blur-sm rounded-lg px-2 py-1" suppressHydrationWarning>
       <button
         onClick={() => setLocale('cs')}
-        className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-          isCzech
-            ? 'text-white shadow-lg border-2 border-green-700'
-            : 'bg-transparent text-green-700 border-2 border-green-700 hover:bg-green-700/10'
-        }`}
-        style={{ 
-          minWidth: '70px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '6px',
-          background: isCzech 
-            ? 'linear-gradient(135deg, #1a5f3a 0%, #4a7c59 50%, #6b8e7a 100%)'
-            : 'transparent'
-        }}
+        style={getButtonStyle(isCzech)}
+        title="Čeština"
       >
         <CzechFlag />
-        <span className="font-semibold">CZ</span>
+        <span>CZ</span>
+      </button>
+      
+      <button
+        onClick={() => setLocale('sk')}
+        style={getButtonStyle(isSlovak)}
+        title="Slovenčina"
+      >
+        <SlovakFlag />
+        <span>SK</span>
+      </button>
+      
+      <button
+        onClick={() => setLocale('en')}
+        style={getButtonStyle(isEnglish)}
+        title="English"
+      >
+        <EnglishFlag />
+        <span>EN</span>
+      </button>
+      
+      <button
+        onClick={() => setLocale('de')}
+        style={getButtonStyle(isGerman)}
+        title="Deutsch"
+      >
+        <GermanFlag />
+        <span>DE</span>
       </button>
     </div>
   );

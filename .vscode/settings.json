@@ -1,0 +1,24 @@
+{
+  "maven.terminal.customEnv": [
+    {
+      "environmentVariable": "PRINTFUL_API_KEY",
+      "value": "lUu36fFbgG6wycrU6ToijrtmttSA7uq8xLijrmo0"
+    },
+    {
+      "environmentVariable": "DATABASE_URL",
+      "value": "postgresql://postgres@localhost:5432/printshop"
+    },
+    {
+      "environmentVariable": "NEXT_PUBLIC_DIRECTUS_URL",
+      "value": "http://localhost:8055"
+    },
+    {
+      "environmentVariable": "DIRECTUS_TOKEN",
+      "value": "_BUEg2u5GZPnl-9fEa6YCgvI-atEE76h"
+    },
+    {
+      "environmentVariable": "RESEND_API_KEY",
+      "value": "re_RdJ7s6Ge_Q3SE6JbeThDu36Lw2pCHbfhn"
+    }
+  ]
+}

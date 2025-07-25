@@ -12,6 +12,15 @@ export interface Product {
   price?: number;
   categories?: Category[];
   designs?: Design[];
+  // Prekladové polia
+  name_cs?: string;
+  name_sk?: string;
+  name_en?: string;
+  name_de?: string;
+  description_cs?: string;
+  description_sk?: string;
+  description_en?: string;
+  description_de?: string;
 }
 
 export interface Variant {

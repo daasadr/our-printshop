@@ -3,8 +3,12 @@
 import React, { useState, FormEvent } from 'react';
 import Link from 'next/link';
 
+interface NewsletterSignupProps {
+  dictionary: any;
+  lang: string;
+}
 
-const NewsletterSignup: React.FC = () => {
+const NewsletterSignup: React.FC<NewsletterSignupProps> = ({ dictionary, lang }) => {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
@@ -14,7 +18,7 @@ const NewsletterSignup: React.FC = () => {
     
     if (!email) {
       setStatus('error');
-      setMessage('Zadejte prosím e-mailovou adresu.');
+      setMessage(dictionary.newsletter?.error || 'Zadejte prosím e-mailovou adresu.');
       return;
     }
     
@@ -22,7 +26,7 @@ const NewsletterSignup: React.FC = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setStatus('error');
-      setMessage('Zadejte prosím platnou e-mailovou adresu.');
+      setMessage(dictionary.newsletter?.invalid_email || 'Zadejte prosím platnou e-mailovou adresu.');
       return;
     }
     
@@ -39,16 +43,16 @@ const NewsletterSignup: React.FC = () => {
       });
       
       if (!response.ok) {
-        throw new Error('Nastala chyba při přihlašování k odběru.');
+        throw new Error(dictionary.newsletter?.error || 'Nastala chyba při přihlašování k odběru.');
       }
       
       setStatus('success');
-      setMessage('Děkujeme za přihlášení k odběru novinek!');
+      setMessage(dictionary.newsletter?.success || 'Děkujeme za přihlášení k odběru novinek!');
       setEmail('');
     } catch (error) {
       console.error('Newsletter subscription error:', error);
       setStatus('error');
-      setMessage('Omlouváme se, nastala chyba. Zkuste to prosím znovu později.');
+      setMessage(dictionary.newsletter?.error || 'Omlouváme se, nastala chyba. Zkuste to prosím znovu později.');
     }
   };
   
@@ -60,8 +64,8 @@ const NewsletterSignup: React.FC = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Vaše e-mailová adresa"
-            className="flex-grow px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder={dictionary.newsletter?.placeholder || "Váš e-mail"}
+            className="flex-grow px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
             disabled={status === 'loading'}
           />
           <button
@@ -73,7 +77,10 @@ const NewsletterSignup: React.FC = () => {
             }`}
             disabled={status === 'loading'}
           >
-            {status === 'loading' ? 'Odesílání...' : 'Přihlásit se'}
+            {status === 'loading' 
+              ? (dictionary.newsletter?.subscribing || 'Přihlašování...') 
+              : (dictionary.newsletter?.button || 'Přihlásit se')
+            }
           </button>
         </div>
         
@@ -86,8 +93,10 @@ const NewsletterSignup: React.FC = () => {
         )}
         
         <p className="mt-3 text-xs text-gray-500">
-          Přihlášením k odběru souhlasíte se zpracováním vašich osobních údajů v souladu s našimi 
-          <Link href="/privacy-policy" className="underline ml-1">zásadami ochrany soukromí</Link>.
+          {dictionary.newsletter?.privacy_notice || "Přihlášením k odběru souhlasíte se zpracováním vašich osobních údajů v souladu s našimi"}
+          <Link href={`/${lang}/privacy-policy`} className="underline ml-1">
+            {dictionary.newsletter?.privacy_policy || "zásadami ochrany soukromí"}
+          </Link>.
         </p>
       </form>
     </div>

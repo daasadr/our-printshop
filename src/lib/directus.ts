@@ -90,6 +90,38 @@ export const createProductCategory = (data: any) => directus.request(createItem(
 export const updateProductCategory = (id: string, data: any) => directus.request(updateItem('product_categories', id, data));
 export const deleteProductCategory = (id: string) => directus.request(deleteItem('product_categories', id));
 
+/**
+ * Načíta odberateľov newsletteru z kolekcie newsletter_subscribers v Directuse.
+ * @param params - Voliteľné parametre pre filtrovanie, zoradenie atď.
+ * @returns Promise s poľom odberateľov
+ */
+export const readNewsletterSubscribers = (params?: any) =>
+  directus.request(readItems('newsletter_subscribers', params));
+
+/**
+ * Vytvorí nového odberateľa newsletteru v kolekcii newsletter_subscribers v Directuse.
+ * @param data - Objekt s emailom (napr. { email: 'test@example.com' })
+ * @returns Promise s vytvoreným záznamom
+ */
+export const createNewsletterSubscriber = (data: { email: string }) =>
+  directus.request(createItem('newsletter_subscribers', data));
+
+/**
+ * Odhlási odberateľa newsletteru z kolekcie newsletter_subscribers v Directuse.
+ * @param email - Email adresa na odhlásenie
+ * @returns Promise s výsledkom operácie
+ */
+export const deleteNewsletterSubscriber = (email: string) => {
+  return directus.request(readItems('newsletter_subscribers', {
+    filter: { email: { _eq: email } }
+  })).then(subscribers => {
+    if (subscribers && subscribers.length > 0) {
+      return directus.request(deleteItem('newsletter_subscribers', subscribers[0].id));
+    }
+    throw new Error('Subscriber not found');
+  });
+};
+
 export { readItem, updateItem };
 
 // Get four latest products sorted by creation date
@@ -166,3 +198,37 @@ export const getCategories = async (limit: number = 4) => {
 };
 
 // Pokud budeš chtít přidat další kolekce (např. product_categories), stačí přidat obdobné CRUD funkce. 
+
+/**
+ * Prekladá produkt podľa jazyka
+ * @param product - Produkt z databázy
+ * @param locale - Jazyk (cs, sk, en, de)
+ * @returns Produkt s preloženými poliami
+ */
+export const translateProduct = (product: any, locale: string) => {
+  const translatedProduct = { ...product };
+  
+  // Preklad názvu
+  const nameKey = `name_${locale}`;
+  if (product[nameKey] && product[nameKey].trim()) {
+    translatedProduct.name = product[nameKey];
+  }
+  
+  // Preklad popisu
+  const descriptionKey = `description_${locale}`;
+  if (product[descriptionKey] && product[descriptionKey].trim()) {
+    translatedProduct.description = product[descriptionKey];
+  }
+  
+  return translatedProduct;
+};
+
+/**
+ * Prekladá pole produktov podľa jazyka
+ * @param products - Pole produktov z databázy
+ * @param locale - Jazyk (cs, sk, en, de)
+ * @returns Pole produktov s preloženými poliami
+ */
+export const translateProducts = (products: any[], locale: string) => {
+  return products.map(product => translateProduct(product, locale));
+}; 
