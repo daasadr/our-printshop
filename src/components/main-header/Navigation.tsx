@@ -44,16 +44,6 @@ const Navigation: React.FC<NavigationProps> = ({ isMenuOpen, setIsMenuOpen, dict
           {dictionary?.navigation?.products || "Produkty"}
         </Link>
         <Link 
-          href={getLocalizedLink('/about')} 
-          className={`px-3 py-2 text-sm font-medium transition-colors ${
-            isActive('/about') 
-              ? 'text-blue-600 border-b-2 border-blue-600'
-              : 'text-gray-700 hover:text-blue-600'
-          }`}
-        >
-          {dictionary?.navigation?.about || "O nás"}
-        </Link>
-        <Link 
           href={getLocalizedLink('/kontakt')} 
           className={`px-3 py-2 text-sm font-medium transition-colors ${
             isActive('/kontakt') 
@@ -116,15 +106,6 @@ const Navigation: React.FC<NavigationProps> = ({ isMenuOpen, setIsMenuOpen, dict
               onClick={() => setIsMenuOpen(false)}
             >
               {dictionary?.navigation?.products || "Produkty"}
-            </Link>
-            <Link
-              href={getLocalizedLink('/about')}
-              className={`px-3 py-2 text-base font-medium rounded-md transition-colors ${
-                isActive('/about') ? 'text-blue-600 bg-blue-50' : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {dictionary?.navigation?.about || "O nás"}
             </Link>
             <Link
               href={getLocalizedLink('/kontakt')}

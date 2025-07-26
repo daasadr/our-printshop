@@ -12,6 +12,7 @@ interface ProductData {
   name: string;
   description?: string | null;
   design_info?: string | null;
+  product_info?: string | null;
   price: number;
   thumbnail_url?: string | null;
   mockup_images: string[];
@@ -28,6 +29,8 @@ interface VariantData {
   price: number;
   is_active: boolean;
   printful_variant_id: string;
+  size?: string;
+  color?: string;
 }
 
 // Helper function to generate slug from title
@@ -76,6 +79,41 @@ function extractMockupImages(syncProduct: SyncProduct, syncVariants: SyncVariant
   
   // Remove duplicates
   return [...new Set(mockupImages)];
+}
+
+// Helper function to extract size and color from variant name
+function extractSizeAndColor(variantName: string): { size: string | null; color: string | null } {
+  // Pattern: "Product Name color / SIZE" or "Product Name / SIZE"
+  const sizePattern = /\s+\/\s+([A-Z0-9]+)$/;
+  
+  const sizeMatch = variantName.match(sizePattern);
+  const size = sizeMatch ? sizeMatch[1] : null;
+  
+  // Extract color: look for the last word before "/ SIZE"
+  let color = null;
+  if (sizeMatch) {
+    const beforeSize = variantName.substring(0, sizeMatch.index);
+    const parts = beforeSize.trim().split(' ');
+    
+    // Look for common color words at the end
+    const colorWords = ['white', 'black', 'red', 'blue', 'green', 'yellow', 'pink', 'purple', 'orange', 'brown', 'gray', 'grey'];
+    const lastWord = parts[parts.length - 1]?.toLowerCase();
+    
+    if (lastWord && colorWords.includes(lastWord)) {
+      color = lastWord;
+    } else {
+      // If no common color found, try to extract the last word that's not part of the product name
+      // For "Ancient Heroine Skater Dress white / XS", we want "white"
+      const productNameParts = ['ancient', 'heroine', 'skater', 'dress'];
+      const lastPart = parts[parts.length - 1]?.toLowerCase();
+      
+      if (lastPart && !productNameParts.includes(lastPart)) {
+        color = lastPart;
+      }
+    }
+  }
+  
+  return { size, color };
 }
 
 const processProduct = async (
@@ -190,6 +228,7 @@ const processProduct = async (
                   catalogDescription ||
                   null,
       design_info: productDetail?.sync_product?.design_info || null,
+      product_info: null, // Necháme null - uživatel si vyplní ručně
       price:
         syncVariants.length > 0 ? parseFloat(syncVariants[0].retail_price) : 0,
       thumbnail_url: syncProduct.thumbnail_url || null,
@@ -215,6 +254,10 @@ const processProduct = async (
         design_info: existingProduct.design_info !== null && existingProduct.design_info !== undefined 
           ? existingProduct.design_info 
           : productData.design_info,
+        // Zachováme product_info pokud už existuje (i prázdný string)
+        product_info: existingProduct.product_info !== null && existingProduct.product_info !== undefined 
+          ? existingProduct.product_info 
+          : productData.product_info,
         // Zachováme description pokud už existuje a není prázdný
         description: existingProduct.description && existingProduct.description.trim() !== '' 
           ? existingProduct.description 
@@ -263,6 +306,20 @@ const processProduct = async (
     );
     for (const syncVariant of syncVariants) {
       try {
+        // Use size and color directly from Printful API
+        const size = syncVariant.size || null;
+        const color = syncVariant.color || null;
+        
+        console.log(`Processing variant: ${syncVariant.name} -> size: ${size}, color: ${color}`);
+        console.log(`Raw variant data:`, {
+          id: syncVariant.id,
+          name: syncVariant.name,
+          size: syncVariant.size,
+          color: syncVariant.color,
+          retail_price: syncVariant.retail_price,
+          sku: syncVariant.sku
+        });
+        
         const variantData: VariantData = {
           product: productId,
           product_id: productId,
@@ -271,6 +328,8 @@ const processProduct = async (
           price: parseFloat(syncVariant.retail_price),
           is_active: syncVariant.availability_status === "active",
           printful_variant_id: syncVariant.id.toString(),
+          size: size,
+          color: color,
         };
 
         const existingVariant = existingVariantsMap.get(
@@ -292,7 +351,9 @@ const processProduct = async (
             existingVariant.name !== variantData.name ||
             existingVariant.price !== variantData.price ||
             existingVariant.is_active !== variantData.is_active ||
-            existingVariant.sku !== variantData.sku;
+            existingVariant.sku !== variantData.sku ||
+            existingVariant.size !== variantData.size ||
+            existingVariant.color !== variantData.color;
 
           if (needsVariantUpdate) {
             await directus.request(
@@ -475,6 +536,7 @@ export async function syncProducts() {
             "name",
             "description",
             "design_info",
+            "product_info",
             "main_category",
             "price",
             "thumbnail_url",
@@ -493,6 +555,8 @@ export async function syncProducts() {
             "is_active",
             "product_id",
             "sku",
+            "size",
+            "color",
           ],
         })
       ),

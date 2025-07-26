@@ -25,6 +25,7 @@ interface Product {
   name: string;
   description: string;
   design_info?: string;
+  product_info?: string;
   variants: Variant[];
   designs: Design[];
   category?: string;
@@ -43,8 +44,19 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     name: product.name,
     description: product.description,
     design_info: product.design_info,
+    product_info: product.product_info,
     hasDesignInfo: !!product.design_info,
-    designInfoLength: product.design_info?.length || 0
+    hasProductInfo: !!product.product_info,
+    designInfoLength: product.design_info?.length || 0,
+    productInfoLength: product.product_info?.length || 0,
+    variantsCount: product.variants?.length || 0,
+    variants: product.variants?.map(v => ({
+      id: v.id,
+      name: v.name,
+      size: v.size,
+      color: v.color,
+      price: v.price
+    })) || []
   });
   
   const [selectedVariant, setSelectedVariant] = useState<Variant | null>(
@@ -306,17 +318,15 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
           )}
         </div>
         
-        {/* Detaily produktu */}
-        <div className="border-t border-gray-200 pt-6">
-          <h2 className="text-lg font-medium mb-4">Detaily produktu</h2>
-          <ul className="space-y-2 text-gray-600">
-            <li><strong>Materiál:</strong> 100% bavlna</li>
-            <li><strong>Potisk:</strong> Digitální tisk vysoké kvality</li>
-            <li><strong>Výroba:</strong> Potisk na vyžádání, každý kus je originál</li>
-            <li><strong>Expedice:</strong> 2-5 pracovních dnů</li>
-            <li><strong>Doručení:</strong> 3-10 pracovních dnů</li>
-          </ul>
-        </div>
+        {/* Informace o produktu z Directus */}
+        {product.product_info && (
+          <div className="border-t border-gray-200 pt-6">
+            <h2 className="text-lg font-medium mb-4">Informace o produktu</h2>
+            <div className="text-gray-600 leading-relaxed">
+              {product.product_info}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ export interface Product {
   name: string;
   description: string;
   design_info?: string;
+  product_info?: string;
   printful_id: string;
   is_active: boolean;
   date_created: string;
@@ -30,6 +31,8 @@ export interface Variant {
   sku: string;
   price: number;
   is_active: boolean;
+  size?: string;
+  color?: string;
 }
 
 export interface Design {
