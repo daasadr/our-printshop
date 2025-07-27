@@ -1,16 +1,22 @@
 import 'server-only';
 
 const dictionaries = {
-  cs: () => import('../../public/locales/cs/common.json').then((module) => module.default),
-  sk: () => import('../../public/locales/sk/common.json').then((module) => module.default),
-  en: () => import('../../public/locales/en/common.json').then((module) => module.default),
-  de: () => import('../../public/locales/de/common.json').then((module) => module.default),
+  cs: () => import('../dictionaries/cs.json').then((module) => module.default || module),
+  sk: () => import('../dictionaries/sk.json').then((module) => module.default || module),
+  en: () => import('../dictionaries/en.json').then((module) => module.default || module),
+  de: () => import('../dictionaries/de.json').then((module) => module.default || module),
 };
 
 export const getDictionary = async (locale: string) => {
-  const dictionary = dictionaries[locale as keyof typeof dictionaries];
-  if (!dictionary) {
+  try {
+    const dictionary = dictionaries[locale as keyof typeof dictionaries];
+    if (!dictionary) {
+      return dictionaries.cs();
+    }
+    return await dictionary();
+  } catch (error) {
+    console.error(`Error loading dictionary for locale ${locale}:`, error);
+    // Fallback na český slovník
     return dictionaries.cs();
   }
-  return dictionary();
 }; 

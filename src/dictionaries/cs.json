@@ -1,0 +1,23 @@
+{
+  "navigation": {
+    "home": "Domů",
+    "products": "Produkty",
+    "contact": "Kontakt",
+    "login": "Přihlásit",
+    "register": "Registrovat",
+    "logout": "Odhlásit",
+    "my_account": "Můj účet",
+    "favorites": "Oblíbené",
+    "welcome_user": "Vítejte, {{name}}"
+  },
+  "wishlist": {
+    "title": "Oblíbené produkty",
+    "empty": "Vaše oblíbené produkty na jednom místě",
+    "no_items": "Zatím nemáte žádné oblíbené produkty",
+    "add_to_cart": "Přidat do košíku",
+    "remove": "Odebrat",
+    "view_product": "Zobrazit produkt"
+  },
+  "search_placeholder": "Hledat produkty...",
+  "search_button": "Hledat"
+} 
