@@ -26,22 +26,7 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
   const { locale } = useLocale();
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [dictionary, setDictionary] = useState<any>(null);
   const searchRef = useRef<HTMLDivElement>(null);
-
-  // Načtení dictionary pro aktuální jazyk
-  useEffect(() => {
-    const loadDictionary = async () => {
-      try {
-        const dict = await import(`../../../public/locales/${locale}/common.json`);
-        setDictionary(dict.default);
-      } catch (error) {
-        console.warn('Failed to load dictionary:', error);
-      }
-    };
-
-    loadDictionary();
-  }, [locale]);
 
   // Click outside handler
   useEffect(() => {
@@ -69,35 +54,23 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
     }
   };
 
-  // Desktop layout - plný search bar a všechny ikony
+  const toggleSearch = () => {
+    setIsSearchOpen(!isSearchOpen);
+    if (!isSearchOpen) {
+      // Focus na input po otevření
+      setTimeout(() => {
+        const input = searchRef.current?.querySelector('input');
+        if (input) input.focus();
+      }, 100);
+    }
+  };
+
+  // Desktop layout - ikony + lupička
   if (!isMobile) {
     return (
       <div className="flex items-center space-x-3">
         {/* Přepínač jazyka */}
         <LocaleSwitch />
-        
-        {/* Search bar */}
-        <div className="relative" ref={searchRef}>
-          <form onSubmit={handleSearch} className="flex items-center">
-            <div className="relative">
-              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder={dictionary?.search_placeholder || "Hľadať produkty..."}
-                className="w-64 pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
-                onFocus={() => setIsSearchOpen(true)}
-              />
-            </div>
-            <button
-              type="submit"
-              className="ml-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
-            >
-              {dictionary?.search_button || "Hľadať"}
-            </button>
-          </form>
-        </div>
         
         {/* Ikony */}
         <div className="flex items-center space-x-1">
@@ -115,12 +88,47 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
               </span>
             )}
           </Link>
+          {/* Lupička pro vyhledávání */}
+          <button
+            onClick={toggleSearch}
+            className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100"
+            aria-label="Vyhledávání"
+          >
+            <FiSearch className="w-5 h-5" />
+          </button>
         </div>
+        
+        {/* Vyhledávací lišta - zobrazí se pod ikonami */}
+        {isSearchOpen && (
+          <div 
+            ref={searchRef}
+            className="absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg z-50 p-4"
+          >
+            <form onSubmit={handleSearch} className="max-w-2xl mx-auto flex items-center">
+              <div className="relative flex-1">
+                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Hledat produkty..."
+                  className="w-full pl-10 pr-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
+                />
+              </div>
+              <button
+                type="submit"
+                className="ml-3 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+              >
+                Hledat
+              </button>
+            </form>
+          </div>
+        )}
       </div>
     );
   }
 
-  // Mobile/Tablet layout - košík, ikony a menu toggle
+  // Mobile/Tablet layout - ikony + menu toggle
   return (
     <div className="flex items-center space-x-2">
       {/* Ikony */}
@@ -139,6 +147,14 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
             </span>
           )}
         </Link>
+        {/* Lupička pro vyhledávání na mobilu */}
+        <button
+          onClick={toggleSearch}
+          className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100"
+          aria-label="Vyhledávání"
+        >
+          <FiSearch className="w-5 h-5" />
+        </button>
       </div>
       
       {/* Menu toggle */}
@@ -149,6 +165,33 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
       >
         {isMenuOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
       </button>
+      
+      {/* Vyhledávací lišta pro mobil - zobrazí se pod ikonami */}
+      {isSearchOpen && (
+        <div 
+          ref={searchRef}
+          className="absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg z-50 p-4"
+        >
+          <form onSubmit={handleSearch} className="flex items-center">
+            <div className="relative flex-1">
+              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Hledat produkty..."
+                className="w-full pl-10 pr-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
+              />
+            </div>
+            <button
+              type="submit"
+              className="ml-3 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+            >
+              Hledat
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 };

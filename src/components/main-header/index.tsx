@@ -47,7 +47,7 @@ const Header: React.FC = () => {
     >
       <div className="container mx-auto px-4">
         {/* Desktop layout - xl a větší */}
-        <div className="hidden xl:flex items-center justify-between">
+        <div className="hidden xl:flex items-center justify-between relative">
           {/* Logo */}
           <div className="flex-shrink-0">
             <Logo />
@@ -59,21 +59,21 @@ const Header: React.FC = () => {
           </div>
           
           {/* Actions - right */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 relative">
             <HeaderActions isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
           </div>
         </div>
 
         {/* Tablet a Mobile layout - menší než xl */}
         <div className="xl:hidden">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between relative">
             {/* Logo */}
             <div className="flex-shrink-0">
               <Logo />
             </div>
             
             {/* Actions - right (s hamburger menu) */}
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 relative">
               <HeaderActions isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} isMobile={true} />
             </div>
           </div>
