@@ -1,0 +1,23 @@
+{
+  "navigation": {
+    "home": "Home",
+    "products": "Products",
+    "contact": "Contact",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "my_account": "My Account",
+    "favorites": "Favorites",
+    "welcome_user": "Welcome, {{name}}"
+  },
+  "wishlist": {
+    "title": "Favorite Products",
+    "empty": "Your favorite products in one place",
+    "no_items": "You don't have any favorite products yet",
+    "add_to_cart": "Add to Cart",
+    "remove": "Remove",
+    "view_product": "View Product"
+  },
+  "search_placeholder": "Search products...",
+  "search_button": "Search"
+} 

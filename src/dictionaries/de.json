@@ -1,0 +1,23 @@
+{
+  "navigation": {
+    "home": "Startseite",
+    "products": "Produkte",
+    "contact": "Kontakt",
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "logout": "Abmelden",
+    "my_account": "Mein Konto",
+    "favorites": "Favoriten",
+    "welcome_user": "Willkommen, {{name}}"
+  },
+  "wishlist": {
+    "title": "Lieblingsprodukte",
+    "empty": "Ihre Lieblingsprodukte an einem Ort",
+    "no_items": "Sie haben noch keine Lieblingsprodukte",
+    "add_to_cart": "In den Warenkorb",
+    "remove": "Entfernen",
+    "view_product": "Produkt anzeigen"
+  },
+  "search_placeholder": "Produkte suchen...",
+  "search_button": "Suchen"
+} 

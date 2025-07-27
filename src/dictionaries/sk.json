@@ -1,0 +1,23 @@
+{
+  "navigation": {
+    "home": "Domov",
+    "products": "Produkty",
+    "contact": "Kontakt",
+    "login": "Prihlásiť",
+    "register": "Registrovať",
+    "logout": "Odhlásiť",
+    "my_account": "Môj účet",
+    "favorites": "Obľúbené",
+    "welcome_user": "Vitajte, {{name}}"
+  },
+  "wishlist": {
+    "title": "Obľúbené produkty",
+    "empty": "Vaše obľúbené produkty na jednom mieste",
+    "no_items": "Zatiaľ nemáte žiadne obľúbené produkty",
+    "add_to_cart": "Pridať do košíka",
+    "remove": "Odobrať",
+    "view_product": "Zobraziť produkt"
+  },
+  "search_placeholder": "Hľadať produkty...",
+  "search_button": "Hľadať"
+} 

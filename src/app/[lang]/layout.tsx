@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { getDictionary } from '@/lib/getDictionary';
 import { LocaleProvider } from '@/context/LocaleContext';
+import { WishlistProvider } from '@/context/WishlistContext';
 import { Header } from '@/components/main-header';
 import { Footer } from '@/components/layout/Footer';
 
@@ -26,13 +27,15 @@ export default async function LocaleLayout({
 }: LayoutProps) {
   return (
     <LocaleProvider>
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <main id="main-content" role="main" className="flex-1">
-          {children}
-        </main>
-        <Footer />
-      </div>
+      <WishlistProvider>
+        <div className="min-h-screen bg-gray-50">
+          <Header />
+          <main id="main-content" role="main" className="flex-1">
+            {children}
+          </main>
+          <Footer />
+        </div>
+      </WishlistProvider>
     </LocaleProvider>
   );
 } 
