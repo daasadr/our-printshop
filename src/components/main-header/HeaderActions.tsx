@@ -68,7 +68,7 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
   // Desktop layout - ikony + lupička
   if (!isMobile) {
     return (
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-3 relative">
         {/* Přepínač jazyka */}
         <LocaleSwitch />
         
@@ -102,9 +102,9 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
         {isSearchOpen && (
           <div 
             ref={searchRef}
-            className="absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg z-50 p-4"
+            className="absolute top-full right-0 mt-2 bg-white border border-gray-200 shadow-lg rounded-lg z-50 p-4 min-w-80"
           >
-            <form onSubmit={handleSearch} className="max-w-2xl mx-auto flex items-center">
+            <form onSubmit={handleSearch} className="flex items-center">
               <div className="relative flex-1">
                 <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input
@@ -112,12 +112,12 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Hledat produkty..."
-                  className="w-full pl-10 pr-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
+                  className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                 />
               </div>
               <button
                 type="submit"
-                className="ml-3 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+                className="ml-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
               >
                 Hledat
               </button>
@@ -130,7 +130,7 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
 
   // Mobile/Tablet layout - ikony + menu toggle
   return (
-    <div className="flex items-center space-x-2">
+    <div className="flex items-center space-x-2 relative">
       {/* Ikony */}
       <div className="flex items-center space-x-1">
         <Link href="/account" className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100">
@@ -170,7 +170,7 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
       {isSearchOpen && (
         <div 
           ref={searchRef}
-          className="absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg z-50 p-4"
+          className="absolute top-full right-0 mt-2 bg-white border border-gray-200 shadow-lg rounded-lg z-50 p-4 min-w-80"
         >
           <form onSubmit={handleSearch} className="flex items-center">
             <div className="relative flex-1">
@@ -180,12 +180,12 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Hledat produkty..."
-                className="w-full pl-10 pr-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
+                className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
               />
             </div>
             <button
               type="submit"
-              className="ml-3 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+              className="ml-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
             >
               Hledat
             </button>
