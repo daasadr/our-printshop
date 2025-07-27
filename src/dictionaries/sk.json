@@ -1,23 +1,43 @@
 {
-  "navigation": {
-    "home": "Domov",
-    "products": "Produkty",
-    "contact": "Kontakt",
-    "login": "Prihlásiť",
-    "register": "Registrovať",
-    "logout": "Odhlásiť",
-    "my_account": "Môj účet",
-    "favorites": "Obľúbené",
-    "welcome_user": "Vitajte, {{name}}"
-  },
-  "wishlist": {
-    "title": "Obľúbené produkty",
-    "empty": "Vaše obľúbené produkty na jednom mieste",
-    "no_items": "Zatiaľ nemáte žiadne obľúbené produkty",
-    "add_to_cart": "Pridať do košíka",
-    "remove": "Odobrať",
-    "view_product": "Zobraziť produkt"
-  },
-  "search_placeholder": "Hľadať produkty...",
-  "search_button": "Hľadať"
+  "auth": {
+    "login": {
+      "title": "Prihlásenie",
+      "subtitle": "Prihláste sa do svojho účtu",
+      "email": "Email",
+      "password": "Heslo",
+      "login": "Prihlásiť sa",
+      "forgotPassword": "Zabudli ste heslo?",
+      "noAccount": "Nemáte účet?",
+      "register": "Zaregistrujte sa",
+      "errors": {
+        "invalidCredentials": "Neplatný email alebo heslo",
+        "emailNotVerified": "Email nie je overený. Skontrolujte svoj email a kliknite na overovací odkaz.",
+        "general": "Došlo k chybe pri prihlásení"
+      }
+    },
+    "register": {
+      "title": "Registrácia",
+      "subtitle": "Vytvorte si nový účet",
+      "name": "Meno a priezvisko",
+      "email": "Email",
+      "password": "Heslo",
+      "confirmPassword": "Potvrďte heslo",
+      "gdprConsent": "Súhlasím so spracovaním osobných údajov podľa GDPR",
+      "register": "Zaregistrovať sa",
+      "hasAccount": "Máte už účet?",
+      "login": "Prihláste sa",
+      "errors": {
+        "allFieldsRequired": "Všetky polia sú povinné",
+        "invalidEmail": "Neplatný formát emailu",
+        "passwordTooShort": "Heslo musí mať aspoň 6 znakov",
+        "passwordsDontMatch": "Heslá sa nezhodujú",
+        "emailExists": "Používateľ s týmto emailom už existuje",
+        "general": "Došlo k chybe pri registrácii"
+      },
+      "success": {
+        "title": "Registrácia úspešná!",
+        "message": "Skontrolujte svoj email pre overenie účtu."
+      }
+    }
+  }
 } 

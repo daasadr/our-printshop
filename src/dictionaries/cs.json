@@ -1,23 +1,45 @@
 {
-  "navigation": {
-    "home": "Domů",
-    "products": "Produkty",
-    "contact": "Kontakt",
-    "login": "Přihlásit",
-    "register": "Registrovat",
-    "logout": "Odhlásit",
-    "my_account": "Můj účet",
-    "favorites": "Oblíbené",
-    "welcome_user": "Vítejte, {{name}}"
-  },
-  "wishlist": {
-    "title": "Oblíbené produkty",
-    "empty": "Vaše oblíbené produkty na jednom místě",
-    "no_items": "Zatím nemáte žádné oblíbené produkty",
-    "add_to_cart": "Přidat do košíku",
-    "remove": "Odebrat",
-    "view_product": "Zobrazit produkt"
-  },
-  "search_placeholder": "Hledat produkty...",
-  "search_button": "Hledat"
+  "auth": {
+    "login": {
+      "title": "Přihlášení",
+      "subtitle": "Přihlaste se ke svému účtu",
+      "description": "Přihlaste se ke svému účtu pro přístup k vašim objednávkám a nastavením",
+      "email": "Email",
+      "password": "Heslo",
+      "login": "Přihlásit se",
+      "forgotPassword": "Zapomněli jste heslo?",
+      "noAccount": "Nemáte účet?",
+      "register": "Zaregistrujte se",
+      "errors": {
+        "invalidCredentials": "Neplatný email nebo heslo",
+        "emailNotVerified": "Email není ověřený. Zkontrolujte svůj email a klikněte na ověřovací odkaz.",
+        "general": "Došlo k chybě při přihlašování"
+      }
+    },
+    "register": {
+      "title": "Registrace",
+      "subtitle": "Vytvořte si nový účet",
+      "description": "Vytvořte si nový účet pro přístup k objednávkám a osobním nastavením",
+      "name": "Jméno a příjmení",
+      "email": "Email",
+      "password": "Heslo",
+      "confirmPassword": "Potvrďte heslo",
+      "gdprConsent": "Souhlasím se zpracováním osobních údajů podle GDPR",
+      "register": "Zaregistrovat se",
+      "hasAccount": "Máte již účet?",
+      "login": "Přihlaste se",
+      "errors": {
+        "allFieldsRequired": "Všechna pole jsou povinná",
+        "invalidEmail": "Neplatný formát emailu",
+        "passwordTooShort": "Heslo musí mít alespoň 6 znaků",
+        "passwordsDontMatch": "Hesla se neshodují",
+        "emailExists": "Uživatel s tímto emailem již existuje",
+        "general": "Došlo k chybě při registraci"
+      },
+      "success": {
+        "title": "Registrace úspěšná!",
+        "message": "Zkontrolujte svůj email pro ověření účtu."
+      }
+    }
+  }
 } 
