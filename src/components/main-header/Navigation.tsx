@@ -95,13 +95,13 @@ const Navigation: React.FC<NavigationProps> = ({ isMenuOpen, setIsMenuOpen, dict
         ) : (
           <>
             <Link 
-              href="/auth/signin" 
+              href={getLocalizedLink('/prihlaseni')} 
               className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
             >
               {dictionary?.navigation?.login || "Přihlásit"}
             </Link>
             <Link 
-              href="/auth/signup" 
+              href={getLocalizedLink('/registrace')} 
               className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
             >
               {dictionary?.navigation?.register || "Registrovat"}
@@ -185,6 +185,24 @@ const Navigation: React.FC<NavigationProps> = ({ isMenuOpen, setIsMenuOpen, dict
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <FiHeart className="w-5 h-5 mr-3" /> {dictionary?.navigation?.favorites || "Oblíbené"}
+                </Link>
+              </div>
+            )}
+            {!session?.data && (
+              <div className="space-y-2 pt-2 border-t border-gray-200">
+                <Link
+                  href={getLocalizedLink('/prihlaseni')}
+                  className="flex items-center px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <FiUser className="w-5 h-5 mr-3" /> {dictionary?.navigation?.login || "Přihlásit"}
+                </Link>
+                <Link
+                  href={getLocalizedLink('/registrace')}
+                  className="flex items-center px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <FiUser className="w-5 h-5 mr-3" /> {dictionary?.navigation?.register || "Registrovat"}
                 </Link>
               </div>
             )}

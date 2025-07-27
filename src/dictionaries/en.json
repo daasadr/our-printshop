@@ -1,0 +1,43 @@
+{
+  "auth": {
+    "login": {
+      "title": "Login",
+      "subtitle": "Sign in to your account",
+      "email": "Email",
+      "password": "Password",
+      "login": "Sign in",
+      "forgotPassword": "Forgot your password?",
+      "noAccount": "Don't have an account?",
+      "register": "Sign up",
+      "errors": {
+        "invalidCredentials": "Invalid email or password",
+        "emailNotVerified": "Email is not verified. Check your email and click the verification link.",
+        "general": "An error occurred during login"
+      }
+    },
+    "register": {
+      "title": "Registration",
+      "subtitle": "Create a new account",
+      "name": "Full name",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "gdprConsent": "I agree to the processing of personal data according to GDPR",
+      "register": "Sign up",
+      "hasAccount": "Already have an account?",
+      "login": "Sign in",
+      "errors": {
+        "allFieldsRequired": "All fields are required",
+        "invalidEmail": "Invalid email format",
+        "passwordTooShort": "Password must be at least 6 characters",
+        "passwordsDontMatch": "Passwords don't match",
+        "emailExists": "User with this email already exists",
+        "general": "An error occurred during registration"
+      },
+      "success": {
+        "title": "Registration successful!",
+        "message": "Check your email to verify your account."
+      }
+    }
+  }
+} 
