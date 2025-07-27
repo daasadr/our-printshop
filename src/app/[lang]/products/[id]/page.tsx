@@ -80,15 +80,10 @@ async function getProduct(id: string): Promise<ProductWithRelations | null> {
       is_active: v.is_active
     })));
 
-    // Převedeme ceny všech variant na CZK
-    const convertedVariants = await Promise.all(activeVariants.map(async (variant: Variant) => ({
-      ...variant,
-      price: await convertEurToCzk(variant.price)
-    })));
-
+    // NEpřepočítáváme ceny na serveru - necháme to na klientovi pro reaktivitu
     const result = {
       ...product,
-      variants: convertedVariants,
+      variants: activeVariants,
       designs: designs
     };
 

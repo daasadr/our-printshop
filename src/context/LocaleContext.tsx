@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
 export type Locale = 'cs' | 'sk' | 'en' | 'de';
-export type Currency = 'CZK' | 'EUR' | 'USD';
+export type Currency = 'CZK' | 'EUR' | 'GBP';
 
 interface LocaleContextType {
   locale: Locale;
@@ -38,6 +38,26 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     }
   }, [urlLang, locale]);
 
+  // Automaticky nastavit měnu podle jazyka
+  useEffect(() => {
+    let newCurrency: Currency = 'CZK';
+    
+    if (locale === 'sk') {
+      newCurrency = 'EUR';
+    } else if (locale === 'en') {
+      newCurrency = 'GBP';
+    } else if (locale === 'de') {
+      newCurrency = 'EUR';
+    } else {
+      newCurrency = 'CZK';
+    }
+    
+    if (newCurrency !== currency) {
+      setCurrencyState(newCurrency);
+      localStorage.setItem('currency', newCurrency);
+    }
+  }, [locale, currency]);
+
   // Načtení z localStorage při startu (len ak nie je v URL)
   useEffect(() => {
     if (!urlLang) {
@@ -48,7 +68,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
         setLocaleState(savedLocale);
       }
       
-      if (savedCurrency && (savedCurrency === 'CZK' || savedCurrency === 'EUR' || savedCurrency === 'USD')) {
+      if (savedCurrency && (savedCurrency === 'CZK' || savedCurrency === 'EUR' || savedCurrency === 'GBP')) {
         setCurrencyState(savedCurrency);
       }
     }
@@ -57,17 +77,6 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   const setLocale = (newLocale: Locale) => {
     setLocaleState(newLocale);
     localStorage.setItem('locale', newLocale);
-    
-    // Automaticky nastavit měnu podle jazyka
-    if (newLocale === 'sk') {
-      setCurrency('EUR');
-    } else if (newLocale === 'en') {
-      setCurrency('USD');
-    } else if (newLocale === 'de') {
-      setCurrency('EUR');
-    } else {
-      setCurrency('CZK');
-    }
     
     // Navigovat na nový jazyk
     const currentPath = window.location.pathname;

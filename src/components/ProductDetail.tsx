@@ -1,10 +1,11 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
-import { formatPriceCZK, convertEurToCzkSync } from '@/utils/currency';
+import { formatPrice, convertCurrency } from '@/utils/currency';
 import { getProductImages } from '@/utils/productImage';
 import { Button, SelectionButton, QuantityButton } from '@/components/ui/Button';
+import { useLocale } from '@/context/LocaleContext';
 
 interface Variant {
   id: string;
@@ -37,6 +38,7 @@ interface ProductDetailProps {
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   const { addToCart } = useCart();
+  const { currency } = useLocale();
   
   // Debug logging
   console.log('ProductDetail - received product data:', {
@@ -58,28 +60,50 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
       price: v.price
     })) || []
   });
+
+  // Přepočítáme ceny variant podle aktuální měny
+  const convertedVariants = useMemo(() => {
+    return product.variants.map(variant => ({
+      ...variant,
+      price: convertCurrency(variant.price, currency)
+    }));
+  }, [product.variants, currency]);
   
   const [selectedVariant, setSelectedVariant] = useState<Variant | null>(
-    product.variants && product.variants.length > 0 ? product.variants[0] : null
+    convertedVariants && convertedVariants.length > 0 ? convertedVariants[0] : null
   );
   const [selectedSize, setSelectedSize] = useState<string | null>(
-    product.variants && product.variants.length > 0 && product.variants[0].size 
-      ? product.variants[0].size 
+    convertedVariants && convertedVariants.length > 0 && convertedVariants[0].size 
+      ? convertedVariants[0].size 
       : null
   );
   const [selectedColor, setSelectedColor] = useState<string | null>(
-    product.variants && product.variants.length > 0 && product.variants[0].color 
-      ? product.variants[0].color 
+    convertedVariants && convertedVariants.length > 0 && convertedVariants[0].color 
+      ? convertedVariants[0].color 
       : null
   );
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   
+  // Aktualizujeme selectedVariant při změně měny
+  React.useEffect(() => {
+    if (convertedVariants && convertedVariants.length > 0) {
+      const currentVariant = convertedVariants.find(v => 
+        v.id === selectedVariant?.id
+      );
+      if (currentVariant) {
+        setSelectedVariant(currentVariant);
+      } else {
+        setSelectedVariant(convertedVariants[0]);
+      }
+    }
+  }, [convertedVariants, selectedVariant?.id, currency]);
+  
   // Funkce pro získání dostupných velikostí
   const getAvailableSizes = () => {
-    if (!product.variants || product.variants.length === 0) return [];
+    if (!convertedVariants || convertedVariants.length === 0) return [];
     
-    const sizes = product.variants
+    const sizes = convertedVariants
       .filter(v => v.size)
       .map(v => v.size)
       .filter((size, index, self) => size && self.indexOf(size) === index);
@@ -89,9 +113,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   
   // Funkce pro získání dostupných barev
   const getAvailableColors = () => {
-    if (!product.variants || product.variants.length === 0) return [];
+    if (!convertedVariants || convertedVariants.length === 0) return [];
     
-    const colors = product.variants
+    const colors = convertedVariants
       .filter(v => v.color)
       .map(v => v.color)
       .filter((color, index, self) => color && self.indexOf(color) === index);
@@ -110,7 +134,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     setSelectedSize(size);
     
     // Najdeme variantu, která odpovídá vybrané velikosti a barvě
-    const variant = product.variants.find(v => 
+    const variant = convertedVariants.find(v => 
       v.size === size && 
       (!selectedColor || v.color === selectedColor)
     );
@@ -126,7 +150,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     setSelectedColor(color);
     
     // Najdeme variantu, která odpovídá vybrané barvě a velikosti
-    const variant = product.variants.find(v => 
+    const variant = convertedVariants.find(v => 
       v.color === color && 
       (!selectedSize || v.size === selectedSize)
     );
@@ -144,14 +168,14 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     setIsAddingToCart(true);
     
     try {
-      // Převedeme cenu na CZK
-      const priceInCzk = convertEurToCzkSync(selectedVariant.price);
+      // Cena už je přepočítaná podle aktuální měny
+      const priceInSelectedCurrency = selectedVariant.price;
       
       addToCart({
         variantId: selectedVariant.id,
         quantity,
         name: `${product.name} ${selectedSize ? `- ${selectedSize}` : ''} ${selectedColor ? `- ${selectedColor}` : ''}`,
-        price: priceInCzk,
+        price: priceInSelectedCurrency,
         image: product.designs && product.designs.length > 0 ? (product.designs[0].previewUrl ?? '') : ''
       });
       
@@ -175,7 +199,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   const availableColors = getAvailableColors();
   
   // Zkontrolujeme, zda máme varianty
-  const hasVariants = product.variants && product.variants.length > 0;
+  const hasVariants = convertedVariants && convertedVariants.length > 0;
   
   const { main: mainImage, others: otherImages } = getProductImages(product);
   
@@ -228,7 +252,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         <div className="mb-6">
           <h2 className="text-lg font-medium mb-2">Cena</h2>
           <p className="text-2xl font-bold text-blue-600">
-            {selectedVariant ? formatPriceCZK(selectedVariant.price) : 'Není k dispozici'}
+            {selectedVariant ? formatPrice(selectedVariant.price, currency) : 'Není k dispozici'}
           </p>
         </div>
         

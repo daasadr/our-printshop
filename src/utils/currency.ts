@@ -1,4 +1,4 @@
-import { getCurrentRate, getCurrentRateSync } from './exchangeRate';
+import { getCurrentRate, getCurrentRateSync, getRateForCurrencySync, getAllRatesSync } from './exchangeRate';
 import { Currency } from '@/context/LocaleContext';
 
 // Formátování ceny v CZK
@@ -21,12 +21,27 @@ export function formatPriceEUR(price: number): string {
   }).format(price);
 }
 
+// Formátování ceny v GBP
+export function formatPriceGBP(price: number): string {
+  return new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'GBP',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(price);
+}
+
 // Univerzální formátování ceny podle měny
 export function formatPrice(price: number, currency: Currency): string {
-  if (currency === 'EUR') {
-    return formatPriceEUR(price);
+  switch (currency) {
+    case 'EUR':
+      return formatPriceEUR(price);
+    case 'GBP':
+      return formatPriceGBP(price);
+    case 'CZK':
+    default:
+      return formatPriceCZK(price);
   }
-  return formatPriceCZK(price);
 }
 
 // Převod z EUR na CZK
@@ -54,12 +69,40 @@ export function convertEurToCzkSync(priceEur: number): number {
   }
 }
 
-// Univerzální převod měny
+// Univerzální převod měny s reálnými kurzy
 export function convertCurrency(priceEur: number, targetCurrency: Currency): number {
   if (targetCurrency === 'EUR') {
     return priceEur;
   }
-  return convertEurToCzkSync(priceEur);
+  
+  // Získáme aktuální kurz z cache nebo výchozí hodnoty
+  const rate = getRateForCurrencySync(targetCurrency);
+  
+  const convertedPrice = priceEur * rate;
+  
+  // Zaokrouhlení podle měny
+  switch (targetCurrency) {
+    case 'CZK':
+      if (convertedPrice < 1000) {
+        return Math.round(convertedPrice);
+      } else {
+        return Math.floor(convertedPrice / 10) * 10;
+      }
+    case 'GBP':
+      return Math.round(convertedPrice * 100) / 100; // 2 desetinná místa
+    default:
+      return convertedPrice;
+  }
+}
+
+// Funkce pro získání aktuálních kurzů
+export function getCurrentExchangeRates(): { [key: string]: number } {
+  return getAllRatesSync();
+}
+
+// Funkce pro získání kurzu konkrétní měny
+export function getExchangeRate(currency: Currency): number {
+  return getRateForCurrencySync(currency);
 }
 
 // Stará funkce pro kompatibilitu

@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
@@ -20,6 +20,18 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ products = [], dictiona
   const { addToCart } = useCart();
   const { currency } = useLocale();
 
+  // Přepočítáme ceny produktů podle aktuální měny
+  const productsWithConvertedPrices = useMemo(() => {
+    return products.map(product => {
+      const priceEur = product.price || product.variants?.[0]?.price || 0;
+      const priceConverted = convertCurrency(priceEur, currency);
+      return {
+        ...product,
+        convertedPrice: priceConverted
+      };
+    });
+  }, [products, currency]);
+
   const handleAddToCart = (product: any) => {
     if (product.variants && product.variants.length > 0) {
       // Převedeme cenu na správnou měnu pro košík
@@ -36,15 +48,12 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ products = [], dictiona
   };
 
   if (!products || products.length === 0) {
-    return <ProductPlaceholders dictionary={dictionary} />;
+    return <ProductPlaceholders dictionary={dictionary} currency={currency} />;
   }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {products.map((product) => {
-        const priceEur = product.price || product.variants?.[0]?.price || 0;
-        const priceConverted = convertCurrency(priceEur, currency);
-        
+      {productsWithConvertedPrices.map((product) => {
         return (
           <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
             <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
@@ -62,7 +71,7 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ products = [], dictiona
                 }}
               />
             </div>
-           
+            
             <div className="p-4">
               <Link href={`/${lang}/products/${product.id}`}>
                 <h3 className="text-sm font-medium text-gray-900 hover:text-blue-600">
@@ -75,9 +84,9 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ products = [], dictiona
               </p>
               
               <div className="mt-4 flex justify-between items-center">
-                {priceConverted > 0 ? (
+                {product.convertedPrice > 0 ? (
                   <p className="text-lg font-medium text-gray-900">
-                    {formatPrice(priceConverted, currency)}
+                    {formatPrice(product.convertedPrice, currency)}
                   </p>
                 ) : (
                   <p className="text-sm text-gray-500">
@@ -120,9 +129,10 @@ const ProductsLoading: React.FC = () => {
 
 interface ProductPlaceholdersProps {
   dictionary?: any;
+  currency?: string;
 }
 
-const ProductPlaceholders: React.FC<ProductPlaceholdersProps> = ({ dictionary }) => {
+const ProductPlaceholders: React.FC<ProductPlaceholdersProps> = ({ dictionary, currency = 'CZK' }) => {
   const placeholders = [
     { id: 'placeholder-1', name: 'Tričko "Minimalistický design"', price: 599, },
     { id: 'placeholder-2', name: 'Mikina "Urban Style"', price: 1299, },
@@ -143,7 +153,7 @@ const ProductPlaceholders: React.FC<ProductPlaceholdersProps> = ({ dictionary })
             <p className="mt-1 text-sm text-gray-500">Více variant</p>
             <div className="mt-4 flex justify-between items-center">
               <p className="text-lg font-medium text-gray-900">
-                {formatPrice(product.price, 'CZK')}
+                {formatPrice(product.price, currency as any)}
               </p>
               <button className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
                 {dictionary?.product?.add_to_cart || "Do košíku"}

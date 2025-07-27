@@ -4,13 +4,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
 import { useLocale } from '@/context/LocaleContext';
-import { formatPriceCZK } from '@/utils/currency';
+import { formatPrice, convertCurrency } from '@/utils/currency';
 import { Button, QuantityButton } from '@/components/ui/Button';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 
 export default function CartContent() {
   const { items, removeFromCart, updateQuantity, totalPrice } = useCart();
-  const { locale } = useLocale();
+  const { locale, currency } = useLocale();
   const [dictionary, setDictionary] = useState<any>(null);
 
   // Načtení dictionary pro aktuální jazyk
@@ -27,6 +27,18 @@ export default function CartContent() {
     loadDictionary();
   }, [locale]);
 
+  // Přepočítáme ceny v košíku podle aktuální měny
+  const convertedItems = useMemo(() => {
+    return items.map(item => ({
+      ...item,
+      price: convertCurrency(item.price, currency)
+    }));
+  }, [items, currency]);
+
+  const convertedTotalPrice = useMemo(() => {
+    return convertedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  }, [convertedItems]);
+
   if (items.length === 0) {
     return (
       <div className="text-center text-white">
@@ -41,7 +53,7 @@ export default function CartContent() {
   return (
     <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
       <div className="space-y-4">
-        {items.map((item) => (
+        {convertedItems.map((item) => (
           <div
             key={item.variantId}
             className="flex items-center gap-4 p-4 bg-white/5 rounded-lg"
@@ -61,7 +73,7 @@ export default function CartContent() {
                 {item.name}
               </h3>
               <p className="text-green-300">
-                {formatPriceCZK(item.price)}
+                {formatPrice(item.price, currency)}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -100,7 +112,7 @@ export default function CartContent() {
         <div className="flex justify-between items-center text-white">
           <span className="text-lg">{dictionary?.cart?.total || 'Celková cena:'}</span>
           <span className="text-2xl font-bold text-green-300">
-            {formatPriceCZK(totalPrice)}
+            {formatPrice(convertedTotalPrice, currency)}
           </span>
         </div>
         <div className="mt-4">

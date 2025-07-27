@@ -41,20 +41,20 @@ const Header: React.FC = () => {
     <header
       role="banner"
       className={`sticky top-0 z-30 w-full transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-md py-2' : 'bg-white/90 backdrop-blur-sm py-4'
+        isScrolled ? 'bg-white shadow-md py-2' : 'bg-white/95 backdrop-blur-sm py-3'
       }`}
       suppressHydrationWarning
     >
       <div className="container mx-auto px-4">
-        {/* Desktop layout */}
-        <div className="hidden lg:flex items-center justify-between">
+        {/* Desktop layout - xl a větší */}
+        <div className="hidden xl:flex items-center justify-between">
           {/* Logo */}
           <div className="flex-shrink-0">
             <Logo />
           </div>
           
           {/* Navigation - center */}
-          <div className="flex-1 flex justify-center">
+          <div className="flex-1 flex justify-center px-8">
             <Navigation isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} dictionary={dictionary} />
           </div>
           
@@ -64,24 +64,24 @@ const Header: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile/Tablet layout */}
-        <div className="lg:hidden">
+        {/* Tablet a Mobile layout - menší než xl */}
+        <div className="xl:hidden">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <div className="flex-shrink-0">
               <Logo />
             </div>
             
-            {/* Actions - right */}
+            {/* Actions - right (s hamburger menu) */}
             <div className="flex-shrink-0">
-              <HeaderActions isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
+              <HeaderActions isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} isMobile={true} />
             </div>
           </div>
-          
-          {/* Mobile navigation */}
-          <div className="mt-4">
-            <Navigation isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} dictionary={dictionary} />
-          </div>
+        </div>
+        
+        {/* Mobile/Tablet navigation - pod hlavním řádkem pro všechny menší než xl */}
+        <div className="xl:hidden mt-3">
+          <Navigation isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} dictionary={dictionary} />
         </div>
       </div>
     </header>
