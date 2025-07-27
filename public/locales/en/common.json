@@ -48,6 +48,43 @@
     "previous": "Previous",
     "next": "Next"
   },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Have a question? Don't hesitate to contact us. We'll get back to you as soon as possible.",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "subject": "Subject",
+      "message": "Message",
+      "submit": "Send Message",
+      "sending": "Sending...",
+      "required": "Required field"
+    },
+    "validation": {
+      "name_required": "Name is required.",
+      "email_required": "Email is required.",
+      "email_invalid": "Please enter a valid email address.",
+      "subject_required": "Subject is required.",
+      "message_required": "Message is required.",
+      "form_errors": "Please fix the errors in the form."
+    },
+    "success": {
+      "title": "Thank you for your message!",
+      "message": "We'll contact you as soon as possible."
+    },
+    "error": {
+      "title": "Sorry, an error occurred.",
+      "message": "Please try again later.",
+      "sending_error": "An error occurred while sending the message."
+    }
+  },
+  "contact_info": {
+    "email": "Email",
+    "response_time": "Response",
+    "languages": "Languages",
+    "response_time_value": "Within 24 hours",
+    "languages_value": "CS, SK, EN, DE"
+  },
   "newsletter": {
     "title": "Stay in the loop",
     "subtitle": "Subscribe to our newsletter and be the first to know about new designs and special offers.",

@@ -126,6 +126,43 @@
     "unsubscribing": "Odhlašování..."
   },
   
+  "contact": {
+    "title": "Kontaktujte nás",
+    "subtitle": "Máte dotaz? Neváhejte nás kontaktovat. Odpovíme vám co nejdříve.",
+    "form": {
+      "name": "Jméno",
+      "email": "E-mail",
+      "subject": "Předmět zprávy",
+      "message": "Zpráva",
+      "submit": "Odeslat zprávu",
+      "sending": "Odesílání...",
+      "required": "Povinné pole"
+    },
+    "validation": {
+      "name_required": "Jméno je povinné.",
+      "email_required": "E-mail je povinný.",
+      "email_invalid": "Zadejte prosím platnou e-mailovou adresu.",
+      "subject_required": "Předmět zprávy je povinný.",
+      "message_required": "Zpráva je povinná.",
+      "form_errors": "Prosím opravte chyby ve formuláři."
+    },
+    "success": {
+      "title": "Děkujeme za vaši zprávu!",
+      "message": "Budeme vás kontaktovat co nejdříve."
+    },
+    "error": {
+      "title": "Omlouváme se, nastala chyba.",
+      "message": "Zkuste to prosím znovu později.",
+      "sending_error": "Nastala chyba při odesílání zprávy."
+    }
+  },
+  "contact_info": {
+    "email": "Email",
+    "response_time": "Odpověď",
+    "languages": "Jazyky",
+    "response_time_value": "Do 24 hodin",
+    "languages_value": "CS, SK, EN, DE"
+  },
   "error": {
     "server_error": "Chyba serveru: {{status}} {{statusText}}",
     "load_products": "Nepodařilo se načíst nejnovější produkty. Zkuste to prosím později.",
