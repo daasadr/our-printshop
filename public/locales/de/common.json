@@ -29,6 +29,7 @@
     "close": "Warenkorb schließen",
     "quantity": "Menge",
     "remove": "Entfernen",
+    "add_to_cart": "In den Warenkorb",
     "items_count": "Artikel im Warenkorb",
     "opened": "Warenkorb geöffnet",
     "closed": "Warenkorb geschlossen"
@@ -47,6 +48,43 @@
   "pagination": {
     "previous": "Vorherige",
     "next": "Nächste"
+  },
+  "contact": {
+    "title": "Kontaktieren Sie uns",
+    "subtitle": "Haben Sie eine Frage? Zögern Sie nicht, uns zu kontaktieren. Wir melden uns so schnell wie möglich bei Ihnen.",
+    "form": {
+      "name": "Name",
+      "email": "E-Mail",
+      "subject": "Betreff",
+      "message": "Nachricht",
+      "submit": "Nachricht senden",
+      "sending": "Wird gesendet...",
+      "required": "Pflichtfeld"
+    },
+    "validation": {
+      "name_required": "Name ist erforderlich.",
+      "email_required": "E-Mail ist erforderlich.",
+      "email_invalid": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+      "subject_required": "Betreff ist erforderlich.",
+      "message_required": "Nachricht ist erforderlich.",
+      "form_errors": "Bitte beheben Sie die Fehler im Formular."
+    },
+    "success": {
+      "title": "Vielen Dank für Ihre Nachricht!",
+      "message": "Wir werden uns so schnell wie möglich bei Ihnen melden."
+    },
+    "error": {
+      "title": "Entschuldigung, ein Fehler ist aufgetreten.",
+      "message": "Bitte versuchen Sie es später erneut.",
+      "sending_error": "Beim Senden der Nachricht ist ein Fehler aufgetreten."
+    }
+  },
+  "contact_info": {
+    "email": "E-Mail",
+    "response_time": "Antwort",
+    "languages": "Sprachen",
+    "response_time_value": "Innerhalb von 24 Stunden",
+    "languages_value": "CS, SK, EN, DE"
   },
   "newsletter": {
     "title": "Bleiben Sie auf dem Laufenden",
@@ -183,5 +221,16 @@
   "sort_price_asc": "Preis: niedrigste zuerst",
   "sort_price_desc": "Preis: höchste zuerst",
   "sort_name_asc": "Name: A-Z",
-  "search_button": "Suchen"
+  "search_button": "Suchen",
+  "wishlist": {
+    "title": "Lieblingsprodukte",
+    "empty": "Ihre Favoritenliste ist leer",
+    "add_to_wishlist": "Zu Favoriten hinzufügen",
+    "remove_from_wishlist": "Aus Favoriten entfernen",
+    "added_to_wishlist": "Zu Favoriten hinzugefügt",
+    "removed_from_wishlist": "Aus Favoriten entfernt",
+    "view_products": "Produkte anzeigen",
+    "clear_wishlist": "Favoriten löschen",
+    "items_count": "Artikel in Favoriten"
+  }
 } 

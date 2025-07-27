@@ -18,11 +18,17 @@ interface ConfettiProps extends Partial<IConfettiOptions> {
   height: number;
 }
 
-const ContactForm = () => {
+interface ContactFormProps {
+  dictionary?: any;
+}
+
+const ContactForm = ({ dictionary }: ContactFormProps) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    message: ''
+    subject: '',
+    message: '',
+    honeypot: '' // Spam ochrana - skryté pole
   });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
@@ -60,20 +66,30 @@ const ContactForm = () => {
     const newErrors: {[key: string]: string} = {};
     
     if (!formData.name.trim()) {
-      newErrors.name = 'Jméno je povinné.';
+      newErrors.name = dictionary?.contact?.validation?.name_required || 'Jméno je povinné.';
     }
     
     if (!formData.email.trim()) {
-      newErrors.email = 'E-mail je povinný.';
+      newErrors.email = dictionary?.contact?.validation?.email_required || 'E-mail je povinný.';
     } else {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(formData.email)) {
-        newErrors.email = 'Zadejte prosím platnou e-mailovou adresu.';
+        newErrors.email = dictionary?.contact?.validation?.email_invalid || 'Zadejte prosím platnou e-mailovou adresu.';
       }
     }
     
+    if (!formData.subject.trim()) {
+      newErrors.subject = dictionary?.contact?.validation?.subject_required || 'Předmět zprávy je povinný.';
+    }
+    
     if (!formData.message.trim()) {
-      newErrors.message = 'Zpráva je povinná.';
+      newErrors.message = dictionary?.contact?.validation?.message_required || 'Zpráva je povinná.';
+    }
+    
+    // Spam ochrana - ak je honeypot vyplnené, je to spam
+    if (formData.honeypot.trim()) {
+      console.log('Spam detected - honeypot field filled');
+      return false;
     }
     
     setErrors(newErrors);
@@ -85,7 +101,7 @@ const ContactForm = () => {
     
     if (!validateForm()) {
       setStatus('error');
-      setMessage('Prosím opravte chyby ve formuláři.');
+      setMessage(dictionary?.contact?.validation?.form_errors || 'Prosím opravte chyby ve formuláři.');
       announce('Formulář obsahuje chyby. Prosím opravte je.', 'assertive');
       return;
     }
@@ -106,15 +122,15 @@ const ContactForm = () => {
       }
 
       setStatus('success');
-      setMessage('Děkujeme za vaši zprávu! Budeme vás kontaktovat co nejdříve.');
-      setFormData({ name: '', email: '', message: '' });
+      setMessage(`${dictionary?.contact?.success?.title || 'Děkujeme za vaši zprávu!'} ${dictionary?.contact?.success?.message || 'Budeme vás kontaktovat co nejdříve.'}`);
+      setFormData({ name: '', email: '', subject: '', message: '', honeypot: '' });
       setErrors({});
       announce('Zpráva byla úspěšně odeslána!', 'assertive');
     } catch (error) {
       console.error('Contact form error:', error);
       setStatus('error');
-      setMessage('Omlouváme se, nastala chyba. Zkuste to prosím znovu později.');
-      announce('Nastala chyba při odesílání zprávy.', 'assertive');
+      setMessage(`${dictionary?.contact?.error?.title || 'Omlouváme se, nastala chyba.'} ${dictionary?.contact?.error?.message || 'Zkuste to prosím znovu později.'}`);
+      announce(dictionary?.contact?.error?.sending_error || 'Nastala chyba při odesílání zprávy.', 'assertive');
     }
   };
 
@@ -163,9 +179,22 @@ const ContactForm = () => {
       <LiveRegionElement />
       {showConfetti && <Confetti {...confettiProps} />}
       <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+        {/* Honeypot pole pre spam ochranu */}
+        <div className="absolute left-[-9999px] opacity-0 pointer-events-none">
+          <input
+            type="text"
+            name="honeypot"
+            value={formData.honeypot}
+            onChange={handleChange}
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+          />
+        </div>
+        
         <div>
           <Label htmlFor="name" size="md">
-            Jméno *
+            {dictionary?.contact?.form?.name || 'Jméno'} *
           </Label>
           <Input
             type="text"
@@ -182,7 +211,7 @@ const ContactForm = () => {
 
         <div>
           <Label htmlFor="email" size="md">
-            E-mail *
+            {dictionary?.contact?.form?.email || 'E-mail'} *
           </Label>
           <Input
             type="email"
@@ -198,8 +227,25 @@ const ContactForm = () => {
         </div>
 
         <div>
+          <Label htmlFor="subject" size="md">
+            {dictionary?.contact?.form?.subject || 'Předmět zprávy'} *
+          </Label>
+          <Input
+            type="text"
+            id="subject"
+            name="subject"
+            value={formData.subject}
+            onChange={handleChange}
+            disabled={status === 'loading'}
+            required
+            error={errors.subject}
+            aria-required="true"
+          />
+        </div>
+
+        <div>
           <Label htmlFor="message" size="md">
-            Zpráva *
+            {dictionary?.contact?.form?.message || 'Zpráva'} *
           </Label>
           <Textarea
             id="message"
@@ -221,10 +267,10 @@ const ContactForm = () => {
           width="full"
           roundness="full"
           loading={status === 'loading'}
-          loadingText="Odesílání..."
+          loadingText={dictionary?.contact?.form?.sending || 'Odesílání...'}
           disabled={status === 'loading'}
         >
-          Odeslat zprávu
+          {dictionary?.contact?.form?.submit || 'Odeslat zprávu'}
         </Button>
 
         {status === 'success' && (

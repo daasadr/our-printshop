@@ -3,6 +3,7 @@ import './globals.css';
 import { Inter } from 'next/font/google';
 import { Providers } from './providers';
 import { CartProvider } from '@/context/CartContext';
+import { WishlistProvider } from '@/context/WishlistContext';
 
 // Add skip navigation styles
 const skipLinkStyles = `
@@ -116,7 +117,9 @@ export default function RootLayout({
         
         <Providers>
           <CartProvider>
-            {children}
+            <WishlistProvider>
+              {children}
+            </WishlistProvider>
           </CartProvider>
         </Providers>
       </body>
