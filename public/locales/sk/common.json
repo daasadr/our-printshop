@@ -29,6 +29,7 @@
     "close": "Zavrieť košík",
     "quantity": "Množstvo",
     "remove": "Odobrať",
+    "add_to_cart": "Do košíka",
     "items_count": "položiek v košíku",
     "opened": "Košík otvorený",
     "closed": "Košík zatvorený"
@@ -183,5 +184,16 @@
   "sort_price_asc": "Ceny: od najlacnejších",
   "sort_price_desc": "Ceny: od najdrahších",
   "sort_name_asc": "Názvu: A-Z",
-  "search_button": "Hľadať"
+  "search_button": "Hľadať",
+  "wishlist": {
+    "title": "Obľúbené produkty",
+    "empty": "Váš zoznam obľúbených je prázdny",
+    "add_to_wishlist": "Pridať do obľúbených",
+    "remove_from_wishlist": "Odobrať z obľúbených",
+    "added_to_wishlist": "Pridané do obľúbených",
+    "removed_from_wishlist": "Odobrané z obľúbených",
+    "view_products": "Prezrieť produkty",
+    "clear_wishlist": "Vymazať obľúbené",
+    "items_count": "produktov v obľúbených"
+  }
 } 

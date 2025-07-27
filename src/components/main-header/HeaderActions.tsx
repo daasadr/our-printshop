@@ -6,6 +6,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { FiUser, FiHeart, FiMenu, FiX, FiSearch } from 'react-icons/fi';
 import { FaShoppingCart } from 'react-icons/fa';
 import { useCart } from '@/hooks/useCart';
+import { useWishlist } from '@/context/WishlistContext';
 import { useLocale } from '@/context/LocaleContext';
 import LocaleSwitch from '@/components/LocaleSwitch';
 
@@ -16,6 +17,7 @@ interface HeaderActionsProps {
 
 const HeaderActions: React.FC<HeaderActionsProps> = ({ isMenuOpen, setIsMenuOpen }) => {
   const { items } = useCart();
+  const { totalItems: wishlistItems } = useWishlist();
   const router = useRouter();
   const params = useParams();
   const { locale } = useLocale();
@@ -99,8 +101,13 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({ isMenuOpen, setIsMenuOpen
         <Link href="/account" className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100">
           <FiUser className="w-5 h-5" />
         </Link>
-        <Link href="/wishlist" className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100">
+        <Link href={`/${locale}/wishlist`} className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100 relative" aria-label="Oblíbené">
           <FiHeart className="w-5 h-5" />
+          {wishlistItems > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+              {wishlistItems}
+            </span>
+          )}
         </Link>
         <Link href="/cart" className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100 relative" aria-label="Košík">
           <FaShoppingCart className="w-5 h-5" />

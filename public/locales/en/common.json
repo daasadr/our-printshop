@@ -29,6 +29,7 @@
     "close": "Close Cart",
     "quantity": "Quantity",
     "remove": "Remove",
+    "add_to_cart": "Add to Cart",
     "items_count": "items in cart",
     "opened": "Cart opened",
     "closed": "Cart closed"
@@ -183,5 +184,16 @@
   "sort_price_asc": "Price: lowest first",
   "sort_price_desc": "Price: highest first",
   "sort_name_asc": "Name: A-Z",
-  "search_button": "Search"
+  "search_button": "Search",
+  "wishlist": {
+    "title": "Favorite Products",
+    "empty": "Your favorites list is empty",
+    "add_to_wishlist": "Add to favorites",
+    "remove_from_wishlist": "Remove from favorites",
+    "added_to_wishlist": "Added to favorites",
+    "removed_from_wishlist": "Removed from favorites",
+    "view_products": "View products",
+    "clear_wishlist": "Clear favorites",
+    "items_count": "items in favorites"
+  }
 } 

@@ -3,10 +3,12 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
+import { useWishlist } from '@/context/WishlistContext';
 import { formatPrice, convertCurrency } from '@/utils/currency';
 import { getProductImages } from '@/utils/productImage';
 import { Button } from '@/components/ui/Button';
 import { useLocale } from '@/context/LocaleContext';
+import { FiHeart } from 'react-icons/fi';
 
 const fallbackImage = '/images/placeholder.jpg';
 
@@ -18,6 +20,7 @@ interface LatestProductsProps {
 
 const LatestProducts: React.FC<LatestProductsProps> = ({ products = [], dictionary, lang = 'cs' }) => {
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { currency } = useLocale();
 
   const handleAddToCart = (product: any) => {
@@ -47,6 +50,33 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ products = [], dictiona
         
         return (
           <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
+            {/* Wishlist tlačidlo */}
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (isInWishlist(product.id)) {
+                  removeFromWishlist(product.id);
+                } else {
+                  addToWishlist({
+                    productId: product.id,
+                    variantId: product.variants[0]?.id || '',
+                    name: product.name,
+                    price: priceEur,
+                    image: product.designs && product.designs.length > 0 ? product.designs[0].previewUrl : ''
+                  });
+                }
+              }}
+              className={`absolute top-3 right-3 z-10 p-2 rounded-full transition-all duration-300 ${
+                isInWishlist(product.id) 
+                  ? 'bg-red-500 text-white shadow-lg' 
+                  : 'bg-white/80 text-gray-600 hover:bg-white hover:text-red-500'
+              }`}
+              aria-label={isInWishlist(product.id) ? 'Odobrať z obľúbených' : 'Pridať do obľúbených'}
+            >
+              <FiHeart className={`w-5 h-5 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
+            </button>
+            
             <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
               <Image
                 src={getProductImages(product).main}
