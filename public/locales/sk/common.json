@@ -48,6 +48,43 @@
     "previous": "Predchádzajúca",
     "next": "Nasledujúca"
   },
+  "contact": {
+    "title": "Kontaktujte nás",
+    "subtitle": "Máte otázku? Neváhajte nás kontaktovať. Odpovieme vám čo najskôr.",
+    "form": {
+      "name": "Meno",
+      "email": "E-mail",
+      "subject": "Predmet správy",
+      "message": "Správa",
+      "submit": "Odoslať správu",
+      "sending": "Odosielanie...",
+      "required": "Povinné pole"
+    },
+    "validation": {
+      "name_required": "Meno je povinné.",
+      "email_required": "E-mail je povinný.",
+      "email_invalid": "Zadajte prosím platnú e-mailovú adresu.",
+      "subject_required": "Predmet správy je povinný.",
+      "message_required": "Správa je povinná.",
+      "form_errors": "Prosím opravte chyby vo formulári."
+    },
+    "success": {
+      "title": "Ďakujeme za vašu správu!",
+      "message": "Budeme vás kontaktovať čo najskôr."
+    },
+    "error": {
+      "title": "Ospravedlňujeme sa, nastala chyba.",
+      "message": "Skúste to prosím znovu neskôr.",
+      "sending_error": "Nastala chyba pri odosielaní správy."
+    }
+  },
+  "contact_info": {
+    "email": "Email",
+    "response_time": "Odpoveď",
+    "languages": "Jazyky",
+    "response_time_value": "Do 24 hodín",
+    "languages_value": "CS, SK, EN, DE"
+  },
   "newsletter": {
     "title": "Zostaňte v obraze",
     "subtitle": "Prihláste sa k odberu nášho newsletteru a buďte prví, ktorí sa dozvedia o nových dizajnoch a špeciálnych ponukách.",
