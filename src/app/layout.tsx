@@ -4,7 +4,7 @@ import { Inter } from 'next/font/google';
 import { Providers } from './providers';
 import { CartProvider } from '@/context/CartContext';
 import { WishlistProvider } from '@/context/WishlistContext';
-import SessionProvider from '@/components/providers/SessionProvider';
+import { AuthProvider } from '@/context/AuthContext';
 
 // Add skip navigation styles
 const skipLinkStyles = `
@@ -116,7 +116,7 @@ export default function RootLayout({
           Přeskočit na hlavní obsah
         </a>
         
-        <SessionProvider>
+        <AuthProvider>
           <Providers>
             <CartProvider>
               <WishlistProvider>
@@ -124,7 +124,7 @@ export default function RootLayout({
               </WishlistProvider>
             </CartProvider>
           </Providers>
-        </SessionProvider>
+        </AuthProvider>
       </body>
     </html>
   );

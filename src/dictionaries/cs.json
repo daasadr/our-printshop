@@ -6,13 +6,12 @@
       "description": "Přihlaste se ke svému účtu pro přístup k vašim objednávkám a nastavením",
       "email": "Email",
       "password": "Heslo",
-      "login": "Přihlásit se",
+      "loginButton": "Přihlásit se",
       "forgotPassword": "Zapomněli jste heslo?",
-      "noAccount": "Nemáte účet?",
-      "register": "Zaregistrujte se",
+      "registerLink": "Nemáte účet?",
       "errors": {
+        "required": "Email a heslo jsou povinné",
         "invalidCredentials": "Neplatný email nebo heslo",
-        "emailNotVerified": "Email není ověřený. Zkontrolujte svůj email a klikněte na ověřovací odkaz.",
         "general": "Došlo k chybě při přihlašování"
       }
     },
@@ -25,21 +24,40 @@
       "password": "Heslo",
       "confirmPassword": "Potvrďte heslo",
       "gdprConsent": "Souhlasím se zpracováním osobních údajů podle GDPR",
-      "register": "Zaregistrovat se",
-      "hasAccount": "Máte již účet?",
-      "login": "Přihlaste se",
+      "registerButton": "Zaregistrovat se",
+      "loginLink": "Máte již účet?",
       "errors": {
-        "allFieldsRequired": "Všechna pole jsou povinná",
+        "required": "Všechna pole jsou povinná",
         "invalidEmail": "Neplatný formát emailu",
+        "passwordMismatch": "Hesla se neshodují",
         "passwordTooShort": "Heslo musí mít alespoň 6 znaků",
-        "passwordsDontMatch": "Hesla se neshodují",
-        "emailExists": "Uživatel s tímto emailem již existuje",
         "general": "Došlo k chybě při registraci"
       },
       "success": {
         "title": "Registrace úspěšná!",
-        "message": "Zkontrolujte svůj email pro ověření účtu."
+        "message": "Váš účet byl úspěšně vytvořen. Nyní se můžete přihlásit."
       }
     }
-  }
+  },
+  "navigation": {
+    "home": "Domů",
+    "products": "Produkty",
+    "contact": "Kontakt",
+    "login": "Přihlásit",
+    "register": "Registrovat",
+    "logout": "Odhlásit",
+    "my_account": "Můj účet",
+    "favorites": "Oblíbené",
+    "welcome_user": "Vítejte, {{name}}"
+  },
+  "wishlist": {
+    "title": "Oblíbené produkty",
+    "empty": "Vaše oblíbené produkty na jednom místě",
+    "no_items": "Zatím nemáte žádné oblíbené produkty",
+    "add_to_cart": "Přidat do košíku",
+    "remove": "Odebrat",
+    "view_product": "Zobrazit produkt"
+  },
+  "search_placeholder": "Hledat produkty...",
+  "search_button": "Hledat"
 } 

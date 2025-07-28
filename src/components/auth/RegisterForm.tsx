@@ -13,15 +13,13 @@ interface RegisterFormProps {
     password: string;
     confirmPassword: string;
     gdprConsent: string;
-    register: string;
-    hasAccount: string;
-    login: string;
+    registerButton: string;
+    loginLink: string;
     errors: {
-      allFieldsRequired: string;
+      required: string;
       invalidEmail: string;
+      passwordMismatch: string;
       passwordTooShort: string;
-      passwordsDontMatch: string;
-      emailExists: string;
       general: string;
     };
     success: {
@@ -37,20 +35,12 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
     email: '',
     password: '',
     confirmPassword: '',
-    gdprConsent: false
+    gdpr_consent: false
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const router = useRouter();
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,8 +48,14 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
     setError('');
 
     // Validace
-    if (!formData.name || !formData.email || !formData.password || !formData.gdprConsent) {
-      setError(dict.errors.allFieldsRequired);
+    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+      setError(dict.errors.required);
+      setIsLoading(false);
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError(dict.errors.passwordMismatch);
       setIsLoading(false);
       return;
     }
@@ -70,14 +66,14 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
       return;
     }
 
-    if (formData.password !== formData.confirmPassword) {
-      setError(dict.errors.passwordsDontMatch);
+    if (!formData.gdpr_consent) {
+      setError('Musíte souhlasit se zpracováním osobních údajů');
       setIsLoading(false);
       return;
     }
 
     try {
-      const response = await fetch('/api/auth/register', {
+      const response = await fetch('/api/auth/register-directus', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -86,28 +82,20 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
           name: formData.name,
           email: formData.email,
           password: formData.password,
-          gdpr_consent: formData.gdprConsent
+          gdpr_consent: formData.gdpr_consent
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        if (response.status === 409) {
-          setError(dict.errors.emailExists);
-        } else {
-          setError(data.error || dict.errors.general);
-        }
+        setError(data.error || dict.errors.general);
       } else {
         setSuccess(true);
-        // Reset formuláře
-        setFormData({
-          name: '',
-          email: '',
-          password: '',
-          confirmPassword: '',
-          gdprConsent: false
-        });
+        // Přesměrování na přihlášení po 3 sekundách
+        setTimeout(() => {
+          router.push('/cs/prihlaseni');
+        }, 3000);
       }
     } catch (error) {
       setError(dict.errors.general);
@@ -116,144 +104,137 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
     }
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
   if (success) {
     return (
-      <div className="text-center">
-        <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-          <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        </div>
-        <h3 className="mt-4 text-lg font-medium text-gray-900">{dict.success.title}</h3>
-        <p className="mt-2 text-sm text-gray-600">{dict.success.message}</p>
-        <div className="mt-6">
-          <Link
-            href="/cs/prihlaseni"
-            className="text-blue-600 hover:text-blue-500 font-medium"
-          >
-            {dict.login}
-          </Link>
+      <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8">
+        <div className="text-center">
+          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+            <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{dict.success.title}</h2>
+          <p className="text-gray-600">{dict.success.message}</p>
+          <p className="text-sm text-gray-500 mt-4">Přesměrování na přihlášení...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit}>
+    <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8">
+      <div className="text-center mb-8">
+        <h1 className="text-2xl font-bold text-gray-900">{dict.title}</h1>
+        <p className="text-gray-600 mt-2">{dict.subtitle}</p>
+      </div>
+
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-          {error}
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-red-600 text-sm">{error}</p>
         </div>
       )}
 
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-          {dict.name}
-        </label>
-        <div className="mt-1">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+            {dict.name}
+          </label>
           <input
+            type="text"
             id="name"
             name="name"
-            type="text"
-            autoComplete="name"
-            required
             value={formData.name}
-            onChange={handleChange}
-            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            required
           />
         </div>
-      </div>
 
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-          {dict.email}
-        </label>
-        <div className="mt-1">
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            {dict.email}
+          </label>
           <input
+            type="email"
             id="email"
             name="email"
-            type="email"
-            autoComplete="email"
-            required
             value={formData.email}
-            onChange={handleChange}
-            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            required
           />
         </div>
-      </div>
 
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-          {dict.password}
-        </label>
-        <div className="mt-1">
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+            {dict.password}
+          </label>
           <input
+            type="password"
             id="password"
             name="password"
-            type="password"
-            autoComplete="new-password"
-            required
             value={formData.password}
-            onChange={handleChange}
-            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            required
           />
         </div>
-      </div>
 
-      <div>
-        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-          {dict.confirmPassword}
-        </label>
-        <div className="mt-1">
+        <div>
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+            {dict.confirmPassword}
+          </label>
           <input
+            type="password"
             id="confirmPassword"
             name="confirmPassword"
-            type="password"
-            autoComplete="new-password"
-            required
             value={formData.confirmPassword}
-            onChange={handleChange}
-            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            required
           />
         </div>
-      </div>
 
-      <div className="flex items-center">
-        <input
-          id="gdprConsent"
-          name="gdprConsent"
-          type="checkbox"
-          required
-          checked={formData.gdprConsent}
-          onChange={handleChange}
-          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-        />
-        <label htmlFor="gdprConsent" className="ml-2 block text-sm text-gray-900">
-          {dict.gdprConsent}
-        </label>
-      </div>
+        <div className="flex items-start">
+          <input
+            type="checkbox"
+            id="gdpr_consent"
+            name="gdpr_consent"
+            checked={formData.gdpr_consent}
+            onChange={handleInputChange}
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1"
+            required
+          />
+          <label htmlFor="gdpr_consent" className="ml-2 block text-sm text-gray-700">
+            {dict.gdprConsent}
+          </label>
+        </div>
 
-      <div>
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          {isLoading ? 'Registrace...' : dict.register}
+          {isLoading ? 'Registruji...' : dict.registerButton}
         </button>
-      </div>
+      </form>
 
-      <div className="text-center">
+      <div className="mt-6 text-center">
         <p className="text-sm text-gray-600">
-          {dict.hasAccount}{' '}
-          <Link
-            href="/cs/prihlaseni"
-            className="font-medium text-blue-600 hover:text-blue-500"
-          >
-            {dict.login}
+          {dict.loginLink}{' '}
+          <Link href="/cs/prihlaseni" className="text-blue-600 hover:text-blue-500 font-medium">
+            Přihlásit se
           </Link>
         </p>
       </div>
-    </form>
+    </div>
   );
 } 

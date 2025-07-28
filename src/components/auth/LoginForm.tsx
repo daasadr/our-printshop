@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { signIn, getSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -11,21 +10,22 @@ interface LoginFormProps {
     subtitle: string;
     email: string;
     password: string;
-    login: string;
+    loginButton: string;
     forgotPassword: string;
-    noAccount: string;
-    register: string;
+    registerLink: string;
     errors: {
+      required: string;
       invalidCredentials: string;
-      emailNotVerified: string;
       general: string;
     };
   };
 }
 
 export default function LoginForm({ dict }: LoginFormProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
@@ -35,20 +35,40 @@ export default function LoginForm({ dict }: LoginFormProps) {
     setIsLoading(true);
     setError('');
 
+    // Validace
+    if (!formData.email || !formData.password) {
+      setError(dict.errors.required);
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
+      const response = await fetch('/api/auth/login-directus', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        }),
       });
 
-      if (result?.error) {
-        if (result.error === 'Email není ověřený') {
-          setError(dict.errors.emailNotVerified);
-        } else {
-          setError(dict.errors.invalidCredentials);
-        }
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || dict.errors.invalidCredentials);
       } else {
+        // Uložíme Directus Auth tokeny do localStorage
+        if (data.access_token) {
+          localStorage.setItem('directus_access_token', data.access_token);
+          localStorage.setItem('directus_refresh_token', data.refresh_token);
+          localStorage.setItem('directus_token_expires', data.expires);
+          
+          // Uložíme také základní informace o uživateli
+          localStorage.setItem('user_email', formData.email);
+        }
+        
         // Úspěšné přihlášení
         router.push('/cs/ucet');
         router.refresh();
@@ -60,82 +80,80 @@ export default function LoginForm({ dict }: LoginFormProps) {
     }
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   return (
-    <form className="space-y-6" onSubmit={handleSubmit}>
+    <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8">
+      <div className="text-center mb-8">
+        <h1 className="text-2xl font-bold text-gray-900">{dict.title}</h1>
+        <p className="text-gray-600 mt-2">{dict.subtitle}</p>
+      </div>
+
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-          {error}
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-red-600 text-sm">{error}</p>
         </div>
       )}
 
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-          {dict.email}
-        </label>
-        <div className="mt-1">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            {dict.email}
+          </label>
           <input
+            type="email"
             id="email"
             name="email"
-            type="email"
-            autoComplete="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
-      </div>
 
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-          {dict.password}
-        </label>
-        <div className="mt-1">
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+            {dict.password}
+          </label>
           <input
+            type="password"
             id="password"
             name="password"
-            type="password"
-            autoComplete="current-password"
+            value={formData.password}
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
-      </div>
 
-      <div className="flex items-center justify-between">
-        <div className="text-sm">
-          <Link
-            href="/cs/zapomenute-heslo"
-            className="font-medium text-blue-600 hover:text-blue-500"
-          >
-            {dict.forgotPassword}
-          </Link>
-        </div>
-      </div>
-
-      <div>
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          {isLoading ? 'Přihlašování...' : dict.login}
+          {isLoading ? 'Přihlašuji...' : dict.loginButton}
         </button>
-      </div>
+      </form>
 
-      <div className="text-center">
+      <div className="mt-6 text-center space-y-2">
         <p className="text-sm text-gray-600">
-          {dict.noAccount}{' '}
-          <Link
-            href="/cs/registrace"
-            className="font-medium text-blue-600 hover:text-blue-500"
-          >
-            {dict.register}
+          <Link href="/cs/zapomenute-heslo" className="text-blue-600 hover:text-blue-500 font-medium">
+            {dict.forgotPassword}
+          </Link>
+        </p>
+        <p className="text-sm text-gray-600">
+          {dict.registerLink}{' '}
+          <Link href="/cs/registrace" className="text-blue-600 hover:text-blue-500 font-medium">
+            Registrovat se
           </Link>
         </p>
       </div>
-    </form>
+    </div>
   );
 } 
