@@ -132,7 +132,7 @@
     "made_in_country": "Hergestellt mit ❤️ Powered by Next.js und Printful.",
     "made_in": "Hergestellt in der Tschechischen Republik/Slowakischen Republik",
     "all_rights_reserved": "Alle Rechte vorbehalten",
-    "copyright": "©{{year}} AnnLibertas & LuGo alle Rechte vorbehalten."
+    "copyright": "©{{year}} LuGo & AnnLibertas alle Rechte vorbehalten."
   },
   "newsletter": {
     "title": "Bleiben Sie auf dem Laufenden",
@@ -158,6 +158,17 @@
     "unsubscribe_button": "Abbestellen",
     "unsubscribe_success": "Sie wurden erfolgreich abgemeldet.",
     "unsubscribing": "Abmelden..."
+  },
+  
+  "wishlist": {
+    "title": "Lieblingsprodukte",
+    "empty": "Ihre Wunschliste ist leer",
+    "view_products": "Produkte anzeigen",
+    "items_count": "Produkte in der Wunschliste",
+    "clear_wishlist": "Wunschliste leeren",
+    "added_to_wishlist": "Zur Wunschliste hinzugefügt",
+    "remove_from_wishlist": "Von der Wunschliste entfernen",
+    "remove": "Entfernen"
   },
   
   "error": {

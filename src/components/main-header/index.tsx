@@ -5,6 +5,7 @@ import { Logo } from './Logo';
 import Navigation from './Navigation';
 import { HeaderActions } from './HeaderActions';
 import { useLocale } from '@/context/LocaleContext';
+import { getDictionary } from '@/lib/getDictionary';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,8 +28,8 @@ const Header: React.FC = () => {
   useEffect(() => {
     const loadDictionary = async () => {
       try {
-        const dict = await import(`../../../public/locales/${locale}/common.json`);
-        setDictionary(dict.default);
+        const dict = await getDictionary(locale);
+        setDictionary(dict);
       } catch (error) {
         console.warn('Failed to load dictionary:', error);
       }

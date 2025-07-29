@@ -28,15 +28,32 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   const validLocales: Locale[] = ['cs', 'sk', 'en', 'de'];
   const defaultLocale: Locale = 'cs';
   
-  const [locale, setLocaleState] = useState<Locale>(urlLang && validLocales.includes(urlLang) ? urlLang : defaultLocale);
+  // Inicializace jazyka - preferujeme localStorage, pak URL, pak default
+  const getInitialLocale = (): Locale => {
+    if (typeof window !== 'undefined') {
+      const savedLocale = localStorage.getItem('locale') as Locale;
+      if (savedLocale && validLocales.includes(savedLocale)) {
+        return savedLocale;
+      }
+    }
+    
+    if (urlLang && validLocales.includes(urlLang)) {
+      return urlLang;
+    }
+    
+    return defaultLocale;
+  };
+  
+  const [locale, setLocaleState] = useState<Locale>(getInitialLocale);
   const [currency, setCurrencyState] = useState<Currency>('CZK');
 
-  // Synchronizovat s URL parametrem
+  // Synchronizovat s URL parametrem pouze při první návštěvě
   useEffect(() => {
-    if (urlLang && validLocales.includes(urlLang) && urlLang !== locale) {
+    if (urlLang && validLocales.includes(urlLang) && !localStorage.getItem('locale')) {
       setLocaleState(urlLang);
+      localStorage.setItem('locale', urlLang);
     }
-  }, [urlLang, locale]);
+  }, [urlLang]);
 
   // Automaticky nastavit měnu podle jazyka
   useEffect(() => {
@@ -58,21 +75,15 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     }
   }, [locale, currency]);
 
-  // Načtení z localStorage při startu (len ak nie je v URL)
+  // Načtení měny z localStorage při startu
   useEffect(() => {
-    if (!urlLang) {
-      const savedLocale = localStorage.getItem('locale') as Locale;
+    if (typeof window !== 'undefined') {
       const savedCurrency = localStorage.getItem('currency') as Currency;
-      
-      if (savedLocale && validLocales.includes(savedLocale)) {
-        setLocaleState(savedLocale);
-      }
-      
       if (savedCurrency && (savedCurrency === 'CZK' || savedCurrency === 'EUR' || savedCurrency === 'GBP')) {
         setCurrencyState(savedCurrency);
       }
     }
-  }, [urlLang]);
+  }, []);
 
   const setLocale = (newLocale: Locale) => {
     setLocaleState(newLocale);
@@ -101,7 +112,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <LocaleContext.Provider value={value} suppressHydrationWarning>
+    <LocaleContext.Provider value={value}>
       {children}
     </LocaleContext.Provider>
   );

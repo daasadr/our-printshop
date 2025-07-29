@@ -7,6 +7,7 @@ import { useLocale } from '@/context/LocaleContext';
 import { formatPrice, convertCurrency } from '@/utils/currency';
 import { Button, QuantityButton } from '@/components/ui/Button';
 import { useEffect, useState, useMemo } from 'react';
+import { getDictionary } from '@/lib/getDictionary';
 
 export default function CartContent() {
   const { items, removeFromCart, updateQuantity, totalPrice } = useCart();
@@ -17,8 +18,8 @@ export default function CartContent() {
   useEffect(() => {
     const loadDictionary = async () => {
       try {
-        const dict = await import(`../../public/locales/${locale}/common.json`);
-        setDictionary(dict.default);
+        const dict = await getDictionary(locale);
+        setDictionary(dict);
       } catch (error) {
         console.warn('Failed to load dictionary:', error);
       }

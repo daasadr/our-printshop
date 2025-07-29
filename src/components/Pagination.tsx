@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useParams } from 'next/navigation';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { getDictionary } from '@/lib/getDictionary';
 
 interface PaginationProps {
   currentPage: number;
@@ -29,8 +30,8 @@ export default function Pagination({
     const loadDictionary = async () => {
       try {
         const lang = params.lang as string;
-        const dict = await import(`../../public/locales/${lang}/common.json`);
-        setDictionary(dict.default);
+        const dict = await getDictionary(lang);
+        setDictionary(dict);
       } catch (error) {
         console.warn('Failed to load dictionary:', error);
       }

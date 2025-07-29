@@ -132,7 +132,7 @@
     "made_in_country": "Vyrobené s ❤️ Powered by Next.js a Printful.",
     "made_in": "Vyrobené v Českej republike/Slovenskej republike",
     "all_rights_reserved": "Všetky práva vyhradené",
-    "copyright": "©{{year}} AnnLibertas & LuGo všetky práva vyhradené."
+    "copyright": "©{{year}} LuGo & AnnLibertas všetky práva vyhradené."
   },
   "newsletter": {
     "title": "Zostaňte v obraze",
@@ -158,6 +158,17 @@
     "unsubscribe_button": "Zrušiť odber",
     "unsubscribe_success": "Boli ste úspešne odhlásení.",
     "unsubscribing": "Odhlasovanie..."
+  },
+  
+  "wishlist": {
+    "title": "Obľúbené produkty",
+    "empty": "Váš zoznam obľúbených je prázdny",
+    "view_products": "Prezrieť produkty",
+    "items_count": "produktov v obľúbených",
+    "clear_wishlist": "Vymazať obľúbené",
+    "added_to_wishlist": "Pridané do obľúbených",
+    "remove_from_wishlist": "Odobrať z obľúbených",
+    "remove": "Odobrať"
   },
   
   "error": {

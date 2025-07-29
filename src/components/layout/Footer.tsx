@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useLocale } from '@/context/LocaleContext';
 import { useEffect, useState } from 'react';
+import { getDictionary } from '@/lib/getDictionary';
 
 const Footer: React.FC = () => {
   const { locale } = useLocale();
@@ -12,8 +13,8 @@ const Footer: React.FC = () => {
   useEffect(() => {
     const loadDictionary = async () => {
       try {
-        const dict = await import(`../../../public/locales/${locale}/common.json`);
-        setDictionary(dict.default);
+        const dict = await getDictionary(locale);
+        setDictionary(dict);
       } catch (error) {
         console.warn('Failed to load dictionary:', error);
       }
