@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Logo } from './Logo';
 import Navigation from './Navigation';
-import { HeaderActions } from './HeaderActions';
+import HeaderActions from './HeaderActions';
 import { useLocale } from '@/context/LocaleContext';
 
 const Header: React.FC = () => {
@@ -60,7 +60,7 @@ const Header: React.FC = () => {
           
           {/* Actions - right */}
           <div className="flex-shrink-0 relative">
-            <HeaderActions isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
+            <HeaderActions isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} dictionary={dictionary} />
           </div>
         </div>
 
@@ -74,7 +74,7 @@ const Header: React.FC = () => {
             
             {/* Actions - right (s hamburger menu) */}
             <div className="flex-shrink-0 relative">
-              <HeaderActions isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} isMobile={true} />
+              <HeaderActions isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} isMobile={true} dictionary={dictionary} />
             </div>
           </div>
         </div>

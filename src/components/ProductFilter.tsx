@@ -84,7 +84,7 @@ export default function ProductFilter({ categories = [], dictionary }: ProductFi
             className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
           >
             <FiFilter className="w-5 h-5" />
-            <span>{dictionary?.product_filter_title || "Filtre"}</span>
+            <span>{dictionary?.filter_button || "Filtre"}</span>
           </button>
 
           {/* Dropdown filtre */}

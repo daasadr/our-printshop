@@ -13,12 +13,14 @@ interface HeaderActionsProps {
   isMenuOpen: boolean;
   setIsMenuOpen: (isOpen: boolean) => void;
   isMobile?: boolean;
+  dictionary?: any;
 }
 
 const HeaderActions: React.FC<HeaderActionsProps> = ({ 
   isMenuOpen, 
   setIsMenuOpen, 
-  isMobile = false 
+  isMobile = false,
+  dictionary
 }) => {
   const { items } = useCart();
   const router = useRouter();
@@ -98,11 +100,11 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
           </button>
         </div>
         
-        {/* Vyhledávací lišta - zobrazí se pod ikonami */}
+        {/* Vyhledávací lišta - zobrazí se jako velký search bar */}
         {isSearchOpen && (
           <div 
             ref={searchRef}
-            className="absolute top-full right-0 mt-2 bg-white border border-gray-200 shadow-lg rounded-lg z-50 p-4 min-w-80"
+            className="absolute top-full right-0 mt-2 bg-white border-2 border-blue-500 shadow-lg rounded-lg z-50 p-4 min-w-96"
           >
             <form onSubmit={handleSearch} className="flex items-center">
               <div className="relative flex-1">
@@ -111,15 +113,15 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Hledat produkty..."
-                  className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
+                  placeholder={dictionary?.search_placeholder || "Hledat produkty..."}
+                  className="w-full pl-10 pr-4 py-3 text-sm border-2 border-blue-500 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder-gray-500"
                 />
               </div>
               <button
                 type="submit"
-                className="ml-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+                className="ml-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors font-medium"
               >
-                Hledat
+                {dictionary?.search_button || "Hledat"}
               </button>
             </form>
           </div>
@@ -166,11 +168,11 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
         {isMenuOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
       </button>
       
-      {/* Vyhledávací lišta pro mobil - zobrazí se pod ikonami */}
+      {/* Vyhledávací lišta pro mobil - zobrazí se jako velký search bar */}
       {isSearchOpen && (
         <div 
           ref={searchRef}
-          className="absolute top-full right-0 mt-2 bg-white border border-gray-200 shadow-lg rounded-lg z-50 p-4 min-w-80"
+          className="absolute top-full right-0 mt-2 bg-white border-2 border-blue-500 shadow-lg rounded-lg z-50 p-4 min-w-80"
         >
           <form onSubmit={handleSearch} className="flex items-center">
             <div className="relative flex-1">
@@ -179,15 +181,15 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Hledat produkty..."
-                className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
+                                  placeholder={dictionary?.search_placeholder || "Hledat produkty..."}
+                className="w-full pl-10 pr-4 py-3 text-sm border-2 border-blue-500 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder-gray-500"
               />
             </div>
             <button
               type="submit"
-              className="ml-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+              className="ml-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors font-medium"
             >
-              Hledat
+              {dictionary?.search_button || "Hledat"}
             </button>
           </form>
         </div>
@@ -196,4 +198,4 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
   );
 };
 
-export { HeaderActions }; 
+export default HeaderActions; 

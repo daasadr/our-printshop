@@ -201,6 +201,7 @@
   },
   
   "product_filter_title": "Product filter",
+  "filter_button": "Filters",
   "category": "Category",
   "all_categories": "All categories",
   "color": "Color",
@@ -214,7 +215,7 @@
   "reset_filters": "Reset filters",
   "min_placeholder": "Min",
   "max_placeholder": "Max",
-  "search_placeholder": "Search...",
+  "search_placeholder": "Search products...",
   "sort_by": "Sort by",
   "sort_default": "Default",
   "sort_price_asc": "Price: lowest first",
