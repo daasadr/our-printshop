@@ -35,10 +35,10 @@ export interface CartItem {
 }
 
 // CRUD funkce pro každou kolekci
-export const readUsers = (params?: any) => directus.request(readItems('users', params));
-export const createUser = (data: Partial<User>) => directus.request(createItem('users', data));
-export const updateUser = (id: string, data: Partial<User>) => directus.request(updateItem('users', id, data));
-export const deleteUser = (id: string) => directus.request(deleteItem('users', id));
+export const readUsers = (params?: any) => directus.request(readItems('app_users', params));
+export const createUser = (data: Partial<User>) => directus.request(createItem('app_users', data));
+export const updateUser = (id: string, data: Partial<User>) => directus.request(updateItem('app_users', id, data));
+export const deleteUser = (id: string) => directus.request(deleteItem('app_users', id));
 
 export const readProducts = (params?: any) => {
   console.log('Directus readProducts - params:', params);
