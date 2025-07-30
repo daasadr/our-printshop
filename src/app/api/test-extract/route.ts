@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 
+// Force dynamic rendering - don't generate static pages for this API
+export const dynamic = 'force-dynamic';
+
 // Helper function to extract size and color from variant name
 function extractSizeAndColor(variantName: string): { size: string | null; color: string | null } {
   // Pattern: "Product Name color / SIZE" or "Product Name / SIZE"

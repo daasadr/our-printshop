@@ -1,5 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 import { readProducts, translateProducts } from "@/lib/directus";
+
+// Force dynamic rendering - don't generate static pages for this API
+export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
   try {
