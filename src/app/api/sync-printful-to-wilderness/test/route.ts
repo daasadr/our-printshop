@@ -3,6 +3,9 @@ import { directus } from "@/lib/directus";
 import { readItems } from '@directus/sdk';
 import { fetchPrintfulProducts } from "../products/fetchPrintfulProducts";
 
+// Force dynamic rendering - don't generate static pages for this API
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     console.log('Testing sync components...');

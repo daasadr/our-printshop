@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sync } from './sync';
 
+// Force dynamic rendering - don't generate static pages for this API
+export const dynamic = 'force-dynamic';
+
 const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY;
 const DIRECTUS_URL = process.env.NEXT_PUBLIC_DIRECTUS_URL;
 const DIRECTUS_TOKEN = process.env.DIRECTUS_TOKEN;
