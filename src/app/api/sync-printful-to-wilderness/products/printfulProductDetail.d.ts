@@ -18,6 +18,7 @@ export interface SyncProduct {
   thumbnail_url: string;
   is_ignored: boolean;
   description?: string; // Přidáno pole pro popis produktu
+  design_info?: string; // Přidáno pole pro design info
 }
 
 export interface SyncVariant {
