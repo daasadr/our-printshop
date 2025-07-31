@@ -44,7 +44,7 @@ describe('/api/auth/login-directus', () => {
     }
 
     // Mock successful login
-    const { jwtAuth } = require('@/lib/jwt-auth')
+    const { jwtAuth } = await import('@/lib/jwt-auth')
     jwtAuth.loginUser.mockResolvedValue({
       user: mockUser,
       access_token: mockTokens.access_token,
@@ -99,7 +99,7 @@ describe('/api/auth/login-directus', () => {
   })
 
   it('should return error for invalid credentials', async () => {
-    const { jwtAuth } = require('@/lib/jwt-auth')
+    const { jwtAuth } = await import('@/lib/jwt-auth')
     jwtAuth.loginUser.mockRejectedValue(new Error('Neplatný email nebo heslo'))
 
     Object.defineProperty(mockRequest, 'json', {
@@ -117,7 +117,7 @@ describe('/api/auth/login-directus', () => {
   })
 
   it('should handle server errors gracefully', async () => {
-    const { jwtAuth } = require('@/lib/jwt-auth')
+    const { jwtAuth } = await import('@/lib/jwt-auth')
     jwtAuth.loginUser.mockRejectedValue(new Error('Database connection failed'))
 
     Object.defineProperty(mockRequest, 'json', {

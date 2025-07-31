@@ -51,7 +51,7 @@ describe('JWT Token Generation and Verification', () => {
 
 describe('Password Hashing', () => {
   it('should hash and verify passwords with argon2', async () => {
-    const { hash, verify } = require('argon2')
+    const { hash, verify } = await import('argon2')
     
     const password = 'testpassword123'
     const hashedPassword = await hash(password)

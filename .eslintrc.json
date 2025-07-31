@@ -17,6 +17,15 @@
         "ts-nocheck": false,
         "ts-check": false
       }],
-      "@next/next/no-img-element": "error"
-    }
+      "@next/next/no-img-element": "error",
+      "@typescript-eslint/no-var-requires": "off"
+    },
+    "overrides": [
+      {
+        "files": ["**/__tests__/**/*", "**/*.test.*", "**/*.spec.*"],
+        "rules": {
+          "@typescript-eslint/no-var-requires": "off"
+        }
+      }
+    ]
   }
