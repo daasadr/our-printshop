@@ -28,10 +28,6 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
   const { locale } = useLocale();
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-<<<<<<< HEAD
-  const searchRef = useRef<HTMLDivElement>(null);
-
-=======
   const [dictionary, setDictionary] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -113,7 +109,6 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
     };
   }, []);
 
->>>>>>> feat/user-accounts
   // Click outside handler
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
