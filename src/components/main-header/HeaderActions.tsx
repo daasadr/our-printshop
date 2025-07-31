@@ -55,8 +55,58 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
         setUser(user);
       } catch (error) {
         console.error('Error parsing user data:', error);
+        setUser(null);
       }
+    } else {
+      setUser(null);
     }
+  }, []);
+
+  // Listen for auth status changes
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'user_data') {
+        console.log('HeaderActions: Storage changed, updating user state...');
+        if (e.newValue) {
+          try {
+            const user = JSON.parse(e.newValue);
+            setUser(user);
+          } catch (error) {
+            console.error('Error parsing user data:', error);
+            setUser(null);
+          }
+        } else {
+          setUser(null);
+        }
+      }
+    };
+
+    // Listen for storage events from other tabs/windows
+    window.addEventListener('storage', handleStorageChange);
+
+    // Also listen for custom events (for same tab)
+    const handleCustomStorageChange = () => {
+      console.log('HeaderActions: Custom storage event received, updating user state...');
+      const userData = localStorage.getItem('user_data');
+      if (userData) {
+        try {
+          const user = JSON.parse(userData);
+          setUser(user);
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+    };
+
+    window.addEventListener('auth-status-changed', handleCustomStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('auth-status-changed', handleCustomStorageChange);
+    };
   }, []);
 
   // Click outside handler
