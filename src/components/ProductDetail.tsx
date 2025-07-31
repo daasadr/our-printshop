@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
 import { useWishlist } from '@/context/WishlistContext';
 import { useLocale } from '@/context/LocaleContext';
-import { formatPriceCZK, convertCurrency } from '@/utils/currency';
+import { formatPrice, convertCurrency } from '@/utils/currency';
 import { getProductImages } from '@/utils/productImage';
 import { Button, SelectionButton, QuantityButton } from '@/components/ui/Button';
 import { FiHeart } from 'react-icons/fi';
@@ -255,7 +255,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         <div className="mb-6">
           <h2 className="text-lg font-medium mb-2">Cena</h2>
           <p className="text-2xl font-bold text-blue-600">
-            {selectedVariant ? formatPriceCZK(selectedVariant.price, currency) : 'Není k dispozici'}
+            {selectedVariant ? formatPrice(selectedVariant.price, currency) : 'Není k dispozici'}
           </p>
         </div>
         

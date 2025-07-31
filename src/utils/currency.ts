@@ -2,7 +2,7 @@ import { getCurrentRate, getCurrentRateSync, getRateForCurrencySync, getAllRates
 import { Currency } from '@/context/LocaleContext';
 
 // Formátování ceny v CZK
-export function formatPriceCZK(price: number, currency: string): string {
+export function formatPriceCZK(price: number): string {
   return new Intl.NumberFormat('cs-CZ', {
     style: 'currency',
     currency: 'CZK',

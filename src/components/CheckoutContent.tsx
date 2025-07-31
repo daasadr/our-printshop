@@ -142,8 +142,7 @@ export default function CheckoutContent() {
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Dokončení objednávky</h1>
         <CheckoutForm 
           cartItems={cartItems} 
-          totalPrice={totalPrice}
-          user={user}
+          total={totalPrice}
         />
       </div>
     </div>

@@ -67,6 +67,7 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ products = [], dictiona
                 if (isInWishlist(product.id)) {
                   removeFromWishlist(product.id);
                 } else {
+                  const priceEur = product.price || product.variants?.[0]?.price || 0;
                   addToWishlist({
                     productId: product.id,
                     variantId: product.variants[0]?.id || '',

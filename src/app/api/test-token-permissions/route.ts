@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { directus } from "@/lib/directus";
-import { readMe } from '@directus/sdk';
+import { readMe, readItems } from '@directus/sdk';
 
 export async function GET(request: NextRequest) {
   try {

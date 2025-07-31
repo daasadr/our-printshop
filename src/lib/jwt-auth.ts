@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import argon2 from 'argon2';
 import { directus } from './directus';
@@ -58,7 +58,7 @@ export class JWTAuth {
       role: user.role || 'App_user'
     };
 
-    return jwt.sign(payload, this.JWT_SECRET, {
+    return (jwt.sign as any)(payload, this.JWT_SECRET, {
       expiresIn: this.JWT_EXPIRES_IN
     });
   }
@@ -71,7 +71,7 @@ export class JWTAuth {
       type: 'refresh'
     };
 
-    return jwt.sign(payload, this.JWT_SECRET, {
+    return (jwt.sign as any)(payload, this.JWT_SECRET, {
       expiresIn: this.REFRESH_TOKEN_EXPIRES_IN
     });
   }

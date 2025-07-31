@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { directus } from "@/lib/directus";
-import { readItems, createItem } from '@directus/sdk';
+import { readItems, createItem, deleteItem } from '@directus/sdk';
 
 export async function GET() {
   try {
@@ -56,10 +56,9 @@ export async function GET() {
         
         // Pokusíme se smazat testovacího uživatele
         try {
-          await directus.request({
-            method: 'DELETE',
-            path: `/items/app_users/${newUser.id}`
-          });
+          await directus.request(
+            deleteItem('app_users', newUser.id)
+          );
           console.log("✅ Can delete from app_users");
           results.canDelete = true;
         } catch (deleteError) {
