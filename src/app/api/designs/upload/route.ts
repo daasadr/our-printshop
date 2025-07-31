@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createDesign, readDesigns } from '@/lib/directus';
 import { uploadDesign } from '@/services/printful';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
+// import { getServerSession } from 'next-auth/next'; // ODSTRANĚNO
+// import { authOptions } from '@/lib/auth'; // ODSTRANĚNO
+import { jwtAuth } from '@/lib/jwt-auth';
 import { PrintfulFile, PrintfulApiResponse } from '@/types/printful';
 import { v4 as uuidv4 } from 'uuid';
 import { writeFile } from 'fs/promises';
@@ -10,11 +11,28 @@ import path from 'path';
 import { mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 
+// Helper function to get user from JWT token
+async function getUserFromRequest(req: NextRequest) {
+  try {
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return null;
+    }
+
+    const token = authHeader.substring(7);
+    const user = await jwtAuth.getUserFromToken(token);
+    return user;
+  } catch (error) {
+    console.error('Error getting user from token:', error);
+    return null;
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     // Ověření přihlášení
-    const session = await getServerSession(authOptions);
-    if (!session) {
+    const user = await getUserFromRequest(req);
+    if (!user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -72,11 +90,11 @@ export async function POST(req: NextRequest) {
 }
 
 // src/app/api/designs/route.ts
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     // Volitelně: Kontrola autentizace
-    const session = await getServerSession(authOptions);
-    if (!session) {
+    const user = await getUserFromRequest(req);
+    if (!user) {
       return NextResponse.json(
         { message: 'Unauthorized' },
         { status: 401 }

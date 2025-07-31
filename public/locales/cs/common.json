@@ -2,6 +2,51 @@
   "Index": {
     "description": "Profesionální tiskárna pro všechny vaše potřeby"
   },
+  "auth": {
+    "register": {
+      "title": "Registrace",
+      "subtitle": "Vytvořte si účet a získejte přístup k exkluzivním nabídkám",
+      "description": "Registrujte se a získejte přístup k vašemu účtu",
+      "name": "Jméno a příjmení",
+      "email": "E-mail",
+      "password": "Heslo",
+      "confirmPassword": "Potvrďte heslo",
+      "gdprConsent": "Souhlasím se zpracováním osobních údajů",
+      "registerButton": "Registrovat",
+      "loginLink": "Již máte účet? Přihlaste se",
+      "errors": {
+        "required": "Toto pole je povinné",
+        "invalidEmail": "Zadejte platnou e-mailovou adresu",
+        "passwordMismatch": "Hesla se neshodují",
+        "passwordTooShort": "Heslo musí mít alespoň 6 znaků",
+        "general": "Nastala chyba při registraci"
+      },
+      "success": {
+        "title": "Registrace úspěšná",
+        "message": "Váš účet byl úspěšně vytvořen"
+      }
+    },
+    "login": {
+      "title": "Přihlášení",
+      "subtitle": "Přihlaste se ke svému účtu",
+      "description": "Přihlaste se a získejte přístup k vašemu účtu",
+      "email": "E-mail",
+      "password": "Heslo",
+      "loginButton": "Přihlásit",
+      "forgotPassword": "Zapomněli jste heslo?",
+      "registerLink": "Nemáte účet? Registrujte se",
+      "errors": {
+        "required": "Toto pole je povinné",
+        "invalidEmail": "Zadejte platnou e-mailovou adresu",
+        "invalidCredentials": "Neplatný e-mail nebo heslo",
+        "general": "Nastala chyba při přihlašování"
+      },
+      "success": {
+        "title": "Přihlášení úspěšné",
+        "message": "Byli jste úspěšně přihlášeni"
+      }
+    }
+  },
   "welcome": "Originální oblečení s autorskými potisky",
   "subtitle": "Vyjádřete svůj jedinečný styl s našimi kreativními designy.",
   "cta_collection": "Prohlédnout kolekci",
@@ -32,6 +77,7 @@
     "close": "Zavřít košík",
     "quantity": "Množství",
     "remove": "Odebrat",
+    "add_to_cart": "Do košíku",
     "items_count": "položek v košíku",
     "opened": "Košík otevřen",
     "closed": "Košík zavřen"
@@ -126,6 +172,43 @@
     "unsubscribing": "Odhlašování..."
   },
   
+  "contact": {
+    "title": "Kontaktujte nás",
+    "subtitle": "Máte dotaz? Neváhejte nás kontaktovat. Odpovíme vám co nejdříve.",
+    "form": {
+      "name": "Jméno",
+      "email": "E-mail",
+      "subject": "Předmět zprávy",
+      "message": "Zpráva",
+      "submit": "Odeslat zprávu",
+      "sending": "Odesílání...",
+      "required": "Povinné pole"
+    },
+    "validation": {
+      "name_required": "Jméno je povinné.",
+      "email_required": "E-mail je povinný.",
+      "email_invalid": "Zadejte prosím platnou e-mailovou adresu.",
+      "subject_required": "Předmět zprávy je povinný.",
+      "message_required": "Zpráva je povinná.",
+      "form_errors": "Prosím opravte chyby ve formuláři."
+    },
+    "success": {
+      "title": "Děkujeme za vaši zprávu!",
+      "message": "Budeme vás kontaktovat co nejdříve."
+    },
+    "error": {
+      "title": "Omlouváme se, nastala chyba.",
+      "message": "Zkuste to prosím znovu později.",
+      "sending_error": "Nastala chyba při odesílání zprávy."
+    }
+  },
+  "contact_info": {
+    "email": "Email",
+    "response_time": "Odpověď",
+    "languages": "Jazyky",
+    "response_time_value": "Do 24 hodin",
+    "languages_value": "CS, SK, EN, DE"
+  },
   "wishlist": {
     "title": "Oblíbené produkty",
     "empty": "Váš seznam oblíbených je prázdný",
@@ -232,5 +315,16 @@
   "sort_price_asc": "Ceny: od nejlevnější",
   "sort_price_desc": "Ceny: od nejdražší",
   "sort_name_asc": "Názvu: A-Z",
-  "search_button": "Hledat"
+  "search_button": "Hledat",
+  "wishlist": {
+    "title": "Oblíbené produkty",
+    "empty": "Váš seznam oblíbených je prázdný",
+    "add_to_wishlist": "Přidat do oblíbených",
+    "remove_from_wishlist": "Odebrat z oblíbených",
+    "added_to_wishlist": "Přidáno do oblíbených",
+    "removed_from_wishlist": "Odebráno z oblíbených",
+    "view_products": "Prohlédnout produkty",
+    "clear_wishlist": "Vymazat oblíbené",
+    "items_count": "produktů v oblíbených"
+  }
 } 

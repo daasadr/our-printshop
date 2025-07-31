@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useParams, useRouter } from 'next/navigation';
-import { signOut, useSession } from 'next-auth/react';
+// import { signOut, useSession } from 'next-auth/react'; // ODSTRANĚNO
 import { FiMenu, FiX, FiUser, FiHeart, FiSearch } from 'react-icons/fi';
 import { useLocale } from '@/context/LocaleContext';
 import LocaleSwitch from '@/components/LocaleSwitch';
@@ -18,10 +18,14 @@ const Navigation: React.FC<NavigationProps> = ({ isMenuOpen, setIsMenuOpen, dict
   const pathname = usePathname();
   const params = useParams();
   const router = useRouter();
-  const session = useSession();
+  // const session = useSession(); // ODSTRANĚNO
   const { locale } = useLocale();
   const [searchTerm, setSearchTerm] = useState('');
   const searchRef = useRef<HTMLDivElement>(null);
+  
+  // JWT Auth state
+  const [user, setUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Funkce pro zjištění, zda je odkaz aktivní
   const isActive = (path: string) => {
@@ -32,6 +36,103 @@ const Navigation: React.FC<NavigationProps> = ({ isMenuOpen, setIsMenuOpen, dict
   const getLocalizedLink = (path: string) => {
     return `/${locale}${path}`;
   };
+
+  // JWT Auth functions
+  const checkAuthStatus = async () => {
+    try {
+      console.log('Navigation: Checking auth status...');
+      const accessToken = localStorage.getItem('access_token');
+      const userData = localStorage.getItem('user_data');
+      console.log('Navigation: Access token found:', !!accessToken);
+      console.log('Navigation: User data found:', !!userData);
+      
+      if (!accessToken || !userData) {
+        console.log('Navigation: No access token or user data, setting user to null');
+        setUser(null);
+        setIsLoading(false);
+        return;
+      }
+
+      // Parsujeme user data z localStorage
+      try {
+        const user = JSON.parse(userData);
+        console.log('Navigation: Setting user from localStorage:', user.email);
+        setUser(user);
+      } catch (parseError) {
+        console.error('Navigation: Error parsing user data:', parseError);
+        setUser(null);
+      }
+    } catch (error) {
+      console.error('Navigation: Auth check error:', error);
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      const refreshToken = localStorage.getItem('refresh_token');
+      
+      // Voláme náš logout endpoint
+      const response = await fetch('/api/auth/logout-directus', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      });
+
+      if (response.ok) {
+        console.log('Logout successful');
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      // Vždy vyčistíme localStorage
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('user_data');
+      setUser(null);
+      
+      // Vyvoláme custom event pro ostatní komponenty
+      window.dispatchEvent(new Event('auth-status-changed'));
+      
+      // Přesměrujeme na hlavní stránku
+      router.push(`/${locale}`);
+    }
+  };
+
+  // Check auth status on mount
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
+
+  // Listen for storage changes (when user logs in/out)
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'access_token' || e.key === 'user_data') {
+        console.log('Navigation: Storage changed, checking auth status...');
+        checkAuthStatus();
+      }
+    };
+
+    // Listen for storage events from other tabs/windows
+    window.addEventListener('storage', handleStorageChange);
+
+    // Also listen for custom events (for same tab)
+    const handleCustomStorageChange = () => {
+      console.log('Navigation: Custom storage event received, checking auth status...');
+      checkAuthStatus();
+    };
+
+    window.addEventListener('auth-status-changed', handleCustomStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('auth-status-changed', handleCustomStorageChange);
+    };
+  }, []);
 
   // Click outside handler pro search
   useEffect(() => {
@@ -80,34 +181,31 @@ const Navigation: React.FC<NavigationProps> = ({ isMenuOpen, setIsMenuOpen, dict
         >
           {dictionary?.navigation?.contact || "Kontakt"}
         </Link>
-        {session?.data ? (
+        {!isLoading && user ? (
           <>
-            <span className="px-3 py-2 text-sm text-gray-700">
-              {dictionary?.navigation?.welcome_user?.replace('{{name}}', session.data.user?.name || session.data.user?.email) || `Vítejte, ${session.data.user?.name || session.data.user?.email}`}
-            </span>
             <button
-              onClick={() => signOut()}
+              onClick={handleLogout}
               className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
             >
               {dictionary?.navigation?.logout || "Odhlásit"}
             </button>
           </>
-        ) : (
+        ) : !isLoading && !user ? (
           <>
             <Link 
-              href="/auth/signin" 
+              href={getLocalizedLink('/prihlaseni')} 
               className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
             >
               {dictionary?.navigation?.login || "Přihlásit"}
             </Link>
             <Link 
-              href="/auth/signup" 
+              href={getLocalizedLink('/registrace')} 
               className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
             >
               {dictionary?.navigation?.register || "Registrovat"}
             </Link>
           </>
-        )}
+        ) : null}
       </nav>
 
       {/* Mobilní menu */}
@@ -170,21 +268,48 @@ const Navigation: React.FC<NavigationProps> = ({ isMenuOpen, setIsMenuOpen, dict
             >
               {dictionary?.navigation?.contact || "Kontakt"}
             </Link>
-            {session?.data && (
+            {!isLoading && user && (
               <div className="space-y-2 pt-2 border-t border-gray-200">
                 <Link
-                  href="/account"
+                  href={getLocalizedLink('/ucet')}
                   className="flex items-center px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <FiUser className="w-5 h-5 mr-3" /> {dictionary?.navigation?.my_account || "Můj účet"}
                 </Link>
                 <Link
-                  href="/wishlist"
+                  href={getLocalizedLink('/wishlist')}
                   className="flex items-center px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <FiHeart className="w-5 h-5 mr-3" /> {dictionary?.navigation?.favorites || "Oblíbené"}
+                </Link>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsMenuOpen(false);
+                  }}
+                  className="flex items-center w-full px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
+                >
+                  <FiUser className="w-5 h-5 mr-3" /> {dictionary?.navigation?.logout || "Odhlásit"}
+                </button>
+              </div>
+            )}
+            {!isLoading && !user && (
+              <div className="space-y-2 pt-2 border-t border-gray-200">
+                <Link
+                  href={getLocalizedLink('/prihlaseni')}
+                  className="flex items-center px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <FiUser className="w-5 h-5 mr-3" /> {dictionary?.navigation?.login || "Přihlásit"}
+                </Link>
+                <Link
+                  href={getLocalizedLink('/registrace')}
+                  className="flex items-center px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <FiUser className="w-5 h-5 mr-3" /> {dictionary?.navigation?.register || "Registrovat"}
                 </Link>
               </div>
             )}

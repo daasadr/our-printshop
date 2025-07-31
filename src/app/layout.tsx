@@ -3,6 +3,8 @@ import './globals.css';
 import { Inter } from 'next/font/google';
 import { Providers } from './providers';
 import { CartProvider } from '@/context/CartContext';
+import { WishlistProvider } from '@/context/WishlistContext';
+import { AuthProvider } from '@/context/AuthContext';
 
 // Add skip navigation styles
 const skipLinkStyles = `
@@ -114,11 +116,15 @@ export default function RootLayout({
           Přeskočit na hlavní obsah
         </a>
         
-        <Providers>
-          <CartProvider>
-            {children}
-          </CartProvider>
-        </Providers>
+        <AuthProvider>
+          <Providers>
+            <CartProvider>
+              <WishlistProvider>
+                {children}
+              </WishlistProvider>
+            </CartProvider>
+          </Providers>
+        </AuthProvider>
       </body>
     </html>
   );

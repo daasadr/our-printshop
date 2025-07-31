@@ -9,7 +9,10 @@ import { Button } from '@/components/ui/Button';
 import { useEffect, useState } from 'react';
 import { FiHeart, FiTrash2, FiShoppingCart } from 'react-icons/fi';
 import { useCart } from '@/hooks/useCart';
+<<<<<<< HEAD
 import { getDictionary } from '@/lib/getDictionary';
+=======
+>>>>>>> feat/user-accounts
 
 export default function WishlistContent() {
   const { items, removeFromWishlist, clearWishlist } = useWishlist();
@@ -21,9 +24,15 @@ export default function WishlistContent() {
   useEffect(() => {
     const loadDictionary = async () => {
       try {
+<<<<<<< HEAD
         const dict = await getDictionary(locale);
         setDictionary(dict);
         console.log('WishlistContent - loaded dictionary for locale:', locale, dict);
+=======
+        const dict = await import(`../../public/locales/${locale}/common.json`);
+        setDictionary(dict.default);
+        console.log('WishlistContent - loaded dictionary for locale:', locale, dict.default);
+>>>>>>> feat/user-accounts
       } catch (error) {
         console.warn('Failed to load dictionary:', error);
       }
@@ -131,6 +140,30 @@ export default function WishlistContent() {
           </div>
         ))}
       </div>
+<<<<<<< HEAD
     </div>
   );
 }
+=======
+
+      {/* Celková cena */}
+      <div className="mt-6 pt-6 border-t border-white/10">
+        <div className="flex justify-between items-center text-white">
+          <span className="text-lg">{dictionary?.cart?.total || 'Celková cena:'}</span>
+          <span className="text-2xl font-bold text-green-300">
+            {formatPrice(items.reduce((sum, item) => sum + (convertCurrency(item.price, currency)), 0), currency)}
+          </span>
+        </div>
+        <div className="mt-4">
+          <Link
+            href={`/${locale}/checkout`}
+            className="block w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors text-center font-semibold"
+          >
+            {dictionary?.cart?.checkout || 'Pokračovat k objednávce'}
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+} 
+>>>>>>> feat/user-accounts

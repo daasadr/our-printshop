@@ -29,6 +29,7 @@
     "close": "Warenkorb schließen",
     "quantity": "Menge",
     "remove": "Entfernen",
+    "add_to_cart": "In den Warenkorb",
     "items_count": "Artikel im Warenkorb",
     "opened": "Warenkorb geöffnet",
     "closed": "Warenkorb geschlossen"
@@ -208,7 +209,52 @@
   "description": "Professionelle Druckerei für alle Ihre Bedürfnisse",
   
   "Index": {
-    "description": "Professionelle Druckerei für alle Ihre Bedürfnisse"
+    "description": "Professioneller Druck für alle Ihre Bedürfnisse"
+  },
+  "auth": {
+    "register": {
+      "title": "Registrierung",
+      "subtitle": "Erstellen Sie ein Konto und erhalten Sie Zugang zu exklusiven Angeboten",
+      "description": "Registrieren Sie sich und erhalten Sie Zugang zu Ihrem Konto",
+      "name": "Vor- und Nachname",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "confirmPassword": "Passwort bestätigen",
+      "gdprConsent": "Ich stimme der Verarbeitung personenbezogener Daten zu",
+      "registerButton": "Registrieren",
+      "loginLink": "Haben Sie bereits ein Konto? Anmelden",
+      "errors": {
+        "required": "Dieses Feld ist erforderlich",
+        "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+        "passwordMismatch": "Passwörter stimmen nicht überein",
+        "passwordTooShort": "Passwort muss mindestens 6 Zeichen lang sein",
+        "general": "Bei der Registrierung ist ein Fehler aufgetreten"
+      },
+      "success": {
+        "title": "Registrierung erfolgreich",
+        "message": "Ihr Konto wurde erfolgreich erstellt"
+      }
+    },
+    "login": {
+      "title": "Anmeldung",
+      "subtitle": "Melden Sie sich in Ihrem Konto an",
+      "description": "Melden Sie sich an und erhalten Sie Zugang zu Ihrem Konto",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "loginButton": "Anmelden",
+      "forgotPassword": "Passwort vergessen?",
+      "registerLink": "Haben Sie kein Konto? Registrieren Sie sich",
+      "errors": {
+        "required": "Dieses Feld ist erforderlich",
+        "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+        "invalidCredentials": "Ungültige E-Mail oder Passwort",
+        "general": "Beim Anmelden ist ein Fehler aufgetreten"
+      },
+      "success": {
+        "title": "Anmeldung erfolgreich",
+        "message": "Sie wurden erfolgreich angemeldet"
+      }
+    }
   },
   
   "product_filter_title": "Produktfilter",
@@ -231,5 +277,16 @@
   "sort_price_asc": "Preis: niedrigste zuerst",
   "sort_price_desc": "Preis: höchste zuerst",
   "sort_name_asc": "Name: A-Z",
-  "search_button": "Suchen"
+  "search_button": "Suchen",
+  "wishlist": {
+    "title": "Lieblingsprodukte",
+    "empty": "Ihre Favoritenliste ist leer",
+    "add_to_wishlist": "Zu Favoriten hinzufügen",
+    "remove_from_wishlist": "Aus Favoriten entfernen",
+    "added_to_wishlist": "Zu Favoriten hinzugefügt",
+    "removed_from_wishlist": "Aus Favoriten entfernt",
+    "view_products": "Produkte anzeigen",
+    "clear_wishlist": "Favoriten löschen",
+    "items_count": "Artikel in Favoriten"
+  }
 } 

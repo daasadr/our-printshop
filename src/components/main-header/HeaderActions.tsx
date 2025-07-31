@@ -6,6 +6,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { FiUser, FiHeart, FiMenu, FiX, FiSearch } from 'react-icons/fi';
 import { FaShoppingCart } from 'react-icons/fa';
 import { useCart } from '@/hooks/useCart';
+import { useWishlist } from '@/context/WishlistContext';
 import { useLocale } from '@/context/LocaleContext';
 import LocaleSwitch from '@/components/LocaleSwitch';
 
@@ -21,13 +22,98 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
   isMobile = false 
 }) => {
   const { items } = useCart();
+  const { totalItems: wishlistItems } = useWishlist();
   const router = useRouter();
   const params = useParams();
   const { locale } = useLocale();
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+<<<<<<< HEAD
   const searchRef = useRef<HTMLDivElement>(null);
 
+=======
+  const [dictionary, setDictionary] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  // Načtení dictionary pro aktuální jazyk
+  useEffect(() => {
+    const loadDictionary = async () => {
+      try {
+        const dict = await import(`../../../public/locales/${locale}/common.json`);
+        setDictionary(dict.default);
+      } catch (error) {
+        console.warn('Failed to load dictionary:', error);
+      }
+    };
+
+    loadDictionary();
+  }, [locale]);
+
+  // Načteme informace o uživateli
+  useEffect(() => {
+    const userData = localStorage.getItem('user_data');
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        setUser(user);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        setUser(null);
+      }
+    } else {
+      setUser(null);
+    }
+  }, []);
+
+  // Listen for auth status changes
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'user_data') {
+        console.log('HeaderActions: Storage changed, updating user state...');
+        if (e.newValue) {
+          try {
+            const user = JSON.parse(e.newValue);
+            setUser(user);
+          } catch (error) {
+            console.error('Error parsing user data:', error);
+            setUser(null);
+          }
+        } else {
+          setUser(null);
+        }
+      }
+    };
+
+    // Listen for storage events from other tabs/windows
+    window.addEventListener('storage', handleStorageChange);
+
+    // Also listen for custom events (for same tab)
+    const handleCustomStorageChange = () => {
+      console.log('HeaderActions: Custom storage event received, updating user state...');
+      const userData = localStorage.getItem('user_data');
+      if (userData) {
+        try {
+          const user = JSON.parse(userData);
+          setUser(user);
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+    };
+
+    window.addEventListener('auth-status-changed', handleCustomStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('auth-status-changed', handleCustomStorageChange);
+    };
+  }, []);
+
+>>>>>>> feat/user-accounts
   // Click outside handler
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -74,10 +160,11 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
         
         {/* Ikony */}
         <div className="flex items-center space-x-1">
-          <Link href="/account" className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100">
+          <Link href={`/${locale}/ucet`} className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100 flex items-center">
             <FiUser className="w-5 h-5" />
+            {user && <span className="ml-1 text-sm">{user.first_name || user.email}</span>}
           </Link>
-          <Link href="/wishlist" className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100">
+          <Link href={`/${locale}/wishlist`} className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100">
             <FiHeart className="w-5 h-5" />
           </Link>
           <Link href="/cart" className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100 relative" aria-label="Košík">
@@ -133,11 +220,17 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
     <div className="flex items-center space-x-2 relative">
       {/* Ikony */}
       <div className="flex items-center space-x-1">
-        <Link href="/account" className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100">
+        <Link href={`/${locale}/ucet`} className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100 flex items-center">
           <FiUser className="w-5 h-5" />
+          {user && <span className="ml-1 text-sm">{user.first_name || user.email}</span>}
         </Link>
-        <Link href="/wishlist" className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100">
+        <Link href={`/${locale}/wishlist`} className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100 relative" aria-label="Oblíbené">
           <FiHeart className="w-5 h-5" />
+          {wishlistItems > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+              {wishlistItems}
+            </span>
+          )}
         </Link>
         <Link href="/cart" className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100 relative" aria-label="Košík">
           <FaShoppingCart className="w-5 h-5" />

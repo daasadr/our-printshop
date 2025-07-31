@@ -2,8 +2,8 @@ import React from 'react';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { readItem } from '@/lib/directus';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+// import { getServerSession } from 'next-auth'; // ODSTRANĚNO
+// import { authOptions } from '@/lib/auth'; // ODSTRANĚNO
 
 // Metadata stránky
 export const metadata = {
@@ -35,8 +35,8 @@ export default async function CheckoutSuccessPage({ searchParams }) {
     redirect('/');
   }
   
-  // Ověření uživatele
-  const session = await getServerSession(authOptions);
+  // Ověření uživatele - prozatím odstraněno, protože je to success page
+  // const session = await getServerSession(authOptions);
   
   // Načtení informací o objednávce
   const order = await getOrder(orderId);
@@ -101,44 +101,32 @@ export default async function CheckoutSuccessPage({ searchParams }) {
                   </li>
                 ))}
               </ul>
-              
-              <div className="mt-4 pt-4 border-t flex justify-between">
-                <span className="font-semibold">Celkem:</span>
-                <span className="font-semibold text-lg">
-                  {order.total.toLocaleString('cs-CZ')} Kč
-                </span>
+            </div>
+            
+            <div className="bg-gray-50 p-4 border-t">
+              <div className="flex justify-between font-bold text-lg">
+                <span>Celkem:</span>
+                <span>{order.total_price.toLocaleString('cs-CZ')} Kč</span>
               </div>
             </div>
           </div>
         </div>
         
-        {order.shippingInfo && (
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-3">Doručovací adresa</h2>
-            <div className="border rounded-md p-4">
-              <p className="font-medium">{order.shippingInfo.name}</p>
-              <p>{order.shippingInfo.address1}</p>
-              {order.shippingInfo.address2 && <p>{order.shippingInfo.address2}</p>}
-              <p>{order.shippingInfo.city}, {order.shippingInfo.zip}</p>
-              <p>{order.shippingInfo.country}</p>
-              {order.shippingInfo.phone && <p>Tel: {order.shippingInfo.phone}</p>}
-            </div>
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-3">Dodací údaje</h2>
+          <div className="border rounded-md p-4">
+            <p className="font-medium">{order.shippingInfo?.name}</p>
+            <p>{order.shippingInfo?.address1}</p>
+            {order.shippingInfo?.address2 && <p>{order.shippingInfo.address2}</p>}
+            <p>{order.shippingInfo?.city}, {order.shippingInfo?.zip}</p>
+            <p>{order.shippingInfo?.country}</p>
           </div>
-        )}
+        </div>
         
-        <div className="text-center pt-6">
-          <Link href="/" className="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 inline-block">
+        <div className="text-center">
+          <Link href="/" className="bg-blue-600 text-white py-3 px-8 rounded-md hover:bg-blue-700 transition-colors">
             Pokračovat v nákupu
           </Link>
-          
-          {session && (
-            <Link 
-              href="/account/orders" 
-              className="ml-4 text-blue-600 hover:text-blue-800 inline-block"
-            >
-              Moje objednávky
-            </Link>
-          )}
         </div>
       </div>
     </div>

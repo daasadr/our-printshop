@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readVariants, createOrder, updateOrder, readOrders, createOrderItem } from '@/lib/directus';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
-import { Session } from 'next-auth';
+// import { getServerSession } from 'next-auth/next'; // ODSTRANĚNO
+// import { authOptions } from '@/lib/auth'; // ODSTRANĚNO
+// import { Session } from 'next-auth'; // ODSTRANĚNO
+import { jwtAuth } from '@/lib/jwt-auth';
 import Stripe from 'stripe';
 import { convertEurToCzkSync } from '@/utils/currency';
 import { Product, Variant } from '@/types';
@@ -18,12 +19,29 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 // Přidáme export pro Next.js, aby věděl, že tato route je dynamická
 export const dynamic = 'force-dynamic';
 
+// Helper function to get user from JWT token
+async function getUserFromRequest(req: NextRequest) {
+  try {
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return null;
+    }
+
+    const token = authHeader.substring(7);
+    const user = await jwtAuth.getUserFromToken(token);
+    return user;
+  } catch (error) {
+    console.error('Error getting user from token:', error);
+    return null;
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { items, shippingInfo } = body;
     
-    const session = await getServerSession(authOptions) as Session | null;
+    const user = await getUserFromRequest(req);
     
     // 1. Ověřit, že všechny produkty existují a jsou dostupné
     const variantIds = items.map((item: { variantId: string }) => item.variantId);
@@ -64,8 +82,8 @@ export async function POST(req: NextRequest) {
     const orderResult = await createOrder({
       status: 'pending',
       total_price: total,
-      ...(session?.user?.email ? {
-        user: session.user.email
+      ...(user?.email ? {
+        user: user.email
       } : {})
     });
 
@@ -100,54 +118,43 @@ export async function POST(req: NextRequest) {
       };
     });
 
-    // Přidat poštovné
-    const shippingCost = 129; // 129 Kč za dopravu
-    lineItems.push({
-      price_data: {
-        currency: 'czk',
-        product_data: {
-          name: 'Poštovné',
-          images: [], // Prázdné pole pro poštovné
-        },
-        unit_amount: shippingCost * 100,
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: lineItems,
+      mode: 'payment',
+      success_url: `${req.nextUrl.origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.nextUrl.origin}/cart`,
+      metadata: {
+        orderId: order.id,
+        ...(user?.email ? { userEmail: user.email } : {})
       },
-      quantity: 1,
     });
 
-    const checkoutSession = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      mode: 'payment',
-      metadata: {
-        orderId: order.id
-      },
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/order/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/order/cancelled`,
-      line_items: lineItems,
-      shipping_address_collection: {
-        allowed_countries: ['CZ', 'SK'],
-      },
-      billing_address_collection: 'required',
-      customer_email: shippingInfo.email,
-    });
-    
-    // 5. Aktualizovat objednávku s Stripe Session ID
-    await updateOrder(order.id, {
-      stripeSessionId: checkoutSession.id
-    });
-    
-    return NextResponse.json({ url: checkoutSession.url });
+    return NextResponse.json({ sessionId: session.id });
   } catch (error) {
-    console.error('Order creation error:', error);
+    console.error('Checkout error:', error);
     return NextResponse.json(
-      { error: 'Failed to create order' },
+      { error: 'Failed to create checkout session' },
       { status: 500 }
     );
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const user = await getUserFromRequest(req);
+    
+    if (!user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const orders = await readOrders({
+      filter: {
+        user: { _eq: user.email }
+      },
       fields: ['*', 'shippingInfo.*', 'items.*', 'items.variant.*', 'items.variant.product.*'],
       sort: ['-date_created']
     });

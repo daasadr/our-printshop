@@ -2,10 +2,12 @@
 import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
-import { formatPrice, convertCurrency } from '@/utils/currency';
+import { useWishlist } from '@/context/WishlistContext';
+import { useLocale } from '@/context/LocaleContext';
+import { formatPriceCZK, convertCurrency } from '@/utils/currency';
 import { getProductImages } from '@/utils/productImage';
 import { Button, SelectionButton, QuantityButton } from '@/components/ui/Button';
-import { useLocale } from '@/context/LocaleContext';
+import { FiHeart } from 'react-icons/fi';
 
 interface Variant {
   id: string;
@@ -38,6 +40,7 @@ interface ProductDetailProps {
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { currency } = useLocale();
   
   // Debug logging
@@ -252,7 +255,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         <div className="mb-6">
           <h2 className="text-lg font-medium mb-2">Cena</h2>
           <p className="text-2xl font-bold text-blue-600">
-            {selectedVariant ? formatPrice(selectedVariant.price, currency) : 'Není k dispozici'}
+            {selectedVariant ? formatPriceCZK(selectedVariant.price, currency) : 'Není k dispozici'}
           </p>
         </div>
         
@@ -322,8 +325,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
           </div>
         </div>
         
-        {/* Tlačítko pro přidání do košíku */}
-        <div className="mb-8">
+        {/* Tlačítka pro přidání do košíku a obľúbených */}
+        <div className="mb-8 space-y-4">
           <Button
             onClick={handleAddToCart}
             disabled={!selectedVariant || isAddingToCart}
@@ -333,6 +336,30 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             state={isAddingToCart ? "loading" : "default"}
           >
             {isAddingToCart ? 'Přidávám...' : 'Přidat do košíku'}
+          </Button>
+          
+          {/* Wishlist tlačidlo */}
+          <Button
+            onClick={() => {
+              if (isInWishlist(product.id)) {
+                removeFromWishlist(product.id);
+              } else {
+                addToWishlist({
+                  productId: product.id,
+                  variantId: selectedVariant?.id || product.variants[0]?.id || '',
+                  name: product.name,
+                  price: selectedVariant?.price || product.variants[0]?.price || 0,
+                  image: product.designs && product.designs.length > 0 ? (product.designs[0].previewUrl ?? '') : ''
+                });
+              }
+            }}
+            variant={isInWishlist(product.id) ? "danger" : "secondary"}
+            size="lg"
+            width="full"
+            className="flex items-center justify-center gap-2"
+          >
+            <FiHeart className={`w-5 h-5 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
+            {isInWishlist(product.id) ? 'Odobrať z obľúbených' : 'Pridať do obľúbených'}
           </Button>
           
           {!hasVariants && (
