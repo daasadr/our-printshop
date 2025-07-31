@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { directus } from "@/lib/directus";
-import { createItem } from '@directus/sdk';
-import bcrypt from "bcryptjs";
+import { jwtAuth } from "@/lib/jwt-auth";
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("App users collection registration called");
+    console.log("JWT Auth registration called");
     
     const { email, name, password, gdpr_consent } = await request.json();
     console.log("Registration data:", { email, name, gdpr_consent, passwordLength: password?.length });
@@ -35,41 +33,35 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    console.log("Creating user in app_users collection...");
+    console.log("Creating user with JWT Auth...");
     
     // Rozdělíme jméno na first_name a last_name
     const nameParts = name.trim().split(' ');
     const firstName = nameParts[0] || '';
     const lastName = nameParts.slice(1).join(' ') || '';
 
-    // Zahashujeme heslo
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Vytvoření nového uživatele v app_users kolekci
-    const userData = {
+    // Registrujeme uživatele pomocí JWT Auth
+    const result = await jwtAuth.registerUser({
       email,
-      password: hashedPassword,
+      password,
       first_name: firstName,
       last_name: lastName,
-      is_active: true,
-      role: 'public',
-      gdpr_consent: true,
-      gdpr_consent_date: new Date().toISOString(),
-      registration_source: 'web_app',
-      email_verified: false
-    };
-    
-    console.log("User data to create:", { ...userData, password: '[HIDDEN]' });
+      gdpr_consent
+    });
 
-    // Použijeme createItem na app_users kolekci
-    const newUser = await directus.request(createItem('app_users', userData));
-
-    console.log("User created successfully in app_users:", newUser.id);
+    console.log("User created successfully with JWT:", result.user.id);
 
     return NextResponse.json({
       success: true,
       message: "Uživatel byl úspěšně vytvořen. Nyní se můžete přihlásit.",
-      userId: newUser.id
+      user: {
+        id: result.user.id,
+        email: result.user.email,
+        first_name: result.user.first_name,
+        last_name: result.user.last_name
+      },
+      access_token: result.accessToken,
+      refresh_token: result.refreshToken
     });
 
   } catch (error) {

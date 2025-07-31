@@ -198,7 +198,52 @@
   "description": "Professional print shop for all your needs",
   
   "Index": {
-    "description": "Professional print shop for all your needs"
+    "description": "Professional printing for all your needs"
+  },
+  "auth": {
+    "register": {
+      "title": "Registration",
+      "subtitle": "Create an account and get access to exclusive offers",
+      "description": "Register and get access to your account",
+      "name": "Full Name",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "gdprConsent": "I agree to the processing of personal data",
+      "registerButton": "Register",
+      "loginLink": "Already have an account? Sign in",
+      "errors": {
+        "required": "This field is required",
+        "invalidEmail": "Please enter a valid email address",
+        "passwordMismatch": "Passwords do not match",
+        "passwordTooShort": "Password must be at least 6 characters",
+        "general": "An error occurred during registration"
+      },
+      "success": {
+        "title": "Registration Successful",
+        "message": "Your account has been successfully created"
+      }
+    },
+    "login": {
+      "title": "Login",
+      "subtitle": "Sign in to your account",
+      "description": "Sign in and get access to your account",
+      "email": "Email",
+      "password": "Password",
+      "loginButton": "Sign in",
+      "forgotPassword": "Forgot your password?",
+      "registerLink": "Don't have an account? Register",
+      "errors": {
+        "required": "This field is required",
+        "invalidEmail": "Please enter a valid email address",
+        "invalidCredentials": "Invalid email or password",
+        "general": "An error occurred during login"
+      },
+      "success": {
+        "title": "Login successful",
+        "message": "You have been successfully logged in"
+      }
+    }
   },
   
   "product_filter_title": "Product filter",

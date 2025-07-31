@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { directus } from "@/lib/directus";
-import { refresh } from '@directus/sdk';
+import { jwtAuth } from "@/lib/jwt-auth";
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("Directus Auth refresh API called");
+    console.log("JWT Auth refresh API called");
     
     const { refresh_token } = await request.json();
 
@@ -14,16 +13,22 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Refresh tokenu pomocí Directus Auth
-    const response = await directus.request(refresh('json', refresh_token));
+    // Obnovíme token pomocí JWT Auth
+    const result = await jwtAuth.refreshAccessToken(refresh_token);
 
-    console.log("Directus Auth refresh successful");
+    if (!result) {
+      return NextResponse.json({
+        error: "Neplatný refresh token"
+      }, { status: 401 });
+    }
+
+    console.log("JWT Auth refresh successful");
 
     return NextResponse.json({
       success: true,
-      access_token: response.access_token,
-      refresh_token: response.refresh_token,
-      expires: response.expires
+      access_token: result.accessToken,
+      refresh_token: result.refreshToken,
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hodin
     });
 
   } catch (error) {

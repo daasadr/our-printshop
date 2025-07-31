@@ -1,15 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readVariants, createOrder, readOrders, createOrderItem } from '@/lib/directus';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
-import { Session } from 'next-auth';
+// import { getServerSession } from 'next-auth/next'; // ODSTRANĚNO
+// import { authOptions } from '@/lib/auth'; // ODSTRANĚNO
+// import { Session } from 'next-auth'; // ODSTRANĚNO
+import { jwtAuth } from '@/lib/jwt-auth';
 import { Order, OrderItem, Variant } from '@/types';
+
+// Helper function to get user from JWT token
+async function getUserFromRequest(req: NextRequest) {
+  try {
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return null;
+    }
+
+    const token = authHeader.substring(7);
+    const user = await jwtAuth.getUserFromToken(token);
+    return user;
+  } catch (error) {
+    console.error('Error getting user from token:', error);
+    return null;
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const user = await getUserFromRequest(req);
     
-    if (!session?.user?.id) {
+    if (!user?.id) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -55,7 +73,7 @@ export async function POST(req: NextRequest) {
     const order = await createOrder({
       status: 'pending',
       total_price: total,
-      ...(session?.user?.email ? { user: session.user.email } : {}),
+      ...(user?.email ? { user: user.email } : {}),
       shippingInfo
     });
 
@@ -80,9 +98,21 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const user = await getUserFromRequest(req);
+    
+    if (!user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const orders = await readOrders({
+      filter: {
+        user: { _eq: user.email }
+      },
       fields: ['*', 'shippingInfo.*', 'items.*', 'items.variant.*', 'items.variant.product.*'],
       sort: ['-date_created']
     });

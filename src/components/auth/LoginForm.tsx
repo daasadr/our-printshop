@@ -59,14 +59,20 @@ export default function LoginForm({ dict }: LoginFormProps) {
       if (!response.ok) {
         setError(data.error || dict.errors.invalidCredentials);
       } else {
-        // Uložíme Directus Auth tokeny do localStorage
+        console.log('LoginForm: Login successful, saving tokens to localStorage...');
+        
+        // Uložíme tokeny do localStorage se stejnými klíči jako Navigation komponenta
         if (data.access_token) {
-          localStorage.setItem('directus_access_token', data.access_token);
-          localStorage.setItem('directus_refresh_token', data.refresh_token);
-          localStorage.setItem('directus_token_expires', data.expires);
+          localStorage.setItem('access_token', data.access_token);
+          localStorage.setItem('refresh_token', data.refresh_token);
+          localStorage.setItem('user_data', JSON.stringify(data.user));
           
-          // Uložíme také základní informace o uživateli
-          localStorage.setItem('user_email', formData.email);
+          console.log('LoginForm: Tokens saved, dispatching auth-status-changed event...');
+          
+          // Vyvoláme custom event pro Navigation komponentu
+          window.dispatchEvent(new Event('auth-status-changed'));
+          
+          console.log('LoginForm: Event dispatched, redirecting to account page...');
         }
         
         // Úspěšné přihlášení

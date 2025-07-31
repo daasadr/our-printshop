@@ -1,4 +1,4 @@
-import 'server-only';
+// import 'server-only'; // ODSTRANĚNO - potřebujeme to i pro client-side komponenty
 
 const dictionaries = {
   cs: () => import('../../public/locales/cs/common.json').then((module) => module.default),

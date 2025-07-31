@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 
 interface HeroSectionProps {
   dictionary: any;
@@ -7,6 +10,21 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ dictionary, lang }: HeroSectionProps) {
+  const [user, setUser] = useState<any>(null);
+
+  // Načteme informace o uživateli při mount
+  useEffect(() => {
+    const userData = localStorage.getItem('user_data');
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        setUser(user);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  }, []);
+
   return (
     <section className="relative min-h-[600px] flex items-center text-white overflow-hidden">
       {/* Obrázek na pozadí */}
@@ -24,6 +42,18 @@ export default function HeroSection({ dictionary, lang }: HeroSectionProps) {
       
       <div className="container mx-auto px-4 py-24 md:py-32 relative z-10">
         <div className="max-w-2xl mx-auto text-center">
+          {/* Uvítání pro přihlášené uživatele */}
+          {user && (
+            <div className="mb-6">
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                Vítejte!
+              </h2>
+              <p className="text-lg text-white/90">
+                Jsme rádi, že jste zpět, {user.first_name || user.email}
+              </p>
+            </div>
+          )}
+          
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
             {dictionary.welcome || "Originální oblečení s autorskými potisky"}
           </h1>

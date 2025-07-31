@@ -2,6 +2,51 @@
   "Index": {
     "description": "Profesionální tiskárna pro všechny vaše potřeby"
   },
+  "auth": {
+    "register": {
+      "title": "Registrace",
+      "subtitle": "Vytvořte si účet a získejte přístup k exkluzivním nabídkám",
+      "description": "Registrujte se a získejte přístup k vašemu účtu",
+      "name": "Jméno a příjmení",
+      "email": "E-mail",
+      "password": "Heslo",
+      "confirmPassword": "Potvrďte heslo",
+      "gdprConsent": "Souhlasím se zpracováním osobních údajů",
+      "registerButton": "Registrovat",
+      "loginLink": "Již máte účet? Přihlaste se",
+      "errors": {
+        "required": "Toto pole je povinné",
+        "invalidEmail": "Zadejte platnou e-mailovou adresu",
+        "passwordMismatch": "Hesla se neshodují",
+        "passwordTooShort": "Heslo musí mít alespoň 6 znaků",
+        "general": "Nastala chyba při registraci"
+      },
+      "success": {
+        "title": "Registrace úspěšná",
+        "message": "Váš účet byl úspěšně vytvořen"
+      }
+    },
+    "login": {
+      "title": "Přihlášení",
+      "subtitle": "Přihlaste se ke svému účtu",
+      "description": "Přihlaste se a získejte přístup k vašemu účtu",
+      "email": "E-mail",
+      "password": "Heslo",
+      "loginButton": "Přihlásit",
+      "forgotPassword": "Zapomněli jste heslo?",
+      "registerLink": "Nemáte účet? Registrujte se",
+      "errors": {
+        "required": "Toto pole je povinné",
+        "invalidEmail": "Zadejte platnou e-mailovou adresu",
+        "invalidCredentials": "Neplatný e-mail nebo heslo",
+        "general": "Nastala chyba při přihlašování"
+      },
+      "success": {
+        "title": "Přihlášení úspěšné",
+        "message": "Byli jste úspěšně přihlášeni"
+      }
+    }
+  },
   "welcome": "Originální oblečení s autorskými potisky",
   "subtitle": "Vyjádřete svůj jedinečný styl s našimi kreativními designy.",
   "cta_collection": "Prohlédnout kolekci",

@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { directus } from "@/lib/directus";
-import { readItems } from '@directus/sdk';
-import bcrypt from "bcryptjs";
+import { jwtAuth } from "@/lib/jwt-auth";
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("App users collection login called");
+    console.log("JWT Auth login called");
     
     const { email, password } = await request.json();
     console.log("Login data:", { email, passwordLength: password?.length });
@@ -18,53 +16,24 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    console.log("Looking up user in app_users collection...");
+    console.log("Authenticating user with JWT Auth...");
 
-    // Najdeme uživatele v app_users kolekci
-    const users = await directus.request(
-      readItems('app_users', {
-        filter: {
-          email: { _eq: email },
-          is_active: { _eq: true }
-        },
-        limit: 1
-      })
-    );
+    // Přihlásíme uživatele pomocí JWT Auth
+    const result = await jwtAuth.loginUser(email, password);
 
-    if (users.length === 0) {
-      console.log("User not found");
-      return NextResponse.json({ error: "Neplatný email nebo heslo" }, { status: 401 });
-    }
-
-    const user = users[0];
-    console.log("User found:", user.id);
-
-    // Ověříme heslo
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    
-    if (!isPasswordValid) {
-      console.log("Invalid password");
-      return NextResponse.json({ error: "Neplatný email nebo heslo" }, { status: 401 });
-    }
-
-    console.log("Login successful for user:", user.id);
-
-    // Vytvoříme jednoduchý token (v produkci byste měli použít JWT)
-    const token = Buffer.from(`${user.id}:${Date.now()}`).toString('base64');
-    const refreshToken = Buffer.from(`${user.id}:refresh:${Date.now()}`).toString('base64');
-    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24 hodin
+    console.log("Login successful for user:", result.user.id);
 
     return NextResponse.json({
       success: true,
       message: "Přihlášení úspěšné",
-      access_token: token,
-      refresh_token: refreshToken,
-      expires: expires,
+      access_token: result.accessToken,
+      refresh_token: result.refreshToken,
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hodin
       user: {
-        id: user.id,
-        email: user.email,
-        first_name: user.first_name,
-        last_name: user.last_name
+        id: result.user.id,
+        email: result.user.email,
+        first_name: result.user.first_name,
+        last_name: result.user.last_name
       }
     });
 
@@ -74,7 +43,7 @@ export async function POST(request: NextRequest) {
     if (error instanceof Error) {
       console.error("Error message:", error.message);
       
-      if (error.message.includes('Invalid user credentials')) {
+      if (error.message.includes('Neplatný email nebo heslo')) {
         return NextResponse.json({ error: "Neplatný email nebo heslo" }, { status: 401 });
       }
       

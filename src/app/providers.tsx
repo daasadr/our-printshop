@@ -1,12 +1,12 @@
 'use client';
 
-import { SessionProvider } from 'next-auth/react';
+// import { SessionProvider } from 'next-auth/react'; // ODSTRANĚNO
 import { CartProvider } from '@/hooks/useCart';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <SessionProvider>
+    // <SessionProvider> // ODSTRANĚNO
       <CartProvider>{children}</CartProvider>
-    </SessionProvider>
+    // </SessionProvider> // ODSTRANĚNO
   );
 } 

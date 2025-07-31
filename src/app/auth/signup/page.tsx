@@ -29,7 +29,7 @@ export default function SignUp() {
     }
 
     try {
-      const response = await fetch('/api/auth/register', {
+      const response = await fetch('/api/auth/register-directus', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,13 +38,14 @@ export default function SignUp() {
           name,
           email,
           password,
+          gdpr_consent: true, // Předpokládáme souhlas s GDPR
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Něco se pokazilo');
+        throw new Error(data.error || 'Něco se pokazilo');
       }
 
       router.push('/auth/signin?registered=true');
@@ -114,7 +115,7 @@ export default function SignUp() {
             </div>
             <div>
               <label htmlFor="confirmPassword" className="sr-only">
-                Potvrzení hesla
+                Potvrďte heslo
               </label>
               <input
                 id="confirmPassword"
@@ -123,7 +124,7 @@ export default function SignUp() {
                 autoComplete="new-password"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Potvrzení hesla"
+                placeholder="Potvrďte heslo"
               />
             </div>
           </div>

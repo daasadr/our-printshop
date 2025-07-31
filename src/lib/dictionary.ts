@@ -1,10 +1,10 @@
 import 'server-only';
 
 const dictionaries = {
-  cs: () => import('../dictionaries/cs.json').then((module) => module.default || module),
-  sk: () => import('../dictionaries/sk.json').then((module) => module.default || module),
-  de: () => import('../dictionaries/de.json').then((module) => module.default || module),
-  en: () => import('../dictionaries/en.json').then((module) => module.default || module),
+  cs: () => import('../../public/locales/cs/common.json').then((module) => module.default || module),
+  sk: () => import('../../public/locales/sk/common.json').then((module) => module.default || module),
+  de: () => import('../../public/locales/de/common.json').then((module) => module.default || module),
+  en: () => import('../../public/locales/en/common.json').then((module) => module.default || module),
 };
 
 export const getDictionary = async (locale: string) => {

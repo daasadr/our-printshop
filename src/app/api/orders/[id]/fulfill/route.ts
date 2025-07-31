@@ -1,17 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
+// import { getServerSession } from 'next-auth/next'; // ODSTRANĚNO
+// import { authOptions } from '@/lib/auth'; // ODSTRANĚNO
+import { jwtAuth } from '@/lib/jwt-auth';
 import { readOrder, updateOrder, readVariants } from '@/lib/directus';
 import { createPrintfulOrder } from '@/lib/printful';
 import { Order } from '@/types';
+
+// Helper function to get user from JWT token
+async function getUserFromRequest(req: NextRequest) {
+  try {
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return null;
+    }
+
+    const token = authHeader.substring(7);
+    const user = await jwtAuth.getUserFromToken(token);
+    return user;
+  } catch (error) {
+    console.error('Error getting user from token:', error);
+    return null;
+  }
+}
 
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions) as { user: { id: string } } | null;
-    if (!session) {
+    const user = await getUserFromRequest(request);
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

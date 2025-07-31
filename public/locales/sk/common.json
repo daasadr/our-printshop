@@ -198,7 +198,52 @@
   "description": "Profesionálna tlačiareň pre všetky vaše potreby",
   
   "Index": {
-    "description": "Profesionálna tlačiareň pre všetky vaše potreby"
+    "description": "Profesionálna tlač pre všetky vaše potreby"
+  },
+  "auth": {
+    "register": {
+      "title": "Registrácia",
+      "subtitle": "Vytvorte si účet a získajte prístup k exkluzívnym ponukám",
+      "description": "Registrujte sa a získajte prístup k vášmu účtu",
+      "name": "Meno a priezvisko",
+      "email": "E-mail",
+      "password": "Heslo",
+      "confirmPassword": "Potvrďte heslo",
+      "gdprConsent": "Súhlasím so spracovaním osobných údajov",
+      "registerButton": "Registrovať",
+      "loginLink": "Už máte účet? Prihláste sa",
+      "errors": {
+        "required": "Toto pole je povinné",
+        "invalidEmail": "Zadajte platnú e-mailovú adresu",
+        "passwordMismatch": "Heslá sa nezhodujú",
+        "passwordTooShort": "Heslo musí mať aspoň 6 znakov",
+        "general": "Nastala chyba počas registrácie"
+      },
+      "success": {
+        "title": "Registrácia úspešná",
+        "message": "Váš účet bol úspešne vytvorený"
+      }
+    },
+    "login": {
+      "title": "Prihlásenie",
+      "subtitle": "Prihláste sa do svojho účtu",
+      "description": "Prihláste sa a získajte prístup k svojmu účtu",
+      "email": "E-mail",
+      "password": "Heslo",
+      "loginButton": "Prihlásiť",
+      "forgotPassword": "Zabudli ste heslo?",
+      "registerLink": "Nemáte účet? Registrujte sa",
+      "errors": {
+        "required": "Toto pole je povinné",
+        "invalidEmail": "Zadajte platnú e-mailovú adresu",
+        "invalidCredentials": "Neplatný e-mail alebo heslo",
+        "general": "Nastala chyba pri prihlásení"
+      },
+      "success": {
+        "title": "Prihlásenie úspešné",
+        "message": "Boli ste úspešne prihlásený"
+      }
+    }
   },
   
   "product_filter_title": "Filter produktov",

@@ -1,89 +1,48 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { directus } from "@/lib/directus";
-import { readItems, createItem } from '@directus/sdk';
+import { readItems, readCollections } from '@directus/sdk';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     console.log("Testing Directus permissions...");
-    
-    const results = {
-      canRead: false,
-      canCreate: false,
-      canUpdate: false,
-      canDelete: false,
-      errors: [] as string[]
-    };
 
-    // Test 1: Čtení directus_users
-    try {
-      const users = await directus.request(
-        readItems('directus_users', {
-          limit: 1
-        })
-      );
-      results.canRead = true;
-      console.log("✅ Can read directus_users");
-    } catch (error) {
-      results.canRead = false;
-      const errorMsg = error instanceof Error ? error.message : "Unknown error";
-      results.errors.push(`Read error: ${errorMsg}`);
-      console.log("❌ Cannot read directus_users:", errorMsg);
+    // 1. Zkontrolujeme, jestli můžeme číst kolekce
+    console.log("1. Testing collections read...");
+    const collections = await directus.request(readCollections());
+    console.log("Collections found:", collections.length);
+
+    // 2. Zkontrolujeme, jestli app_users kolekce existuje
+    const appUsersCollection = collections.find(col => col.collection === 'app_users');
+    console.log("app_users collection exists:", !!appUsersCollection);
+
+    if (!appUsersCollection) {
+      return NextResponse.json({
+        error: "Kolekce app_users neexistuje",
+        collections: collections.map(col => col.collection)
+      }, { status: 404 });
     }
 
-    // Test 2: Vytvoření testovacího uživatele (pak ho smažeme)
-    try {
-      const testUser = {
-        email: `test-${Date.now()}@example.com`,
-        password: '$2a$10$test.hash.for.testing',
-        first_name: 'Test',
-        last_name: 'User',
-        status: 'active',
-        role: 'public'
-      };
-
-      const newUser = await directus.request(
-        createItem('directus_users', testUser)
-      );
-      
-      results.canCreate = true;
-      console.log("✅ Can create in directus_users, created user ID:", newUser.id);
-      
-      // Pokusíme se smazat testovacího uživatele
-      try {
-        await directus.request({
-          method: 'DELETE',
-          path: `/items/directus_users/${newUser.id}`
-        });
-        console.log("✅ Can delete from directus_users");
-        results.canDelete = true;
-      } catch (deleteError) {
-        console.log("❌ Cannot delete from directus_users:", deleteError);
-        results.errors.push(`Delete error: ${deleteError instanceof Error ? deleteError.message : "Unknown error"}`);
-      }
-      
-    } catch (error) {
-      results.canCreate = false;
-      const errorMsg = error instanceof Error ? error.message : "Unknown error";
-      results.errors.push(`Create error: ${errorMsg}`);
-      console.log("❌ Cannot create in directus_users:", errorMsg);
-    }
+    // 3. Zkusíme číst z app_users kolekce
+    console.log("2. Testing app_users read...");
+    const users = await directus.request(readItems('app_users', { limit: 1 }));
+    console.log("Users read successfully:", users.length);
 
     return NextResponse.json({
       success: true,
-      message: "Directus permissions test completed",
-      permissions: results,
-      summary: {
-        hasFullAccess: results.canRead && results.canCreate && results.canUpdate && results.canDelete,
-        canManageUsers: results.canCreate && results.canDelete
-      }
+      message: "Directus permissions test successful",
+      collectionsCount: collections.length,
+      appUsersExists: true,
+      canReadUsers: true,
+      usersCount: users.length
     });
 
   } catch (error) {
-    console.error("Permissions test error:", error);
+    console.error("Directus permissions test failed:", error);
     
     return NextResponse.json({
-      error: "Chyba při testování oprávnění",
-      details: error instanceof Error ? error.message : "Neznámá chyba"
+      error: "Directus permissions test failed",
+      details: error instanceof Error ? error.message : "Neznámá chyba",
+      collections: error instanceof Error && error.message.includes('collections') ? 'Cannot read collections' : 'Unknown'
     }, { status: 500 });
   }
 } 

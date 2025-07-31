@@ -29,6 +29,7 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [dictionary, setDictionary] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
   const searchRef = useRef<HTMLDivElement>(null);
 
   // Načtení dictionary pro aktuální jazyk
@@ -44,6 +45,19 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
 
     loadDictionary();
   }, [locale]);
+
+  // Načteme informace o uživateli
+  useEffect(() => {
+    const userData = localStorage.getItem('user_data');
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        setUser(user);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  }, []);
 
   // Click outside handler
   useEffect(() => {
@@ -103,10 +117,11 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
         
         {/* Ikony */}
         <div className="flex items-center space-x-1">
-          <Link href="/account" className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100">
+          <Link href={`/${locale}/ucet`} className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100 flex items-center">
             <FiUser className="w-5 h-5" />
+            {user && <span className="ml-1 text-sm">{user.first_name || user.email}</span>}
           </Link>
-          <Link href="/wishlist" className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100">
+          <Link href={`/${locale}/wishlist`} className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100">
             <FiHeart className="w-5 h-5" />
           </Link>
           <Link href="/cart" className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100 relative" aria-label="Košík">
@@ -127,8 +142,9 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
     <div className="flex items-center space-x-2">
       {/* Ikony */}
       <div className="flex items-center space-x-1">
-        <Link href="/account" className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100">
+        <Link href={`/${locale}/ucet`} className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100 flex items-center">
           <FiUser className="w-5 h-5" />
+          {user && <span className="ml-1 text-sm">{user.first_name || user.email}</span>}
         </Link>
         <Link href={`/${locale}/wishlist`} className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100 relative" aria-label="Oblíbené">
           <FiHeart className="w-5 h-5" />
