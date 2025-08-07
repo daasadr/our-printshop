@@ -33,6 +33,7 @@ interface CategoryTilesProps {
 }
 
 const CategoryTiles = ({ categories = [], dictionary, lang = 'cs' }: CategoryTilesProps) => {
+  
   // Default kategórie ak nie sú poskytnuté
   const defaultCategories = [
     { id: 1, name: 'Domov a dekorace', slug: 'home-decor' },
