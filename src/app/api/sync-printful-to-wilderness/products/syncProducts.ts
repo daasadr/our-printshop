@@ -1,9 +1,10 @@
 import { fetchPrintfulProducts, PrintfulProduct } from "./fetchPrintfulProducts";
 import { directus } from "@/lib/directus";
-import { readItems, createItem, updateItem } from '@directus/sdk';
+import { readItems, createItem, updateItem, deleteItem } from '@directus/sdk';
 import { fetchPrintfulProductDetails } from "./fetchPrintfulProductDetails";
 import { fetchPrintfulCatalogProduct } from "./fetchPrintfulCatalogProduct";
 import type { Result, SyncProduct, SyncVariant } from "./printfulProductDetail";
+import { generateDescriptionForNewProduct } from "../../../../../scripts/generateProductDescriptions";
 
 // Types based on the attached schema
 interface ProductData {
@@ -17,6 +18,7 @@ interface ProductData {
   thumbnail_url?: string | null;
   mockup_images: string[];
   category?: number | null;
+  main_category?: string | null;
   date_created?: string;
   date_updated: string;
 }
@@ -116,6 +118,19 @@ function extractSizeAndColor(variantName: string): { size: string | null; color:
   return { size, color };
 }
 
+// Funkcia na vyčistenie HTML tagov
+function stripHtmlTags(text: string): string {
+  if (!text) return text;
+  return text
+    .replace(/<[^>]*>/g, '') // Odstráň HTML tagy
+    .replace(/&lt;/g, '<')   // Dekóduj HTML entity
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .trim();
+}
+
 const processProduct = async (
   printfulProduct: PrintfulProduct,
   existingProductsMap: Map<string, any>,
@@ -125,9 +140,14 @@ const processProduct = async (
     const printfulProductId = printfulProduct.id.toString();
 
     console.log(`Fetching details for product ${printfulProductId}...`);
-    const productDetail: Result = await fetchPrintfulProductDetails(
-      printfulProduct.id
+    
+    // Pridáme timeout pre API volania
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('API timeout')), 30000)
     );
+    
+    const productDetailPromise = fetchPrintfulProductDetails(printfulProduct.id);
+    const productDetail: Result = await Promise.race([productDetailPromise, timeoutPromise]) as Result;
 
     if (!productDetail || !productDetail.sync_product) {
       throw new Error(
@@ -145,97 +165,68 @@ const processProduct = async (
     // Zkusíme načíst catalog produkt pro dlouhý popis
     let catalogDescription = null;
     
-    console.log(`🔍 Debug: syncProduct data:`, {
-      id: syncProduct.id,
-      external_id: syncProduct.external_id,
-      name: syncProduct.name,
-      description: syncProduct.description
-    });
-    
     if (syncVariants.length > 0) {
-      console.log(`🔍 Debug: First variant data:`, {
-        id: syncVariants[0].id,
-        variant_id: syncVariants[0].variant_id,
-        product: syncVariants[0].product,
-        external_id: syncVariants[0].external_id
-      });
-      
       // Zkusíme různé způsoby získání catalog product ID
       const catalogProductId = syncVariants[0].product?.product_id || 
                               syncVariants[0].variant_id || 
                               syncVariants[0].id;
       
-      console.log(`🔍 Trying catalog product ID: ${catalogProductId}`);
-      
       if (catalogProductId) {
         try {
-          console.log(`🔍 Fetching catalog product details for ID: ${catalogProductId}`);
-          
-          const catalogProduct = await fetchPrintfulCatalogProduct(catalogProductId);
-          console.log(`🔍 Catalog product response:`, catalogProduct);
+          // Pridáme timeout aj pre catalog API
+          const catalogPromise = fetchPrintfulCatalogProduct(catalogProductId);
+          const catalogProduct = await Promise.race([catalogPromise, timeoutPromise]) as any;
           
           if (catalogProduct && catalogProduct.description) {
             catalogDescription = catalogProduct.description;
-            console.log(`✅ Found catalog description: ${catalogDescription.substring(0, 100)}...`);
           } else if (catalogProduct && catalogProduct.description_text) {
             catalogDescription = catalogProduct.description_text;
-            console.log(`✅ Found catalog description_text: ${catalogDescription.substring(0, 100)}...`);
           } else if (catalogProduct && catalogProduct.description_html) {
             // Odstraníme HTML tagy pro čistý text
             catalogDescription = catalogProduct.description_html.replace(/<[^>]*>/g, '');
-            console.log(`✅ Found catalog description_html (cleaned): ${catalogDescription.substring(0, 100)}...`);
-          } else {
-            console.log(`❌ No description found in catalog product:`, catalogProduct);
           }
         } catch (catalogError) {
-          console.error(`❌ Could not fetch catalog product details:`, catalogError);
+          console.log(`Could not fetch catalog product details for ${catalogProductId}:`, catalogError);
           // Pokračujeme bez catalog popisu
         }
-      } else {
-        console.log(`❌ No catalog product ID found in variants`);
       }
-    } else {
-      console.log(`❌ No variants found`);
     }
 
     // Find the category ID from the first variant's main_category_id (for reference only)
     let categoryId = null;
     if (syncVariants.length > 0 && syncVariants[0].main_category_id) {
+      try {
       categoryId = await findCategoryId(syncVariants[0].main_category_id);
+      } catch (error) {
+        console.log(`Could not find category for main_category_id ${syncVariants[0].main_category_id}:`, error);
+      }
     }
 
     // Extract mockup images
     const mockupImages = extractMockupImages(syncProduct, syncVariants);
 
     // Map Printful product to Directus schema
-    // main_category bude null - uživatel si ho přiřadí ručně v Directus
-    
-    // Debug: zkontrolujeme, odkud se načítá description
     const variantDescription = syncVariants.length > 0 ? syncVariants[0].product?.description : null;
     const syncProductDescription = productDetail?.sync_product?.description;
     
-    console.log(`🔍 Debug description sources for ${syncProduct.name}:`);
-    console.log(`  - variant[0].product.description: ${variantDescription ? variantDescription.substring(0, 100) + '...' : 'null'}`);
-    console.log(`  - sync_product.description: ${syncProductDescription ? syncProductDescription.substring(0, 100) + '...' : 'null'}`);
-    console.log(`  - catalogDescription: ${catalogDescription ? catalogDescription.substring(0, 100) + '...' : 'null'}`);
+    // Prioritizujeme catalog description, potom variant description, nakonec sync product description
+    const rawDescription = catalogDescription || variantDescription || syncProductDescription || 'Popis není k dispozici.';
     
-    const productData: ProductData & { main_category?: string | null } = {
+    // Odstránime všetky HTML tagy z popisu
+    const finalDescription = stripHtmlTags(rawDescription);
+
+    const productData: ProductData = {
       printful_id: printfulProductId,
-      external_id: syncProduct.external_id || null,
+      external_id: syncProduct.external_id,
       name: syncProduct.name,
-      description: (syncVariants.length > 0 ? syncVariants[0].product?.description : null) ||
-                  productDetail?.sync_product?.description || 
-                  catalogDescription ||
-                  null,
-      design_info: productDetail?.sync_product?.design_info || null,
-      product_info: null, // Necháme null - uživatel si vyplní ručně
-      price:
-        syncVariants.length > 0 ? parseFloat(syncVariants[0].retail_price) : 0,
-      thumbnail_url: syncProduct.thumbnail_url || null,
+      description: finalDescription,
+      design_info: syncProduct.design_info || null,
+      product_info: null, // Toto pole zatím nepoužíváme
+      price: parseFloat(syncVariants[0]?.retail_price || '0'),
+      thumbnail_url: syncProduct.thumbnail_url,
       mockup_images: mockupImages,
       category: categoryId,
       date_updated: new Date().toISOString(),
-      main_category: null, // Necháme null - uživatel si přiřadí ručně
     };
     
     console.log(`✅ Final description for ${syncProduct.name}: ${productData.description ? productData.description.substring(0, 100) + '...' : 'null'}`);
@@ -258,13 +249,18 @@ const processProduct = async (
         product_info: existingProduct.product_info !== null && existingProduct.product_info !== undefined 
           ? existingProduct.product_info 
           : productData.product_info,
-        // Zachováme description pokud už existuje a není prázdný
+        // Zachováme description pokud už existuje a není prázdný, ale vyčistíme HTML tagy
         description: existingProduct.description && existingProduct.description.trim() !== '' 
-          ? existingProduct.description 
+          ? stripHtmlTags(existingProduct.description)
           : productData.description,
+        // Vyčistíme HTML tagy z všetkých jazykových verzií popiskov
+        description_cs: existingProduct.description_cs ? stripHtmlTags(existingProduct.description_cs) : null,
+        description_sk: existingProduct.description_sk ? stripHtmlTags(existingProduct.description_sk) : null,
+        description_en: existingProduct.description_en ? stripHtmlTags(existingProduct.description_en) : null,
+        description_de: existingProduct.description_de ? stripHtmlTags(existingProduct.description_de) : null,
       };
 
-      // Check if update is needed
+      // Check if update is needed (ensure all description fields are checked)
       const needsUpdate =
         existingProduct.name !== updateData.name ||
         existingProduct.description !== updateData.description ||
@@ -272,7 +268,11 @@ const processProduct = async (
         existingProduct.thumbnail_url !== updateData.thumbnail_url ||
         existingProduct.category !== updateData.category ||
         JSON.stringify(existingProduct.mockup_images) !==
-          JSON.stringify(updateData.mockup_images);
+          JSON.stringify(updateData.mockup_images) ||
+        existingProduct.description_cs !== updateData.description_cs ||
+        existingProduct.description_sk !== updateData.description_sk ||
+        existingProduct.description_en !== updateData.description_en ||
+        existingProduct.description_de !== updateData.description_de;
 
       if (needsUpdate) {
         console.log(`Updating existing product: ${updateData.name}`);
@@ -285,12 +285,14 @@ const processProduct = async (
       }
       productId = existingProduct.id;
     } else {
-      // Create new product - add date_created for new products
+      // Create new product
+      console.log(`Creating new product: ${productData.name}`);
+      
       const newProductData = {
         ...productData,
         date_created: new Date().toISOString(),
       };
-      console.log(`Creating new product: ${productData.name}`);
+      
       const newProduct = await directus.request(
         createItem("products", newProductData)
       );
@@ -424,7 +426,7 @@ const processProduct = async (
 
 export async function syncProducts() {
   try {
-    console.log("Starting product sync...");
+    console.log("Starting simple product sync...");
 
     // Validate environment variables
     const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY;
@@ -435,9 +437,7 @@ export async function syncProducts() {
       throw new Error("PRINTFUL_API_KEY environment variable is missing");
     }
     if (!DIRECTUS_URL) {
-      throw new Error(
-        "NEXT_PUBLIC_DIRECTUS_URL environment variable is missing"
-      );
+      throw new Error("NEXT_PUBLIC_DIRECTUS_URL environment variable is missing");
     }
     if (!DIRECTUS_TOKEN) {
       throw new Error("DIRECTUS_TOKEN environment variable is missing");
@@ -448,217 +448,133 @@ export async function syncProducts() {
     // Test Directus connection
     try {
       console.log("Testing Directus connection...");
-      console.log("Directus URL:", DIRECTUS_URL);
-      console.log("Directus Token exists:", !!DIRECTUS_TOKEN);
-      console.log(
-        "Directus Token length:",
-        DIRECTUS_TOKEN ? DIRECTUS_TOKEN.length : 0
-      );
-
-      const testQuery = await directus.request(
-        readItems("categories", { limit: 1 })
-      );
-      console.log(
-        "Directus connection successful, categories found:",
-        testQuery.length
-      );
+      const testQuery = await directus.request(readItems("categories", { limit: 1 }));
+      console.log("Directus connection successful");
     } catch (directusError) {
       console.error("Directus connection failed:", directusError);
-      console.error("Error type:", typeof directusError);
-      console.error("Error constructor:", directusError?.constructor?.name);
-
-      let errorDetails = "Unknown Directus error";
-
-      if (directusError instanceof Error) {
-        errorDetails = `${directusError.name}: ${directusError.message}`;
-        console.error("Error stack:", directusError.stack);
-      } else if (directusError && typeof directusError === "object") {
-        if ("response" in directusError) {
-          console.error("HTTP Response error:", directusError.response);
-        }
-        if ("status" in directusError) {
-          console.error("HTTP Status:", directusError.status);
-        }
-        if ("statusText" in directusError) {
-          console.error("HTTP Status Text:", directusError.statusText);
-        }
-        if ("data" in directusError) {
-          console.error("Response data:", directusError.data);
-        }
-        errorDetails = JSON.stringify(directusError, null, 2);
-      } else {
-        errorDetails = String(directusError);
-      }
-
-      // Try to provide more specific error information
-      if (
-        errorDetails.includes("401") ||
-        errorDetails.includes("Unauthorized")
-      ) {
-        throw new Error(
-          `Cannot connect to Directus: Authentication failed. Check your DIRECTUS_TOKEN.`
-        );
-      } else if (
-        errorDetails.includes("404") ||
-        errorDetails.includes("Not Found")
-      ) {
-        throw new Error(
-          `Cannot connect to Directus: URL not found. Check your NEXT_PUBLIC_DIRECTUS_URL: ${DIRECTUS_URL}`
-        );
-      } else if (
-        errorDetails.includes("ECONNREFUSED") ||
-        errorDetails.includes("ENOTFOUND")
-      ) {
-        throw new Error(
-          `Cannot connect to Directus: Connection refused. Check if Directus is running at: ${DIRECTUS_URL}`
-        );
-      } else if (errorDetails.includes("categories")) {
-        throw new Error(
-          `Cannot connect to Directus: 'categories' collection not found. Check your Directus schema.`
-        );
-      } else {
-        throw new Error(`Cannot connect to Directus: ${errorDetails}`);
-      }
+      throw new Error(`Cannot connect to Directus: ${directusError}`);
     }
 
+    // Fetch products from Printful
+    console.log("Fetching products from Printful...");
     const products = await fetchPrintfulProducts();
-    // return products; // For testing purposes, return the fetched products
     console.log(`Fetched ${products.length} products from Printful`);
 
-    // Get existing products and variants from Directus
-    console.log("Fetching existing products and variants from Directus...");
-    const [existingProducts, existingVariants] = await Promise.all([
-      directus.request(
+    // Get existing products from Directus
+    console.log("Fetching existing products from Directus...");
+    const existingProducts = await directus.request(
         readItems("products", {
-          fields: [
-            "id",
-            "printful_id",
-            "name",
-            "description",
-            "design_info",
-            "product_info",
-            "main_category",
-            "price",
-            "thumbnail_url",
-            "mockup_images",
-            "category",
-          ],
-        })
-      ),
-      directus.request(
-        readItems("variants", {
-          fields: [
-            "id",
-            "printful_variant_id",
-            "name",
-            "price",
-            "is_active",
-            "product_id",
-            "sku",
-            "size",
-            "color",
-          ],
-        })
-      ),
-    ]);
-
-    console.log(
-      `Found ${existingProducts.length} existing products and ${existingVariants.length} existing variants`
+        fields: ["id", "printful_id", "name"],
+      })
     );
+
+    console.log(`Found ${existingProducts.length} existing products`);
 
     // Create lookup maps
     const existingProductsMap = new Map(
       existingProducts.map((product) => [product.printful_id, product])
     );
 
-    const existingVariantsMap = new Map(
-      existingVariants.map((variant) => [
-        String(variant.printful_variant_id),
-        variant,
-      ])
-    );
-
-    console.log("Existing variants map populated:");
-    console.log(`  - Map size: ${existingVariantsMap.size}`);
-    if (existingVariants.length > 0) {
-      console.log("  - Sample entries:");
-      existingVariants.slice(0, 3).forEach((variant) => {
-        console.log(
-          `    - Key: "${variant.printful_variant_id}" (type: ${typeof variant.printful_variant_id}) -> Variant ID: ${variant.id}, Name: ${variant.name}`
-        );
-      });
-    }
-
-    // Check for duplicate printful_variant_ids in the database
-    const printfulVariantIds = existingVariants.map(
-      (v) => v.printful_variant_id
-    );
-    const duplicateIds = printfulVariantIds.filter(
-      (id, index) => printfulVariantIds.indexOf(id) !== index
-    );
-    if (duplicateIds.length > 0) {
-      console.warn(
-        `⚠️  Found duplicate printful_variant_ids in database:`,
-        duplicateIds
-      );
-    }
+    // Create set of Printful product IDs for easy lookup
+    const printfulProductIds = new Set(products.map(p => p.id.toString()));
 
     let processedCount = 0;
+    let createdCount = 0;
+    let updatedCount = 0;
+    let deletedCount = 0;
     const totalProducts = products.length;
 
     console.log(`Starting to process ${totalProducts} products...`);
 
-    // Process products sequentially to avoid API rate limits
-    for (const product of products) {
-      try {
-        console.log(
-          `Processing product ${processedCount + 1}/${totalProducts}: ${product.name || product.id}`
-        );
-        await processProduct(product, existingProductsMap, existingVariantsMap);
-        processedCount++;
-
-        if (processedCount % 10 === 0) {
-          console.log(`Processed ${processedCount}/${totalProducts} products`);
+    // First, delete products that no longer exist in Printful
+    console.log("Checking for products to delete...");
+    for (const existingProduct of existingProducts) {
+      if (existingProduct.printful_id) {
+        // Delete products with printful_id that no longer exist in Printful
+        if (!printfulProductIds.has(existingProduct.printful_id)) {
+          console.log(`Deleting product that no longer exists in Printful: ${existingProduct.name} (ID: ${existingProduct.id})`);
+          try {
+            await directus.request(deleteItem("products", existingProduct.id));
+            deletedCount++;
+          } catch (error) {
+            console.error(`Failed to delete product ${existingProduct.id}:`, error);
+          }
         }
-
-        // Add small delay to respect API rate limits
-        await new Promise((resolve) => setTimeout(resolve, 100));
-      } catch (error) {
-        console.error(`Failed to process product ${product.id}:`, error);
-        console.error("Product data:", JSON.stringify(product, null, 2));
-        // Continue with next product instead of stopping the entire sync
+      } else {
+        // Delete products without printful_id (old test products)
+        console.log(`Deleting product without printful_id: ${existingProduct.name} (ID: ${existingProduct.id})`);
+        try {
+          await directus.request(deleteItem("products", existingProduct.id));
+          deletedCount++;
+        } catch (error) {
+          console.error(`Failed to delete product ${existingProduct.id}:`, error);
+        }
       }
     }
 
-    console.log(
-      `Product sync completed: ${processedCount}/${totalProducts} products processed`
-    );
+    // Process products sequentially
+    for (const product of products) {
+      try {
+        console.log(`Processing product ${processedCount + 1}/${totalProducts}: ${product.name || product.id}`);
+        
+        const printfulProductId = product.id.toString();
+        const existingProduct = existingProductsMap.get(printfulProductId);
+
+        if (existingProduct) {
+          // Update existing product
+          console.log(`Updating existing product: ${product.name}`);
+          await directus.request(
+            updateItem("products", existingProduct.id, {
+              name: product.name,
+              thumbnail_url: product.thumbnail_url,
+              date_updated: new Date().toISOString(),
+            })
+          );
+          updatedCount++;
+        } else {
+          // Create new product
+          console.log(`Creating new product: ${product.name}`);
+          await directus.request(
+            createItem("products", {
+              printful_id: printfulProductId,
+              name: product.name,
+              description: `Popis pre ${product.name}`,
+              price: 0,
+              thumbnail_url: product.thumbnail_url,
+              mockup_images: [],
+              date_created: new Date().toISOString(),
+              date_updated: new Date().toISOString(),
+            })
+          );
+          createdCount++;
+        }
+
+        processedCount++;
+
+        // Add small delay to respect API rate limits
+        await new Promise((resolve) => setTimeout(resolve, 200));
+      } catch (error) {
+        console.error(`Failed to process product ${product.id}:`, error);
+        // Continue with next product
+      }
+    }
+
+    console.log(`Product sync completed: ${processedCount}/${totalProducts} products processed`);
+    console.log(`Created: ${createdCount}, Updated: ${updatedCount}, Deleted: ${deletedCount}`);
 
     return {
       success: true,
       stats: {
         total: totalProducts,
         processed: processedCount,
+        created: createdCount,
+        updated: updatedCount,
+        deleted: deletedCount,
         failed: totalProducts - processedCount,
       },
     };
   } catch (error) {
     console.error("Error syncing products:", error);
-    console.error(
-      "Error stack:",
-      error instanceof Error ? error.stack : "No stack trace"
-    );
-
-    // Provide more specific error information
-    let errorMessage = "Unknown error";
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    } else if (typeof error === "string") {
-      errorMessage = error;
-    } else if (error && typeof error === "object") {
-      errorMessage = JSON.stringify(error);
-    }
-
-    throw new Error(`Failed to sync products: ${errorMessage}`);
+    throw new Error(`Failed to sync products: ${error}`);
   }
 }

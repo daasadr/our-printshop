@@ -53,7 +53,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
       setLocaleState(urlLang);
       localStorage.setItem('locale', urlLang);
     }
-  }, [urlLang]); // Removed validLocales from dependency array
+  }, [urlLang, validLocales]);
 
   // Automaticky nastavit měnu podle jazyka
   useEffect(() => {
