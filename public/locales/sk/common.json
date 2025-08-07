@@ -18,7 +18,18 @@
     "price_not_available": "Cena nie je k dispozícii",
     "view_product": "Zobraziť produkt",
     "out_of_stock": "Nie je skladom",
-    "in_stock": "Skladom"
+    "in_stock": "Skladom",
+    "description": {
+      "men": "Štýlové {product_name} pre moderných mužov. Vyrobené z kvalitných materiálov pre maximálny komfort a trvanlivosť. Ideálne pre každodenné nosenie aj špeciálne príležitosti.",
+      "women": "Elegantné {product_name} pre ženy, ktoré chcú vyjadriť svoj jedinečný štýl. Kvalitné materiály a starostlivé spracovanie zabezpečujú komfort a krásu.",
+      "kids": "Veselé a pohodlné {product_name} pre deti. Bezpečné materiály a zábavné dizajny, ktoré deti milujú. Ideálne pre aktívne deti.",
+      "unisex": "Univerzálne {product_name} pre všetkých. Moderný dizajn a kvalitné materiály zabezpečujú komfort pre každého.",
+      "home-decor": "Krásne {product_name} pre váš domov. Pridajte osobný štýl do vášho interiéru s našimi originálnymi dizajnmi.",
+      "t-shirt": "Štýlové tričko {product_name} zo 100% bavlny. Mäkký materiál a pohodlný strih zabezpečujú maximálny komfort.",
+      "hoodie": "Teplá a pohodlná mikina {product_name}. Ideálna pre chladnejšie dni a relaxáciu.",
+      "poster": "Krásny plagát {product_name} pre váš domov. Vytlačené na kvalitnom papieri so živými farbami.",
+      "fallback": "Kvalitné {product_name} s originálnym dizajnom. Vyrobené s starostlivosťou a láskou k detailu."
+    }
   },
   "cart": {
     "title": "Košík",
@@ -262,6 +273,7 @@
   "all_categories": "Všetky kategórie",
   "color": "Farba",
   "all_colors": "Všetky farby",
+  "price": "Cena",
   "size": "Veľkosť",
   "all_sizes": "Všetky veľkosti",
   "price_from": "Cena od (€)",

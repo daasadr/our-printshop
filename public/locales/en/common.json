@@ -18,7 +18,18 @@
     "price_not_available": "Price not available",
     "view_product": "View Product",
     "out_of_stock": "Out of Stock",
-    "in_stock": "In Stock"
+    "in_stock": "In Stock",
+    "description": {
+      "men": "Stylish {product_name} for modern men. Made from quality materials for maximum comfort and durability. Perfect for everyday wear and special occasions.",
+      "women": "Elegant {product_name} for women who want to express their unique style. Quality materials and careful craftsmanship ensure comfort and beauty.",
+      "kids": "Fun and comfortable {product_name} for kids. Safe materials and playful designs that children love. Perfect for active kids.",
+      "unisex": "Universal {product_name} for everyone. Modern design and quality materials ensure comfort for all.",
+      "home-decor": "Beautiful {product_name} for your home. Add personal style to your interior with our original designs.",
+      "t-shirt": "Stylish {product_name} t-shirt made from 100% cotton. Soft material and comfortable fit ensure maximum comfort.",
+      "hoodie": "Warm and comfortable {product_name} hoodie. Perfect for cooler days and relaxation.",
+      "poster": "Beautiful {product_name} poster for your home. Printed on quality paper with vibrant colors.",
+      "fallback": "Quality {product_name} with original design. Made with care and love for detail."
+    }
   },
   "cart": {
     "title": "Cart",
@@ -262,6 +273,7 @@
   "all_categories": "All categories",
   "color": "Color",
   "all_colors": "All colors",
+  "price": "Price",
   "size": "Size",
   "all_sizes": "All sizes",
   "price_from": "Price from ($)",

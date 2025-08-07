@@ -18,7 +18,18 @@
     "price_not_available": "Preis nicht verfügbar",
     "view_product": "Produkt anzeigen",
     "out_of_stock": "Nicht auf Lager",
-    "in_stock": "Auf Lager"
+    "in_stock": "Auf Lager",
+    "description": {
+      "men": "Stylvolle {product_name} für moderne Männer. Hergestellt aus hochwertigen Materialien für maximalen Komfort und Langlebigkeit. Perfekt für den Alltag und besondere Anlässe.",
+      "women": "Elegante {product_name} für Frauen, die ihren einzigartigen Stil ausdrücken möchten. Hochwertige Materialien und sorgfältige Verarbeitung garantieren Komfort und Schönheit.",
+      "kids": "Lustige und bequeme {product_name} für Kinder. Sichere Materialien und verspielte Designs, die Kinder lieben. Perfekt für aktive Kinder.",
+      "unisex": "Universelle {product_name} für alle. Modernes Design und hochwertige Materialien garantieren Komfort für jeden.",
+      "home-decor": "Schöne {product_name} für Ihr Zuhause. Fügen Sie Ihrem Interieur persönlichen Stil mit unseren originellen Designs hinzu.",
+      "t-shirt": "Stylvolle {product_name} T-Shirt aus 100% Baumwolle. Weiches Material und bequemer Schnitt garantieren maximalen Komfort.",
+      "hoodie": "Warme und bequeme {product_name} Kapuze. Perfekt für kühlere Tage und Entspannung.",
+      "poster": "Schönes {product_name} Poster für Ihr Zuhause. Gedruckt auf hochwertigem Papier mit lebendigen Farben.",
+      "fallback": "Hochwertige {product_name} mit originellem Design. Hergestellt mit Sorgfalt und Liebe zum Detail."
+    }
   },
   "cart": {
     "title": "Warenkorb",
@@ -262,6 +273,7 @@
   "all_categories": "Alle Kategorien",
   "color": "Farbe",
   "all_colors": "Alle Farben",
+  "price": "Preis",
   "size": "Größe",
   "all_sizes": "Alle Größen",
   "price_from": "Preis ab (€)",

@@ -12,7 +12,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { currency } = useLocale();
+  const { currency, locale } = useLocale();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [isWishlistLoading, setIsWishlistLoading] = useState(false);
   
@@ -20,6 +20,20 @@ export default function ProductCard({ product }: ProductCardProps) {
   const priceConverted = convertCurrency(priceEur, currency);
   const previewUrl = product.designs[0]?.previewUrl || '';
   const isInWishlistState = isInWishlist(product.id);
+
+  // Funkce pro překlad názvu produktu
+  const getTranslatedProductName = () => {
+    if (locale === 'cs') return product.name;
+    
+    // Pro ostatní jazyky použijeme jednoduchý překlad
+    const translations: { [key: string]: string } = {
+      'sk': product.name, // Slovenčina používa rovnaký názov ako čeština
+      'en': product.name.replace('tričko', 't-shirt'),
+      'de': product.name.replace('tričko', 'T-Shirt')
+    };
+    
+    return translations[locale] || product.name;
+  };
   
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -70,7 +84,22 @@ export default function ProductCard({ product }: ProductCardProps) {
           />
         </div>
         <div className="p-4">
-          <h3 className="text-lg font-semibold text-white mb-2">{product.name}</h3>
+          <h3 className="text-lg font-semibold text-white mb-2">
+            {product.icon_cs && (
+              <span 
+                className="mr-1" 
+                style={{ fontFamily: 'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif' }}
+              >
+                {product.icon_cs}
+              </span>
+            )}
+            {getTranslatedProductName()}
+          </h3>
+          {product.description && (
+            <p className="text-sm text-gray-300 mb-2 line-clamp-2">
+              {product.description}
+            </p>
+          )}
           <p className="text-green-200 font-medium">
             {formatPrice(priceConverted, currency)}
           </p>

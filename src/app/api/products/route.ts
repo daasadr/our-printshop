@@ -23,8 +23,15 @@ export async function GET(req: Request) {
         '*',
         'variants.*',
         'designs.*',
-        'main_category' // Explicitně přidám main_category
-        // Prekladové polia budú pridané neskôr: 'name_cs', 'name_sk', 'name_en', 'name_de', 'description_cs', 'description_sk', 'description_en', 'description_de'
+        'main_category', // Explicitně přidám main_category
+        'description_cs',
+        'description_sk', 
+        'description_en',
+        'description_de',
+        'icon_cs',
+        'icon_sk',
+        'icon_en',
+        'icon_de'
       ],
       sort,
       limit: limit // Vždy nastavit limit

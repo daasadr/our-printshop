@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
 import { useWishlist } from '@/context/WishlistContext';
@@ -8,6 +8,7 @@ import { formatPrice, convertCurrency } from '@/utils/currency';
 import { getProductImages } from '@/utils/productImage';
 import { Button, SelectionButton, QuantityButton } from '@/components/ui/Button';
 import { FiHeart } from 'react-icons/fi';
+import { getDictionary } from '@/lib/getDictionary';
 
 interface Variant {
   id: string;
@@ -26,12 +27,20 @@ interface Design {
 interface Product {
   id: string;
   name: string;
+  name_cs?: string;
+  name_sk?: string;
+  name_en?: string;
+  name_de?: string;
   description: string;
   design_info?: string;
   product_info?: string;
   variants: Variant[];
   designs: Design[];
   category?: string;
+  icon_cs?: string;
+  icon_sk?: string;
+  icon_en?: string;
+  icon_de?: string;
 }
 
 interface ProductDetailProps {
@@ -41,7 +50,36 @@ interface ProductDetailProps {
 const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-  const { currency } = useLocale();
+  const { currency, locale } = useLocale();
+  const [dictionary, setDictionary] = useState<any>(null);
+
+  // Načtení dictionary pro aktuální jazyk
+  useEffect(() => {
+    const loadDictionary = async () => {
+      try {
+        const dict = await getDictionary(locale);
+        setDictionary(dict);
+      } catch (error) {
+        console.warn('Failed to load dictionary:', error);
+      }
+    };
+
+    loadDictionary();
+  }, [locale]);
+
+  // Funkce pro překlad názvu produktu
+  const getTranslatedProductName = () => {
+    if (locale === 'cs') return product.name;
+    
+    // Pro ostatní jazyky použijeme jednoduchý překlad
+    const translations: { [key: string]: string } = {
+      'sk': product.name, // Slovenčina používa rovnaký názov ako čeština
+      'en': product.name.replace('tričko', 't-shirt'),
+      'de': product.name.replace('tričko', 'T-Shirt')
+    };
+    
+    return translations[locale] || product.name;
+  };
   
   // Debug logging
   console.log('ProductDetail - received product data:', {
@@ -217,6 +255,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
               alt={product.name} 
               fill
               className="object-contain"
+              loader={({ src }) => src}
             />
           </div>
         ) : (
@@ -228,7 +267,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
           <div className="flex gap-2 mt-2">
             {otherImages.map((img, idx) => (
               <div key={idx} className="relative w-24 h-24 rounded overflow-hidden border">
-                <Image src={img} alt={product.name + ' mockup ' + (idx+1)} fill sizes="96px" className="object-cover" />
+                <Image src={img} alt={product.name + ' mockup ' + (idx+1)} fill sizes="96px" className="object-cover" unoptimized />
               </div>
             ))}
           </div>
@@ -237,7 +276,17 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
       
       {/* Informace o produktu */}
       <div>
-        <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          {product.icon_cs && (
+            <span 
+              className="mr-2" 
+              style={{ fontFamily: 'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif' }}
+            >
+              {product.icon_cs}
+            </span>
+          )}
+          {getTranslatedProductName()}
+        </h1>
         
         {/* Design info od návrháře */}
         {product.design_info && (
@@ -248,21 +297,27 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         
         {/* Základní popis produktu */}
         {product.description && (
-          <p className="text-gray-600 mb-6">{product.description}</p>
+          <div 
+            className="prose prose-lg max-w-none"
+          >
+            <p className="text-gray-700 leading-relaxed">
+              {product.description}
+            </p>
+          </div>
         )}
         
         {/* Cena */}
         <div className="mb-6">
-          <h2 className="text-lg font-medium mb-2">Cena</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-3 border-b-2 border-blue-500 pb-2">💰 {dictionary?.price || 'Cena'}</h2>
           <p className="text-2xl font-bold text-blue-600">
-            {selectedVariant ? formatPrice(selectedVariant.price, currency) : 'Není k dispozici'}
+            {selectedVariant ? formatPrice(selectedVariant.price, currency) : dictionary?.product?.price_not_available || 'Není k dispozici'}
           </p>
         </div>
         
         {/* Velikosti */}
         {availableSizes.length > 0 && (
           <div className="mb-6">
-            <h2 className="text-lg font-medium mb-2">Velikost</h2>
+            <h2 className="text-xl font-bold text-gray-800 mb-3 border-b-2 border-blue-500 pb-2">📏 {dictionary?.size || 'Velikost'}</h2>
             <div className="flex flex-wrap gap-2">
               {availableSizes.map(size => (
                 <SelectionButton
@@ -280,7 +335,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         {/* Barvy */}
         {availableColors.length > 0 && (
           <div className="mb-6">
-            <h2 className="text-lg font-medium mb-2">Barva</h2>
+            <h2 className="text-xl font-bold text-gray-800 mb-3 border-b-2 border-blue-500 pb-2">🎨 {dictionary?.color || 'Barva'}</h2>
             <div className="flex flex-wrap gap-2">
               {availableColors.map(color => (
                 <SelectionButton
@@ -297,7 +352,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         
         {/* Množství */}
         <div className="mb-6">
-          <h2 className="text-lg font-medium mb-2">Množství</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-3 border-b-2 border-blue-500 pb-2">📦 {dictionary?.cart?.quantity || 'Množství'}</h2>
           <div className="flex items-center border border-gray-300 rounded-md w-32">
             <QuantityButton
               onClick={() => handleQuantityChange(quantity - 1)}
@@ -311,7 +366,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
               type="number"
               value={quantity}
               onChange={e => handleQuantityChange(parseInt(e.target.value) || 1)}
-              className="w-12 h-10 text-center focus:outline-none"
+              className="w-16 h-10 text-center focus:outline-none text-lg font-medium text-gray-900 bg-white"
               min="1"
             />
             <QuantityButton
