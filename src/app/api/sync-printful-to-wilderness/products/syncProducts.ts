@@ -18,6 +18,7 @@ interface ProductData {
   thumbnail_url?: string | null;
   mockup_images: string[];
   category?: number | null;
+  main_category?: string | null;
   date_created?: string;
   date_updated: string;
 }
@@ -209,7 +210,7 @@ const processProduct = async (
     const syncProductDescription = productDetail?.sync_product?.description;
     
     // Prioritizujeme catalog description, potom variant description, nakonec sync product description
-    let rawDescription = catalogDescription || variantDescription || syncProductDescription || 'Popis není k dispozici.';
+    const rawDescription = catalogDescription || variantDescription || syncProductDescription || 'Popis není k dispozici.';
     
     // Odstránime všetky HTML tagy z popisu
     const finalDescription = stripHtmlTags(rawDescription);

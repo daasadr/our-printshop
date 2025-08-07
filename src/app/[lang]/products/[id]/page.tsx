@@ -66,8 +66,8 @@ export async function generateMetadata({ params }: GenerateMetadataProps) {
       openGraph: {
         title: `${product.name} | HappyWilderness`,
         description: product.description || 'Popis produktu není k dispozici',
-        images: product.mockup_images && product.mockup_images.length > 0
-          ? [product.mockup_images[0]]
+        images: product.mockups && product.mockups.length > 0
+          ? [product.mockups[0]]
           : ['/images/default-product.jpg'],
       }
     };
