@@ -153,7 +153,7 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
             name="name"
             value={formData.name}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
             required
           />
         </div>
@@ -168,7 +168,7 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
             name="email"
             value={formData.email}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
             required
           />
         </div>
@@ -183,7 +183,7 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
             name="password"
             value={formData.password}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
             required
           />
         </div>
@@ -198,7 +198,7 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
             name="confirmPassword"
             value={formData.confirmPassword}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
             required
           />
         </div>

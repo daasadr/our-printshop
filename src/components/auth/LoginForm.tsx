@@ -118,7 +118,7 @@ export default function LoginForm({ dict }: LoginFormProps) {
             name="email"
             value={formData.email}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
             required
           />
         </div>
@@ -133,7 +133,7 @@ export default function LoginForm({ dict }: LoginFormProps) {
             name="password"
             value={formData.password}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
             required
           />
         </div>

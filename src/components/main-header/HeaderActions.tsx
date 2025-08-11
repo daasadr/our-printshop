@@ -159,8 +159,13 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
             <FiUser className="w-5 h-5" />
             {user && <span className="ml-1 text-sm">{user.first_name || user.email}</span>}
           </Link>
-          <Link href={`/${locale}/wishlist`} className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100">
+          <Link href={`/${locale}/wishlist`} className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100 relative" aria-label="Oblíbené">
             <FiHeart className="w-5 h-5" />
+            {wishlistItems > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                {wishlistItems}
+              </span>
+            )}
           </Link>
           <Link href="/cart" className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100 relative" aria-label="Košík">
             <FaShoppingCart className="w-5 h-5" />

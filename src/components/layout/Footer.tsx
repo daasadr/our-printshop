@@ -63,6 +63,9 @@ const Footer: React.FC = () => {
               <Link href={getLocalizedLink('/kontakt')} className="text-gray-600 hover:text-blue-600">
                 {dictionary?.footer?.contact || "Kontakt"}
               </Link>
+              <Link href={getLocalizedLink('/faq')} className="text-gray-600 hover:text-blue-600">
+                {dictionary?.faq || "FAQ"}
+              </Link>
               <Link href="/terms" className="text-gray-600 hover:text-blue-600">
                 {dictionary?.footer?.terms || "Obchodní podmínky"}
               </Link>

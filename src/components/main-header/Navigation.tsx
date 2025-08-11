@@ -181,6 +181,16 @@ const Navigation: React.FC<NavigationProps> = ({ isMenuOpen, setIsMenuOpen, dict
         >
           {dictionary?.navigation?.contact || "Kontakt"}
         </Link>
+        <Link 
+          href={getLocalizedLink('/faq')} 
+          className={`px-3 py-2 text-sm font-medium transition-colors ${
+            isActive('/faq') 
+              ? 'text-blue-600 border-b-2 border-blue-600'
+              : 'text-gray-700 hover:text-blue-600'
+          }`}
+        >
+          {dictionary?.faq || "FAQ"}
+        </Link>
         {!isLoading && user ? (
           <>
             <button
@@ -267,6 +277,15 @@ const Navigation: React.FC<NavigationProps> = ({ isMenuOpen, setIsMenuOpen, dict
               onClick={() => setIsMenuOpen(false)}
             >
               {dictionary?.navigation?.contact || "Kontakt"}
+            </Link>
+            <Link
+              href={getLocalizedLink('/faq')}
+              className={`px-3 py-2 text-base font-medium rounded-md transition-colors ${
+                isActive('/faq') ? 'text-blue-600 bg-blue-50' : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {dictionary?.faq || "FAQ"}
             </Link>
             {!isLoading && user && (
               <div className="space-y-2 pt-2 border-t border-gray-200">
