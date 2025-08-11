@@ -2,6 +2,10 @@ const ProductSkeleton = () => {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-pulse">
         {/* Obrázek produktu */}
+        <div className="rounded-lg overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300 h-[500px] relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+        </div>
+        {/* Obrázek produktu */}
         <div className="rounded-lg overflow-hidden bg-gray-200 h-[500px]"></div>
         
         <div>
