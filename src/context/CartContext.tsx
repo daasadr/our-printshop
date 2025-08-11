@@ -10,24 +10,33 @@ interface CartContextType {
   removeFromCart: (itemId: string) => Promise<void>;
   updateQuantity: (itemId: string, quantity: number) => Promise<void>;
   clearCart: () => Promise<void>;
+  fetchCart: () => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<any | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Změněno na false
   const [error, setError] = useState<string | null>(null);
 
-  // Načtení košíku při startu
-  useEffect(() => {
-    fetchCart();
-  }, []);
+  // NENÍ automatické načtení košíku při startu
+  // Košík se načte pouze když je potřeba
 
   const fetchCart = async () => {
     try {
+      setLoading(true);
+      setError(null);
+      
       const response = await fetch('/api/cart');
-      if (!response.ok) throw new Error('Failed to fetch cart');
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Uživatel není přihlášen - to je v pořádku
+          setCart(null);
+          return;
+        }
+        throw new Error('Failed to fetch cart');
+      }
       const data = await response.json();
       setCart(data);
     } catch (err) {
@@ -99,6 +108,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         removeFromCart,
         updateQuantity,
         clearCart,
+        fetchCart, // Exportujeme fetchCart pro manuální volání
       }}
     >
       {children}

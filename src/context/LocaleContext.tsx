@@ -28,7 +28,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   const validLocales: Locale[] = ['cs', 'sk', 'en', 'de'];
   const defaultLocale: Locale = 'cs';
   
-  // Inicializace jazyka - preferujeme localStorage, pak URL, pak default
+  // Inicializace jazyka - preferujeme localStorage, pak URL, pak automatickou detekci, pak default
   const getInitialLocale = (): Locale => {
     if (typeof window !== 'undefined') {
       const savedLocale = localStorage.getItem('locale') as Locale;
@@ -46,6 +46,62 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   
   const [locale, setLocaleState] = useState<Locale>(getInitialLocale);
   const [currency, setCurrencyState] = useState<Currency>('CZK');
+  const [hasDetectedLocation, setHasDetectedLocation] = useState(false);
+
+  // Automatická detekce jazyka podle lokality při prvním načtení
+  useEffect(() => {
+    const detectLocationAndLanguage = async () => {
+      // Kontrola, jestli už jsme detekovali lokaci
+      if (hasDetectedLocation || localStorage.getItem('locale')) {
+        return;
+      }
+
+      // Nejdříve zkusit Accept-Language header
+      const browserLanguage = navigator.language || navigator.languages?.[0];
+      if (browserLanguage) {
+        const langCode = browserLanguage.split('-')[0];
+        if (validLocales.includes(langCode as Locale)) {
+          console.log(`Detected browser language: ${langCode}`);
+          setLocaleState(langCode as Locale);
+          localStorage.setItem('locale', langCode);
+          setHasDetectedLocation(true);
+          return;
+        }
+      }
+
+      try {
+        const response = await fetch('/api/geolocation');
+        if (response.ok) {
+          const data = await response.json();
+          
+          if (data.success && data.detectedLanguage) {
+            const detectedLocale = data.detectedLanguage as Locale;
+            
+            // Nastavit detekovaný jazyk pouze pokud je validní
+            if (validLocales.includes(detectedLocale)) {
+              console.log(`Detected language: ${detectedLocale} for country: ${data.country} (${data.countryCode})`);
+              
+              setLocaleState(detectedLocale);
+              localStorage.setItem('locale', detectedLocale);
+              
+              // Navigovat na nový jazyk, pokud se liší od URL
+              if (urlLang && urlLang !== detectedLocale) {
+                const currentPath = window.location.pathname;
+                const pathWithoutLang = currentPath.replace(/^\/(cs|sk|en|de)/, '');
+                router.push(`/${detectedLocale}${pathWithoutLang}`);
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.warn('Failed to detect location, using default language:', error);
+      } finally {
+        setHasDetectedLocation(true);
+      }
+    };
+
+    detectLocationAndLanguage();
+  }, [urlLang, router, hasDetectedLocation, validLocales]);
 
   // Synchronizovat s URL parametrem pouze při první návštěvě
   useEffect(() => {

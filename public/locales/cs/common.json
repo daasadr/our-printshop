@@ -48,6 +48,8 @@
     }
   },
   "welcome": "Originální oblečení s autorskými potisky",
+  "welcome_back": "Vítejte!",
+  "welcome_back_message": "Jsme rádi, že jste zpět, {name}",
   "subtitle": "Vyjádřete svůj jedinečný styl s našimi kreativními designy.",
   "cta_collection": "Prohlédnout kolekci",
   "cta_story": "Náš příběh",

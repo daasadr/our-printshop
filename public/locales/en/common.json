@@ -1,5 +1,7 @@
 {
   "welcome": "Original clothing with designer prints",
+  "welcome_back": "Welcome!",
+  "welcome_back_message": "We're glad you're back, {name}",
   "subtitle": "Express your unique style with our creative designs.",
   "cta_collection": "View collection",
   "cta_story": "Our story",

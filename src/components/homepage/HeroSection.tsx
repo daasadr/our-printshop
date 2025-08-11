@@ -46,10 +46,11 @@ export default function HeroSection({ dictionary, lang }: HeroSectionProps) {
           {user && (
             <div className="mb-6">
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                Vítejte!
+                {dictionary.welcome_back || "Vítejte!"}
               </h2>
               <p className="text-lg text-white/90">
-                Jsme rádi, že jste zpět, {user.first_name || user.email}
+                {dictionary.welcome_back_message?.replace('{name}', user.first_name || user.email) || 
+                 `Jsme rádi, že jste zpět, ${user.first_name || user.email}`}
               </p>
             </div>
           )}

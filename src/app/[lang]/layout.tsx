@@ -25,15 +25,18 @@ export default async function LocaleLayout({
   children,
   params: { lang },
 }: LayoutProps) {
+  // Načíst dictionary na server-side
+  const dictionary = await getDictionary(lang);
+
   return (
     <LocaleProvider>
       <WishlistProvider>
         <div className="min-h-screen bg-gray-50">
-          <Header />
+          <Header dictionary={dictionary} />
           <main id="main-content" role="main" className="flex-1">
             {children}
           </main>
-          <Footer />
+          <Footer dictionary={dictionary} />
         </div>
       </WishlistProvider>
     </LocaleProvider>

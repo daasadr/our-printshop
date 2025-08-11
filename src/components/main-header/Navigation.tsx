@@ -3,7 +3,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useParams, useRouter } from 'next/navigation';
-// import { signOut, useSession } from 'next-auth/react'; // ODSTRANĚNO
 import { FiMenu, FiX, FiUser, FiHeart, FiSearch } from 'react-icons/fi';
 import { useLocale } from '@/context/LocaleContext';
 import LocaleSwitch from '@/components/LocaleSwitch';
@@ -18,7 +17,6 @@ const Navigation: React.FC<NavigationProps> = ({ isMenuOpen, setIsMenuOpen, dict
   const pathname = usePathname();
   const params = useParams();
   const router = useRouter();
-  // const session = useSession(); // ODSTRANĚNO
   const { locale } = useLocale();
   const [searchTerm, setSearchTerm] = useState('');
   const searchRef = useRef<HTMLDivElement>(null);
@@ -70,6 +68,36 @@ const Navigation: React.FC<NavigationProps> = ({ isMenuOpen, setIsMenuOpen, dict
     }
   };
 
+  // NENÍ automatická kontrola auth status při načtení
+  // Auth status se kontroluje pouze při interakci uživatele
+  useEffect(() => {
+    // Kontrola auth status pouze při změně localStorage
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'access_token' || e.key === 'user_data') {
+        checkAuthStatus();
+      }
+    };
+
+    const handleCustomStorageChange = () => {
+      checkAuthStatus();
+    };
+
+    // Event listeners pro změny v localStorage
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('auth-status-changed', handleCustomStorageChange);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('auth-status-changed', handleCustomStorageChange);
+    };
+  }, []);
+
+  // Check auth status on mount
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
+
   const handleLogout = async () => {
     try {
       const refreshToken = localStorage.getItem('refresh_token');
@@ -102,37 +130,6 @@ const Navigation: React.FC<NavigationProps> = ({ isMenuOpen, setIsMenuOpen, dict
       router.push(`/${locale}`);
     }
   };
-
-  // Check auth status on mount
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
-
-  // Listen for storage changes (when user logs in/out)
-  useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'access_token' || e.key === 'user_data') {
-        console.log('Navigation: Storage changed, checking auth status...');
-        checkAuthStatus();
-      }
-    };
-
-    // Listen for storage events from other tabs/windows
-    window.addEventListener('storage', handleStorageChange);
-
-    // Also listen for custom events (for same tab)
-    const handleCustomStorageChange = () => {
-      console.log('Navigation: Custom storage event received, checking auth status...');
-      checkAuthStatus();
-    };
-
-    window.addEventListener('auth-status-changed', handleCustomStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('auth-status-changed', handleCustomStorageChange);
-    };
-  }, []);
 
   // Click outside handler pro search
   useEffect(() => {

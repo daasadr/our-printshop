@@ -2,26 +2,13 @@
 
 import Link from 'next/link';
 import { useLocale } from '@/context/LocaleContext';
-import { useEffect, useState } from 'react';
-import { getDictionary } from '@/lib/getDictionary';
 
-const Footer: React.FC = () => {
+interface FooterProps {
+  dictionary: any;
+}
+
+const Footer: React.FC<FooterProps> = ({ dictionary }) => {
   const { locale } = useLocale();
-  const [dictionary, setDictionary] = useState<any>(null);
-
-  // Načtení dictionary pro aktuální jazyk
-  useEffect(() => {
-    const loadDictionary = async () => {
-      try {
-        const dict = await getDictionary(locale);
-        setDictionary(dict);
-      } catch (error) {
-        console.warn('Failed to load dictionary:', error);
-      }
-    };
-
-    loadDictionary();
-  }, [locale]);
 
   // Funkce pro vytvoření jazykového odkazu
   const getLocalizedLink = (path: string) => {
