@@ -2,6 +2,7 @@ import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+import { ButtonLoader } from "@/components/PageLoader";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed",
@@ -142,7 +143,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         aria-disabled={isDisabled}
         {...props}
       >
-        {loading ? loadingText : children}
+        {loading ? (
+          <div className="flex items-center gap-2">
+            <ButtonLoader size="sm" />
+            {loadingText}
+          </div>
+        ) : (
+          children
+        )}
         {srOnlyText && (
           <span className="sr-only">{srOnlyText}</span>
         )}

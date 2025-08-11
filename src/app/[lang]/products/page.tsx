@@ -2,6 +2,8 @@ import { ProductList } from '@/components/ProductList';
 import CategoryTiles from '@/components/CategoryTiles';
 import Pagination from '@/components/Pagination';
 import ProductFilter from '@/components/ProductFilter';
+import { ProductListSkeleton } from '@/components/ProductListSkeleton';
+import { PageTransition } from '@/components/PageTransition';
 import { getCategories } from '@/lib/directus';
 import { getDictionary } from '@/lib/getDictionary';
 import { ProductWithRelations } from '@/types';
@@ -132,51 +134,53 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-amber-50 to-teal-50">
-      {/* Kategorie tiles nahoře */}
-      <div className="bg-gradient-to-br from-[#1a2a1b] via-[#3a4a3b] to-[#1a2a1b] text-white py-16">
-        <CategoryTiles categories={categories} />
-      </div>
-
-      {/* Produkty s filtry a paginací */}
-      <div className="container mx-auto px-4 py-8">
-        {/* Filter komponent */}
-        <ProductFilter categories={categories} dictionary={dict} />
-        
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            {category ? `${dict.products?.title || 'Produkty'} - ${category}` : dict.products?.all_products || 'Všechny produkty'}
-          </h1>
-          <div className="text-sm text-gray-600">
-            {dict.products?.showing || 'Zobrazeno'} {startIndex + 1}-{Math.min(endIndex, totalProducts)} {dict.products?.of || 'z'} {totalProducts} {dict.products?.products || 'produktů'}
-          </div>
+    <PageTransition>
+      <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-amber-50 to-teal-50">
+        {/* Kategorie tiles nahoře */}
+        <div className="bg-gradient-to-br from-[#1a2a1b] via-[#3a4a3b] to-[#1a2a1b] text-white py-16">
+          <CategoryTiles categories={categories} />
         </div>
-        
-        {currentProducts.length > 0 ? (
-          <>
-            <ProductList products={currentProducts} />
-            <Pagination
-              currentPage={page}
-              totalPages={totalPages}
-              totalProducts={totalProducts}
-              productsPerPage={productsPerPage}
-              category={category}
-            />
-          </>
-        ) : (
-          <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {dict.products?.no_products_found || 'Žádné produkty nenalezeny'}
-            </h3>
-            <p className="text-gray-600">
-              {category 
-                ? `${dict.products?.no_products_in_category || 'V kategorii'} "${category}" ${dict.products?.no_products_found_in_category || 'nebyly nalezeny žádné produkty.'}`
-                : dict.products?.no_products_available || 'Momentálně nejsou k dispozici žádné produkty.'
-              }
-            </p>
+
+        {/* Produkty s filtry a paginací */}
+        <div className="container mx-auto px-4 py-8">
+          {/* Filter komponent */}
+          <ProductFilter categories={categories} dictionary={dict} />
+          
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">
+              {category ? `${dict.products?.title || 'Produkty'} - ${category}` : dict.products?.all_products || 'Všechny produkty'}
+            </h1>
+            <div className="text-sm text-gray-600">
+              {dict.products?.showing || 'Zobrazeno'} {startIndex + 1}-{Math.min(endIndex, totalProducts)} {dict.products?.of || 'z'} {totalProducts} {dict.products?.products || 'produktů'}
+            </div>
           </div>
-        )}
+          
+          {currentProducts.length > 0 ? (
+            <>
+              <ProductList products={currentProducts} />
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                totalProducts={totalProducts}
+                productsPerPage={productsPerPage}
+                category={category}
+              />
+            </>
+          ) : (
+            <div className="text-center py-12">
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                {dict.products?.no_products_found || 'Žádné produkty nenalezeny'}
+              </h3>
+              <p className="text-gray-600">
+                {category 
+                  ? `${dict.products?.no_products_in_category || 'V kategorii'} "${category}" ${dict.products?.no_products_found_in_category || 'nebyly nalezeny žádné produkty.'}`
+                  : dict.products?.no_products_available || 'Momentálně nejsou k dispozici žádné produkty.'
+                }
+              </p>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </PageTransition>
   );
 } 

@@ -9,6 +9,7 @@ import { ProductWithRelations } from '@/types';
 import { getProductImages } from '@/utils/productImage';
 import { Button } from '@/components/ui/Button';
 import { useLocale } from '@/context/LocaleContext';
+import { FadeIn } from '@/components/PageTransition';
 
 interface ProductListProps {
   products: ProductWithRelations[];
@@ -47,13 +48,14 @@ export function ProductList({ products }: ProductListProps) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {safeProducts.map((product) => {
+      {safeProducts.map((product, index) => {
         const firstVariant = Array.isArray(product.variants) && product.variants.length > 0 ? product.variants[0] : null;
         const firstDesign = Array.isArray(product.designs) && product.designs.length > 0 ? product.designs[0] : null;
         const priceConverted = firstVariant ? convertCurrency(firstVariant.price, currency) : 0;
         
         return (
-          <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
+          <FadeIn key={product.id} delay={index * 100}>
+            <div className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
             <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
               <Image
                 src={getProductImages(product).main || fallbackImage}
@@ -97,6 +99,7 @@ export function ProductList({ products }: ProductListProps) {
               </Button>
             </div>
           </div>
+          </FadeIn>
         );
       })}
     </div>
