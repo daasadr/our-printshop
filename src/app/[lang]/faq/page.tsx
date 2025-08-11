@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { getDictionary } from '@/lib/getDictionary';
-import { Locale } from '@/i18n.config';
+import { Locale } from '@/context/LocaleContext';
 import FAQContactModal from '@/components/FAQContactModal';
 
 interface FAQPageProps {
