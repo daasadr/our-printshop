@@ -45,7 +45,22 @@
     "add_to_cart": "Add to Cart",
     "items_count": "items in cart",
     "opened": "Cart opened",
-    "closed": "Cart closed"
+    "closed": "Cart closed",
+    "select_all": "Select All",
+    "selected_items": "items selected",
+    "bulk_actions": {
+      "remove_selected": "Remove Selected",
+      "move_to_wishlist": "Move to Wishlist",
+      "export_cart": "Export Cart",
+      "share_cart": "Share Cart",
+      "clear_cart": "Clear Cart"
+    },
+    "confirm_remove": "Do you really want to remove",
+    "confirm_clear": "Do you really want to clear the cart?",
+    "saved_for_later": "Saved for Later",
+    "no_saved_items": "You have no saved items",
+    "move_to_cart": "Move to Cart",
+    "saved_on": "Saved on"
   },
   "products": {
     "title": "Products",

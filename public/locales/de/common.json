@@ -45,7 +45,22 @@
     "add_to_cart": "In den Warenkorb",
     "items_count": "Artikel im Warenkorb",
     "opened": "Warenkorb geöffnet",
-    "closed": "Warenkorb geschlossen"
+    "closed": "Warenkorb geschlossen",
+    "select_all": "Alle auswählen",
+    "selected_items": "Artikel ausgewählt",
+    "bulk_actions": {
+      "remove_selected": "Ausgewählte entfernen",
+      "move_to_wishlist": "Zu Favoriten verschieben",
+      "export_cart": "Warenkorb exportieren",
+      "share_cart": "Warenkorb teilen",
+      "clear_cart": "Warenkorb leeren"
+    },
+    "confirm_remove": "Möchten Sie wirklich entfernen",
+    "confirm_clear": "Möchten Sie wirklich den Warenkorb leeren?",
+    "saved_for_later": "Für später gespeichert",
+    "no_saved_items": "Sie haben keine gespeicherten Artikel",
+    "move_to_cart": "In den Warenkorb verschieben",
+    "saved_on": "Gespeichert am"
   },
   "products": {
     "title": "Produkte",
