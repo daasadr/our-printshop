@@ -43,7 +43,22 @@
     "add_to_cart": "Do košíka",
     "items_count": "položiek v košíku",
     "opened": "Košík otvorený",
-    "closed": "Košík zatvorený"
+    "closed": "Košík zatvorený",
+    "select_all": "Vybrať všetko",
+    "selected_items": "položiek vybraných",
+    "bulk_actions": {
+      "remove_selected": "Odobrať vybrané",
+      "move_to_wishlist": "Presunúť do obľúbených",
+      "export_cart": "Exportovať košík",
+      "share_cart": "Zdieľať košík",
+      "clear_cart": "Vyprázdniť košík"
+    },
+    "confirm_remove": "Opravdu chcete odobrať",
+    "confirm_clear": "Opravdu chcete vyprázdniť košík?",
+    "saved_for_later": "Uložené na neskôr",
+    "no_saved_items": "Nemáte uložené položky",
+    "move_to_cart": "Presunúť do košíka",
+    "saved_on": "Uložené"
   },
   "products": {
     "title": "Produkty",
