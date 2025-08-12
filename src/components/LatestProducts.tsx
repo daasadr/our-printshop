@@ -45,7 +45,8 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ products = [], dictiona
         quantity: 1,
         name: product.name,
         price: priceConverted,
-        image: product.designs && product.designs.length > 0 ? product.designs[0].previewUrl : ''
+        image: product.designs && product.designs.length > 0 ? product.designs[0].previewUrl : '',
+        sourceCurrency: 'EUR'
       });
     }
   };

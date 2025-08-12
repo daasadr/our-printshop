@@ -66,6 +66,24 @@
     "view_product": "Produkt anzeigen",
     "out_of_stock": "Nicht auf Lager",
     "in_stock": "Auf Lager",
+    "on_demand": "Auf Bestellung",
+    "description": "Beschreibung",
+    "variants": "Varianten",
+    "quantity": "Menge",
+    "color": "Farbe",
+    "size": "Größe",
+    "stock_status": {
+      "in_stock": "Auf Lager",
+      "out_of_stock": "Nicht verfügbar",
+      "on_demand": "Auf Bestellung"
+    },
+    "quick_view": {
+      "title": "Schnellansicht",
+      "add_to_cart": "In den Warenkorb",
+      "add_to_wishlist": "Zu Favoriten hinzufügen",
+      "remove_from_wishlist": "Aus Favoriten entfernen",
+      "close": "Schließen"
+    },
     "description": {
       "men": "Stylvolle {product_name} für moderne Männer. Hergestellt aus hochwertigen Materialien für maximalen Komfort und Langlebigkeit. Perfekt für den Alltag und besondere Anlässe.",
       "women": "Elegante {product_name} für Frauen, die ihren einzigartigen Stil ausdrücken möchten. Hochwertige Materialien und sorgfältige Verarbeitung garantieren Komfort und Schönheit.",

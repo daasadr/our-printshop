@@ -62,7 +62,8 @@ export default function CartRecommendations({ className = '' }: CartRecommendati
         quantity: 1,
         name: product.name,
         price: firstVariant.price,
-        image: getProductImages(product).main
+        image: getProductImages(product).main,
+        sourceCurrency: 'EUR'
       });
     }
   };

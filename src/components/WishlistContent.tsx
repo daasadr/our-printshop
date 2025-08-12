@@ -37,7 +37,8 @@ export default function WishlistContent() {
       quantity: 1,
       name: item.name,
       price: item.price, // Originálna cena v EUR
-      image: item.image || ''
+      image: item.image || '',
+      sourceCurrency: 'EUR'
     });
   };
 
