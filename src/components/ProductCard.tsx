@@ -9,6 +9,7 @@ import { useState } from 'react';
 import StockIndicator from './StockIndicator';
 import ColorVariants from './ColorVariants';
 import QuickViewModal from './QuickViewModal';
+import { ClientOnlyPrice } from './ClientOnly';
 
 interface ProductCardProps {
   product: any;
@@ -161,9 +162,9 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
           )}
           
-          <p className="text-green-200 font-medium mt-3 text-lg group-hover:text-green-300 transition-all duration-300 group-hover:scale-105">
+          <ClientOnlyPrice className="text-green-200 font-medium mt-3 text-lg group-hover:text-green-300 transition-all duration-300 group-hover:scale-105">
             {formatPrice(priceConverted, currency)}
-          </p>
+          </ClientOnlyPrice>
         </div>
         
         {/* Quick View Modal */}

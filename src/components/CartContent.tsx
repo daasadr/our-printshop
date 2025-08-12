@@ -6,6 +6,7 @@ import { useCart } from '@/hooks/useCart';
 import { useLocale } from '@/context/LocaleContext';
 import { formatPrice, convertCurrency } from '@/utils/currency';
 import { Button, QuantityButton } from '@/components/ui/Button';
+import { ClientOnlyPrice } from '@/components/ClientOnly';
 import { useEffect, useState, useMemo } from 'react';
 import { getDictionary } from '@/lib/getDictionary';
 import CartBulkActions from './CartBulkActions';
@@ -76,9 +77,9 @@ export default function CartContent() {
               <h3 className="text-white font-medium">
                 {item.name}
               </h3>
-              <p className="text-green-300">
+              <ClientOnlyPrice className="text-green-300">
                 {formatPrice(item.price, currency)}
-              </p>
+              </ClientOnlyPrice>
             </div>
             <div className="flex items-center gap-2">
               <QuantityButton
@@ -115,9 +116,9 @@ export default function CartContent() {
       <div className="mt-6 pt-6 border-t border-white/10">
         <div className="flex justify-between items-center text-white">
           <span className="text-lg">{dictionary?.cart?.total || 'Celková cena:'}</span>
-          <span className="text-2xl font-bold text-green-300">
+          <ClientOnlyPrice className="text-2xl font-bold text-green-300">
             {formatPrice(convertedTotalPrice, currency)}
-          </span>
+          </ClientOnlyPrice>
         </div>
         <div className="mt-4">
           <Link

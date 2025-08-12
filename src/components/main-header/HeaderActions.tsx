@@ -9,6 +9,7 @@ import { useCart } from '@/hooks/useCart';
 import { useWishlist } from '@/context/WishlistContext';
 import { useLocale } from '@/context/LocaleContext';
 import LocaleSwitch from '@/components/LocaleSwitch';
+import HeaderDarkModeToggle from '@/components/ui/DarkModeToggle';
 
 interface HeaderActionsProps {
   isMenuOpen: boolean;
@@ -153,6 +154,9 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
         {/* Přepínač jazyka */}
         <LocaleSwitch />
         
+        {/* Dark mode toggle */}
+        <HeaderDarkModeToggle />
+        
         {/* Ikony */}
         <div className="flex items-center space-x-1">
           <Link href={`/${locale}/ucet`} className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100 flex items-center">
@@ -218,6 +222,9 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
   // Mobile/Tablet layout - ikony + menu toggle
   return (
     <div className="flex items-center space-x-2 relative">
+      {/* Dark mode toggle */}
+      <HeaderDarkModeToggle />
+      
       {/* Ikony */}
       <div className="flex items-center space-x-1">
         <Link href={`/${locale}/ucet`} className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100 flex items-center">
