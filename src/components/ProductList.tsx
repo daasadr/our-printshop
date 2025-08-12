@@ -13,11 +13,12 @@ import { FadeIn } from '@/components/PageTransition';
 
 interface ProductListProps {
   products: ProductWithRelations[];
+  exchangeRates?: { [key: string]: number };
 }
 
 const fallbackImage = '/images/placeholder.jpg';
 
-export function ProductList({ products }: ProductListProps) {
+export function ProductList({ products, exchangeRates }: ProductListProps) {
   const { addToCart } = useCart();
   const { currency } = useLocale();
 
@@ -30,14 +31,18 @@ export function ProductList({ products }: ProductListProps) {
     const firstVariant = Array.isArray(product.variants) && product.variants.length > 0 ? product.variants[0] : null;
     const firstDesign = Array.isArray(product.designs) && product.designs.length > 0 ? product.designs[0] : null;
     if (firstVariant) {
-      // Převedeme cenu na správnou měnu pro košík
-      const priceConverted = convertCurrency(firstVariant.price, currency);
+      // Převedeme cenu na správnou měnu pro košík - použijeme server-side kurzy pokud jsou k dispozici
+      const priceConverted = exchangeRates ? 
+        firstVariant.price * (exchangeRates[currency] || 1) : 
+        convertCurrency(firstVariant.price, currency);
+      
       addToCart({
         variantId: firstVariant.id,
         quantity: 1,
         name: product.name,
         price: priceConverted,
-        image: firstDesign?.previewUrl || ''
+        image: firstDesign?.previewUrl || '',
+        sourceCurrency: currency // Přidáno: uložíme zdrojovou měnu
       });
     }
   };
@@ -51,7 +56,14 @@ export function ProductList({ products }: ProductListProps) {
       {safeProducts.map((product, index) => {
         const firstVariant = Array.isArray(product.variants) && product.variants.length > 0 ? product.variants[0] : null;
         const firstDesign = Array.isArray(product.designs) && product.designs.length > 0 ? product.designs[0] : null;
-        const priceConverted = firstVariant ? convertCurrency(firstVariant.price, currency) : 0;
+        // Použijeme server-side kurzy pokud jsou k dispozici, jinak client-side
+        const priceConverted = firstVariant ? 
+          (exchangeRates ? 
+            // Server-side konverze s aktuálními kurzy
+            firstVariant.price * (exchangeRates[currency] || 1) : 
+            // Client-side konverze jako fallback
+            convertCurrency(firstVariant.price, currency)
+          ) : 0;
         
         return (
           <FadeIn key={product.id} delay={index * 100}>

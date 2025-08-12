@@ -70,15 +70,54 @@ export function convertEurToCzkSync(priceEur: number): number {
 }
 
 // Univerzální převod měny s reálnými kurzy
-export function convertCurrency(priceEur: number, targetCurrency: Currency): number {
-  if (targetCurrency === 'EUR') {
-    return priceEur;
+export function convertCurrency(price: number, targetCurrency: Currency, sourceCurrency?: Currency): number {
+  // Pokud není specifikována zdrojová měna, předpokládáme EUR (pro zpětnou kompatibilitu)
+  if (!sourceCurrency) {
+    sourceCurrency = 'EUR';
   }
   
-  // Získáme aktuální kurz z cache nebo výchozí hodnoty
-  const rate = getRateForCurrencySync(targetCurrency);
+  // Pokud jsou měny stejné, vracíme původní cenu
+  if (sourceCurrency === targetCurrency) {
+    return price;
+  }
   
-  const convertedPrice = priceEur * rate;
+  // Pokud je zdrojová měna EUR, použijeme původní logiku
+  if (sourceCurrency === 'EUR') {
+    if (targetCurrency === 'EUR') {
+      return price;
+    }
+    
+    // Získáme aktuální kurz z cache nebo výchozí hodnoty
+    const rate = getRateForCurrencySync(targetCurrency);
+    
+    const convertedPrice = price * rate;
+    
+    // Zaokrouhlení podle měny
+    switch (targetCurrency) {
+      case 'CZK':
+        if (convertedPrice < 1000) {
+          return Math.round(convertedPrice);
+        } else {
+          return Math.floor(convertedPrice / 10) * 10;
+        }
+      case 'GBP':
+        return Math.round(convertedPrice * 100) / 100; // 2 desetinná místa
+      default:
+        return convertedPrice;
+    }
+  }
+  
+  // Pro převod z jiných měn než EUR
+  // Nejdříve převedeme na EUR, pak na cílovou měnu
+  const eurRate = getRateForCurrencySync(sourceCurrency);
+  const priceInEur = price / eurRate;
+  
+  if (targetCurrency === 'EUR') {
+    return priceInEur;
+  }
+  
+  const targetRate = getRateForCurrencySync(targetCurrency);
+  const convertedPrice = priceInEur * targetRate;
   
   // Zaokrouhlení podle měny
   switch (targetCurrency) {

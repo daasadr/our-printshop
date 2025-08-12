@@ -3,6 +3,22 @@ let cachedRates: { [key: string]: number } | null = null;
 let lastFetch: number = 0;
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hodina
 
+// Inicializace cache při startu - pouze jednou
+if (typeof window !== 'undefined' && !cachedRates) {
+  // Na client-side inicializujeme cache pouze pokud ještě není načteno
+  setTimeout(() => {
+    fetchExchangeRates().then(rates => {
+      if (!cachedRates) { // Kontrola, že cache ještě nebyl nastaven
+        cachedRates = rates;
+        lastFetch = Date.now();
+        console.log('Exchange rates initialized on client:', rates);
+      }
+    }).catch(error => {
+      console.warn('Failed to initialize exchange rates on client:', error);
+    });
+  }, 100); // Malé zpoždění aby se vyhnulo hydration mismatch
+}
+
 // Výchozí kurzy (fallback)
 const DEFAULT_RATES = {
   EUR: 1.0,
@@ -81,9 +97,19 @@ export async function getRateForCurrency(currency: string): Promise<number> {
 // Synchronní funkce pro získání kurzu pro konkrétní měnu
 export function getRateForCurrencySync(currency: string): number {
   if (cachedRates) {
-    return cachedRates[currency] || DEFAULT_RATES[currency as keyof typeof DEFAULT_RATES] || 1.0;
+    const rate = cachedRates[currency];
+    if (rate !== undefined) {
+      return rate;
+    }
   }
-  return DEFAULT_RATES[currency as keyof typeof DEFAULT_RATES] || 1.0;
+  
+  // Fallback na výchozí kurzy - bez console.warn aby se neopakovaly
+  const fallbackRate = DEFAULT_RATES[currency as keyof typeof DEFAULT_RATES];
+  if (fallbackRate !== undefined) {
+    return fallbackRate;
+  }
+  
+  return 1.0;
 }
 
 // Funkce pro vynucení aktualizace kurzů
@@ -127,5 +153,9 @@ export async function getAllRates(): Promise<{ [key: string]: number }> {
 
 // Funkce pro získání všech kurzů synchronně
 export function getAllRatesSync(): { [key: string]: number } {
-  return cachedRates || DEFAULT_RATES;
+  if (cachedRates) {
+    return cachedRates;
+  }
+  
+  return DEFAULT_RATES;
 } 

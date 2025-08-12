@@ -164,7 +164,7 @@ export default function CartBulkActions({
   }
 
   return (
-    <div className={`bg-gray-50 border border-gray-200 rounded-lg p-4 ${className}`}>
+    <div className={`bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-4 ${className}`}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
           <label className="flex items-center space-x-2 cursor-pointer">
@@ -172,16 +172,19 @@ export default function CartBulkActions({
               type="checkbox"
               checked={isSelectAll}
               onChange={handleSelectAll}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="rounded border-white/30 text-green-600 focus:ring-green-500 bg-white/20"
             />
-                      <span className="text-sm font-medium text-gray-700">
-            {dictionary?.cart?.select_all || 'Vybrať všetko'} ({items.length})
-          </span>
+            <span className="text-sm font-medium text-white">
+              {dictionary?.cart?.select_all || 'Vybrať všetko'} ({items.reduce((total, item) => total + item.quantity, 0)})
+            </span>
           </label>
         </div>
         
-        <div className="text-sm text-gray-500">
-          {selectedItems.size} {dictionary?.cart?.selected_items || 'položiek vybraných'}
+        <div className="text-sm text-white/70">
+          {Array.from(selectedItems).reduce((total, itemId) => {
+            const item = items.find(i => i.variantId === itemId);
+            return total + (item?.quantity || 0);
+          }, 0)} {dictionary?.cart?.selected_items || 'položiek vybraných'}
         </div>
       </div>
 
@@ -192,7 +195,7 @@ export default function CartBulkActions({
           disabled={selectedItems.size === 0}
           variant="secondary"
           size="sm"
-          className="flex items-center space-x-1"
+          className="flex items-center space-x-1 bg-red-600 hover:bg-red-700 text-white border-red-600"
         >
           <FiTrash2 className="w-4 h-4" />
           <span>{dictionary?.cart?.bulk_actions?.remove_selected || 'Odobrať vybrané'}</span>
@@ -203,7 +206,7 @@ export default function CartBulkActions({
           disabled={selectedItems.size === 0}
           variant="secondary"
           size="sm"
-          className="flex items-center space-x-1"
+          className="flex items-center space-x-1 bg-pink-600 hover:bg-pink-700 text-white border-pink-600"
         >
           <FiHeart className="w-4 h-4" />
           <span>{dictionary?.cart?.bulk_actions?.move_to_wishlist || 'Presunúť do obľúbených'}</span>
@@ -213,7 +216,7 @@ export default function CartBulkActions({
           onClick={handleExportCart}
           variant="secondary"
           size="sm"
-          className="flex items-center space-x-1"
+          className="flex items-center space-x-1 bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
         >
           <FiDownload className="w-4 h-4" />
           <span>{dictionary?.cart?.bulk_actions?.export_cart || 'Exportovať košík'}</span>
@@ -223,7 +226,7 @@ export default function CartBulkActions({
           onClick={handleShareCart}
           variant="secondary"
           size="sm"
-          className="flex items-center space-x-1"
+          className="flex items-center space-x-1 bg-purple-600 hover:bg-purple-700 text-white border-purple-600"
         >
           <FiShare2 className="w-4 h-4" />
           <span>{dictionary?.cart?.bulk_actions?.share_cart || 'Zdieľať košík'}</span>
@@ -233,7 +236,7 @@ export default function CartBulkActions({
           onClick={handleClearCart}
           variant="danger"
           size="sm"
-          className="flex items-center space-x-1"
+          className="flex items-center space-x-1 bg-red-700 hover:bg-red-800 text-white border-red-700"
         >
           <FiTrash2 className="w-4 h-4" />
           <span>{dictionary?.cart?.bulk_actions?.clear_cart || 'Vyprázdniť košík'}</span>
@@ -243,16 +246,16 @@ export default function CartBulkActions({
       {/* Individual item checkboxes */}
       <div className="mt-4 space-y-2">
         {items.map((item) => (
-          <label key={item.variantId} className="flex items-center space-x-3 cursor-pointer p-2 hover:bg-gray-100 rounded">
+          <label key={item.variantId} className="flex items-center space-x-3 cursor-pointer p-2 hover:bg-white/10 rounded transition-colors">
             <input
               type="checkbox"
               checked={selectedItems.has(item.variantId)}
               onChange={() => handleItemSelect(item.variantId)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="rounded border-white/30 text-green-600 focus:ring-green-500 bg-white/20"
             />
             <div className="flex-1">
-              <span className="text-sm font-medium text-gray-900">{item.name}</span>
-              <span className="text-sm text-gray-500 ml-2">
+              <span className="text-sm font-medium text-white">{item.name}</span>
+              <span className="text-sm text-white/70 ml-2">
                 ({item.quantity}x)
               </span>
             </div>

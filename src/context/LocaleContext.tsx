@@ -25,94 +25,71 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   
   // Získat jazyk z URL parametra
   const urlLang = params?.lang as Locale;
-  const validLocales: Locale[] = ['cs', 'sk', 'en', 'de'];
+  const validLocales: Locale[] = React.useMemo(() => ['cs', 'sk', 'en', 'de'], []);
   const defaultLocale: Locale = 'cs';
   
-  // Inicializace jazyka - preferujeme localStorage, pak URL, pak automatickou detekci, pak default
+  // Flag pro kontrolu, zda už byl jazyk inicializován
+  const [hasInitialized, setHasInitialized] = useState(false);
+  
+  // Inicializace jazyka - preferujeme localStorage, pak URL, pak default
   const getInitialLocale = (): Locale => {
     if (typeof window !== 'undefined') {
       const savedLocale = localStorage.getItem('locale') as Locale;
       if (savedLocale && validLocales.includes(savedLocale)) {
+        console.log('LocaleContext - Using saved language from localStorage:', savedLocale);
         return savedLocale;
       }
     }
     
     if (urlLang && validLocales.includes(urlLang)) {
+      console.log('LocaleContext - Using URL language:', urlLang);
       return urlLang;
     }
     
+    console.log('LocaleContext - Using default language:', defaultLocale);
     return defaultLocale;
   };
   
-  const [locale, setLocaleState] = useState<Locale>(getInitialLocale);
+  const [locale, setLocaleState] = useState<Locale>(() => getInitialLocale());
   const [currency, setCurrencyState] = useState<Currency>('CZK');
-  const [hasDetectedLocation, setHasDetectedLocation] = useState(false);
 
-  // Automatická detekce jazyka podle lokality při prvním načtení
+  // Synchronizovat s URL parametrem a localStorage
   useEffect(() => {
-    const detectLocationAndLanguage = async () => {
-      // Kontrola, jestli už jsme detekovali lokaci
-      if (hasDetectedLocation || localStorage.getItem('locale')) {
-        return;
+    if (urlLang && validLocales.includes(urlLang)) {
+      console.log('LocaleContext - Syncing with URL language:', urlLang, 'current locale:', locale);
+      if (urlLang !== locale) {
+        setLocaleState(urlLang);
+        localStorage.setItem('locale', urlLang);
+        setHasInitialized(true);
       }
-
-      // Nejdříve zkusit Accept-Language header
-      const browserLanguage = navigator.language || navigator.languages?.[0];
-      if (browserLanguage) {
-        const langCode = browserLanguage.split('-')[0];
-        if (validLocales.includes(langCode as Locale)) {
-          console.log(`Detected browser language: ${langCode}`);
-          setLocaleState(langCode as Locale);
-          localStorage.setItem('locale', langCode);
-          setHasDetectedLocation(true);
-          return;
+    } else if (!urlLang && typeof window !== 'undefined') {
+      // Pokud není URL jazyk, VŽDY obnovit jazyk z localStorage
+      const savedLocale = localStorage.getItem('locale') as Locale;
+      if (savedLocale && validLocales.includes(savedLocale)) {
+        console.log('LocaleContext - No URL language, restoring from localStorage:', savedLocale);
+        if (savedLocale !== locale) {
+          console.log('LocaleContext - Updating locale from', locale, 'to', savedLocale);
+          setLocaleState(savedLocale);
         }
       }
-
-      try {
-        const response = await fetch('/api/geolocation');
-        if (response.ok) {
-          const data = await response.json();
-          
-          if (data.success && data.detectedLanguage) {
-            const detectedLocale = data.detectedLanguage as Locale;
-            
-            // Nastavit detekovaný jazyk pouze pokud je validní
-            if (validLocales.includes(detectedLocale)) {
-              console.log(`Detected language: ${detectedLocale} for country: ${data.country} (${data.countryCode})`);
-              
-              setLocaleState(detectedLocale);
-              localStorage.setItem('locale', detectedLocale);
-              
-              // Navigovat na nový jazyk, pokud se liší od URL
-              if (urlLang && urlLang !== detectedLocale) {
-                const currentPath = window.location.pathname;
-                const pathWithoutLang = currentPath.replace(/^\/(cs|sk|en|de)/, '');
-                router.push(`/${detectedLocale}${pathWithoutLang}`);
-              }
-            }
-          }
-        }
-      } catch (error) {
-        console.warn('Failed to detect location, using default language:', error);
-      } finally {
-        setHasDetectedLocation(true);
-      }
-    };
-
-    detectLocationAndLanguage();
-  }, [urlLang, router, hasDetectedLocation, validLocales]);
-
-  // Synchronizovat s URL parametrem pouze při první návštěvě
-  useEffect(() => {
-    if (urlLang && validLocales.includes(urlLang) && !localStorage.getItem('locale')) {
-      setLocaleState(urlLang);
-      localStorage.setItem('locale', urlLang);
     }
-  }, [urlLang, validLocales]);
+  }, [urlLang, validLocales, locale]);
+
+  // Dodatečná kontrola - pokud není URL jazyk, obnovit jazyk z localStorage
+  useEffect(() => {
+    if (!urlLang && typeof window !== 'undefined') {
+      const savedLocale = localStorage.getItem('locale') as Locale;
+      if (savedLocale && validLocales.includes(savedLocale) && savedLocale !== locale) {
+        console.log('LocaleContext - Additional check: restoring from localStorage:', savedLocale);
+        setLocaleState(savedLocale);
+      }
+    }
+  }, [urlLang, validLocales, locale]);
 
   // Automaticky nastavit měnu podle jazyka
   useEffect(() => {
+    console.log('LocaleContext - Setting currency based on locale:', { locale, currentCurrency: currency });
+    
     let newCurrency: Currency = 'CZK';
     
     if (locale === 'sk') {
@@ -125,9 +102,14 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
       newCurrency = 'CZK';
     }
     
+    console.log('LocaleContext - New currency calculated:', { locale, newCurrency, currentCurrency: currency });
+    
     if (newCurrency !== currency) {
+      console.log('LocaleContext - Updating currency from', currency, 'to', newCurrency);
       setCurrencyState(newCurrency);
       localStorage.setItem('currency', newCurrency);
+    } else {
+      console.log('LocaleContext - Currency unchanged:', currency);
     }
   }, [locale, currency]);
 
@@ -135,28 +117,34 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedCurrency = localStorage.getItem('currency') as Currency;
+      console.log('LocaleContext - Loading currency from localStorage:', savedCurrency);
       if (savedCurrency && (savedCurrency === 'CZK' || savedCurrency === 'EUR' || savedCurrency === 'GBP')) {
+        console.log('LocaleContext - Setting currency from localStorage:', savedCurrency);
         setCurrencyState(savedCurrency);
+      } else {
+        console.log('LocaleContext - No valid currency in localStorage, will use default');
       }
     }
   }, []);
 
-  const setLocale = (newLocale: Locale) => {
+  const setLocale = React.useCallback((newLocale: Locale) => {
+    console.log('LocaleContext - setLocale called with:', newLocale);
     setLocaleState(newLocale);
     localStorage.setItem('locale', newLocale);
     
-    // Navigovat na nový jazyk
+    // Navigovat na nový jazyk pomocí router.push pro zachování košíku
     const currentPath = window.location.pathname;
     const pathWithoutLang = currentPath.replace(/^\/(cs|sk|en|de)/, '');
     router.push(`/${newLocale}${pathWithoutLang}`);
-  };
+  }, [router]);
 
-  const setCurrency = (newCurrency: Currency) => {
+  const setCurrency = React.useCallback((newCurrency: Currency) => {
+    console.log('LocaleContext - setCurrency called with:', newCurrency);
     setCurrencyState(newCurrency);
     localStorage.setItem('currency', newCurrency);
-  };
+  }, []);
 
-  const value: LocaleContextType = {
+  const value: LocaleContextType = React.useMemo(() => ({
     locale,
     currency,
     setLocale,
@@ -165,7 +153,16 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     isSlovak: locale === 'sk',
     isEnglish: locale === 'en',
     isGerman: locale === 'de',
-  };
+  }), [locale, currency, setLocale, setCurrency]);
+
+  console.log('LocaleContext - Current state:', { 
+    locale, 
+    currency, 
+    urlLang, 
+    hasUrlLang: !!urlLang,
+    hasInitialized,
+    localStorageLocale: typeof window !== 'undefined' ? localStorage.getItem('locale') : 'N/A'
+  });
 
   return (
     <LocaleContext.Provider value={value}>

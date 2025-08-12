@@ -9,6 +9,7 @@ import { Button, QuantityButton } from '@/components/ui/Button';
 import { useEffect, useState, useMemo } from 'react';
 import { getDictionary } from '@/lib/getDictionary';
 import CartBulkActions from './CartBulkActions';
+import CartRecommendations from './CartRecommendations';
 
 export default function CartContent() {
   const { items, removeFromCart, updateQuantity, totalPrice } = useCart();
@@ -29,13 +30,8 @@ export default function CartContent() {
     loadDictionary();
   }, [locale]);
 
-  // Přepočítáme ceny v košíku podle aktuální měny
-  const convertedItems = useMemo(() => {
-    return items.map(item => ({
-      ...item,
-      price: convertCurrency(item.price, currency)
-    }));
-  }, [items, currency]);
+  // Ceny jsou už konvertované z useCart hooku
+  const convertedItems = items;
 
   const convertedTotalPrice = useMemo(() => {
     return convertedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -131,6 +127,11 @@ export default function CartContent() {
             {dictionary?.cart?.checkout || 'Pokračovat k objednávce'}
           </Link>
         </div>
+      </div>
+
+      {/* Recommendations */}
+      <div className="mt-8 pt-6 border-t border-white/10">
+        <CartRecommendations />
       </div>
     </div>
   );

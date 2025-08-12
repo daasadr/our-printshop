@@ -1,4 +1,49 @@
 {
+  "auth": {
+    "register": {
+      "title": "Registration",
+      "subtitle": "Create an account and get access to exclusive offers",
+      "description": "Register and get access to your account",
+      "name": "Name or nickname",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "gdprConsent": "I agree to the processing of personal data",
+      "registerButton": "Register",
+      "loginLink": "Already have an account? Sign in",
+      "errors": {
+        "required": "This field is required",
+        "invalidEmail": "Please enter a valid email address",
+        "passwordMismatch": "Passwords do not match",
+        "passwordTooShort": "Password must be at least 6 characters long",
+        "general": "An error occurred during registration"
+      },
+      "success": {
+        "title": "Registration successful",
+        "message": "Your account has been successfully created"
+      }
+    },
+    "login": {
+      "title": "Sign In",
+      "subtitle": "Sign in to your account",
+      "description": "Sign in and get access to your account",
+      "email": "Email",
+      "password": "Password",
+      "loginButton": "Sign In",
+      "forgotPassword": "Forgot your password?",
+      "registerLink": "Don't have an account? Register",
+      "errors": {
+        "required": "This field is required",
+        "invalidEmail": "Please enter a valid email address",
+        "invalidCredentials": "Invalid email or password",
+        "general": "An error occurred during sign in"
+      },
+      "success": {
+        "title": "Sign in successful",
+        "message": "You have been successfully signed in"
+      }
+    }
+  },
   "welcome": "Original clothing with designer prints",
   "welcome_back": "Welcome!",
   "welcome_back_message": "We're glad you're back, {name}",
@@ -60,7 +105,10 @@
     "saved_for_later": "Saved for Later",
     "no_saved_items": "You have no saved items",
     "move_to_cart": "Move to Cart",
-    "saved_on": "Saved on"
+    "saved_on": "Saved on",
+    "recommendations": {
+      "title": "Recommended products"
+    }
   },
   "products": {
     "title": "Products",

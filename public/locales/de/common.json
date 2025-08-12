@@ -1,4 +1,49 @@
 {
+  "auth": {
+    "register": {
+      "title": "Registrierung",
+      "subtitle": "Erstellen Sie ein Konto und erhalten Sie Zugang zu exklusiven Angeboten",
+      "description": "Registrieren Sie sich und erhalten Sie Zugang zu Ihrem Konto",
+      "name": "Name oder Spitzname",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "confirmPassword": "Passwort bestätigen",
+      "gdprConsent": "Ich stimme der Verarbeitung personenbezogener Daten zu",
+      "registerButton": "Registrieren",
+      "loginLink": "Haben Sie bereits ein Konto? Anmelden",
+      "errors": {
+        "required": "Dieses Feld ist erforderlich",
+        "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+        "passwordMismatch": "Passwörter stimmen nicht überein",
+        "passwordTooShort": "Passwort muss mindestens 6 Zeichen lang sein",
+        "general": "Bei der Registrierung ist ein Fehler aufgetreten"
+      },
+      "success": {
+        "title": "Registrierung erfolgreich",
+        "message": "Ihr Konto wurde erfolgreich erstellt"
+      }
+    },
+    "login": {
+      "title": "Anmeldung",
+      "subtitle": "Melden Sie sich bei Ihrem Konto an",
+      "description": "Melden Sie sich an und erhalten Sie Zugang zu Ihrem Konto",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "loginButton": "Anmelden",
+      "forgotPassword": "Passwort vergessen?",
+      "registerLink": "Haben Sie kein Konto? Registrieren",
+      "errors": {
+        "required": "Dieses Feld ist erforderlich",
+        "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+        "invalidCredentials": "Ungültige E-Mail oder Passwort",
+        "general": "Bei der Anmeldung ist ein Fehler aufgetreten"
+      },
+      "success": {
+        "title": "Anmeldung erfolgreich",
+        "message": "Sie wurden erfolgreich angemeldet"
+      }
+    }
+  },
   "welcome": "Originelle Kleidung mit Designer-Prints",
   "welcome_back": "Willkommen!",
   "welcome_back_message": "Wir freuen uns, dass Sie zurück sind, {name}",
@@ -60,7 +105,10 @@
     "saved_for_later": "Für später gespeichert",
     "no_saved_items": "Sie haben keine gespeicherten Artikel",
     "move_to_cart": "In den Warenkorb verschieben",
-    "saved_on": "Gespeichert am"
+    "saved_on": "Gespeichert am",
+    "recommendations": {
+      "title": "Empfohlene Produkte"
+    }
   },
   "products": {
     "title": "Produkte",

@@ -7,7 +7,7 @@
       "title": "Registrace",
       "subtitle": "Vytvořte si účet a získejte přístup k exkluzivním nabídkám",
       "description": "Registrujte se a získejte přístup k vašemu účtu",
-      "name": "Jméno a příjmení",
+      "name": "Jméno či přezdívka",
       "email": "E-mail",
       "password": "Heslo",
       "confirmPassword": "Potvrďte heslo",
@@ -108,7 +108,10 @@
     "saved_for_later": "Uložené na později",
     "no_saved_items": "Nemáte uložené položky",
     "move_to_cart": "Přesunout do košíku",
-    "saved_on": "Uloženo"
+    "saved_on": "Uloženo",
+    "recommendations": {
+      "title": "Doporučené produkty"
+    }
   },
   "products": {
     "title": "Produkty",

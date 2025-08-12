@@ -1,6 +1,5 @@
 import { ReactNode } from 'react';
 import { getDictionary } from '@/lib/getDictionary';
-import { LocaleProvider } from '@/context/LocaleContext';
 import { WishlistProvider } from '@/context/WishlistContext';
 import { Header } from '@/components/main-header';
 import { Footer } from '@/components/layout/Footer';
@@ -29,16 +28,14 @@ export default async function LocaleLayout({
   const dictionary = await getDictionary(lang);
 
   return (
-    <LocaleProvider>
-      <WishlistProvider>
-        <div className="min-h-screen bg-gray-50">
-          <Header dictionary={dictionary} />
-          <main id="main-content" role="main" className="flex-1">
-            {children}
-          </main>
-          <Footer dictionary={dictionary} />
-        </div>
-      </WishlistProvider>
-    </LocaleProvider>
+    <WishlistProvider>
+      <div className="min-h-screen bg-gray-50">
+        <Header dictionary={dictionary} />
+        <main id="main-content" role="main" className="flex-1">
+          {children}
+        </main>
+        <Footer dictionary={dictionary} />
+      </div>
+    </WishlistProvider>
   );
 } 

@@ -66,13 +66,8 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
     localStorage.setItem('savedForLater', JSON.stringify(items));
   };
 
-  // Convert prices
-  const convertedItems = React.useMemo(() => {
-    return items.map(item => ({
-      ...item,
-      price: convertCurrency(item.price, currency)
-    }));
-  }, [items, currency]);
+  // Ceny jsou už konvertované z useCart hooku
+  const convertedItems = items;
 
   const convertedTotalPrice = React.useMemo(() => {
     return convertedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -89,6 +84,13 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
   };
 
   const handleSaveForLater = (item: any) => {
+    // Kontrola, zda je uživatel přihlášený
+    const user = localStorage.getItem('user');
+    if (!user) {
+      alert('Pro uložení položky do oblíbených se musíte přihlásit nebo zaregistrovat.');
+      return;
+    }
+
     const savedItem: SavedItem = {
       id: `${item.variantId}-${Date.now()}`,
       variantId: item.variantId,
