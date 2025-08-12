@@ -10,6 +10,7 @@ import { getProductImages } from '@/utils/productImage';
 import { Button } from '@/components/ui/Button';
 import { useLocale } from '@/context/LocaleContext';
 import { FadeTransition } from '@/components/PageTransition';
+import { ClientOnlyPrice } from '@/components/ClientOnly';
 
 interface ProductListProps {
   products: ProductWithRelations[];
@@ -93,9 +94,9 @@ export function ProductList({ products, exchangeRates }: ProductListProps) {
             </p>
             <div className="mt-4 flex justify-between items-center">
               {priceConverted > 0 ? (
-                <p className="text-lg font-medium text-gray-900">
+                <ClientOnlyPrice className="text-lg font-medium text-gray-900">
                   {formatPrice(priceConverted, currency)}
-                </p>
+                </ClientOnlyPrice>
               ) : (
                 <p className="text-sm text-gray-500">
                   Cena není k dispozici

@@ -4,6 +4,7 @@ import { WishlistProvider } from '@/context/WishlistContext';
 import { Header } from '@/components/main-header';
 import { Footer } from '@/components/layout/Footer';
 import ClientPageTransition from '@/components/ClientPageTransition';
+import { FloatingDarkModeToggle } from '@/components/ui/DarkModeToggle';
 
 interface LayoutProps {
   children: ReactNode;
@@ -38,6 +39,9 @@ export default async function LocaleLayout({
           </ClientPageTransition>
         </main>
         <Footer dictionary={dictionary} />
+        
+        {/* Floating dark mode toggle */}
+        <FloatingDarkModeToggle />
       </div>
     </WishlistProvider>
   );
