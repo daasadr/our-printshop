@@ -62,18 +62,18 @@ const CategoryTiles = ({ categories = [], dictionary, lang = 'cs' }: CategoryTil
             <Link
               key={category.id}
               href={`/${lang}/products?category=${slug}`}
-              className="group relative rounded-lg overflow-hidden aspect-[4/3] bg-black/40 backdrop-blur-sm transition-transform hover:scale-105 hover:shadow-xl"
+              className="group category-tile relative rounded-lg overflow-hidden aspect-[4/3] glass-card transition-all duration-500 hover:scale-105 hover-3d"
             >
               <Image
                 src={imageSrc}
                 alt={translatedName}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                className="object-cover group-hover:opacity-75 transition-opacity"
+                className="object-cover group-hover:scale-110 transition-all duration-500"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-6">
-                <h3 className="text-xl font-semibold text-white">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent group-hover:from-black/90 transition-all duration-300" />
+              <div className="absolute inset-x-0 bottom-0 p-6 transform transition-transform duration-300 group-hover:translate-y-[-10px]">
+                <h3 className="text-xl font-semibold text-white group-hover:text-green-300 transition-colors duration-300">
                   {translatedName.charAt(0).toUpperCase() + translatedName.slice(1)}
                 </h3>
               </div>

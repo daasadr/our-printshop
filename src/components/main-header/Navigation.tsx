@@ -216,8 +216,11 @@ const Navigation: React.FC<NavigationProps> = ({ isMenuOpen, setIsMenuOpen, dict
       </nav>
 
       {/* Mobilní menu */}
-      {isMenuOpen && (
-        <div className="xl:hidden mt-4 pb-4 border-t border-gray-200 pt-4">
+      <div className={`xl:hidden mt-4 pb-4 border-t border-gray-200 pt-4 transition-all duration-300 ease-in-out ${
+        isMenuOpen 
+          ? 'max-h-screen opacity-100 transform translate-y-0' 
+          : 'max-h-0 opacity-0 transform -translate-y-4 overflow-hidden'
+      }`}>
           {/* Jazykové buttony - pouze na mobilu */}
           <div className="mb-4 flex justify-center">
             <LocaleSwitch />
@@ -331,7 +334,6 @@ const Navigation: React.FC<NavigationProps> = ({ isMenuOpen, setIsMenuOpen, dict
             )}
           </nav>
         </div>
-      )}
     </>
   );
 };
