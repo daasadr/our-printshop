@@ -3,6 +3,7 @@ import HeroSection from './homepage/HeroSection';
 import CategoriesAndProductsSection from './homepage/CategoriesAndProductsSection';
 import CallToActionSection from './homepage/CallToActionSection';
 import NewsletterSection from './homepage/NewsletterSection';
+import PageTransition from './PageTransition';
 
 interface HomePageProps {
   dictionary: any;
@@ -41,16 +42,18 @@ export default async function HomePage({ dictionary, lang }: HomePageProps) {
   ];
 
   return (
-    <main>
-      <HeroSection dictionary={dictionary} lang={lang} />
-      <CategoriesAndProductsSection 
-        categories={defaultCategories} 
-        products={products}
-        dictionary={dictionary} 
-        lang={lang} 
-      />
-      <CallToActionSection dictionary={dictionary} lang={lang} />
-      <NewsletterSection dictionary={dictionary} lang={lang} />
-    </main>
+    <PageTransition>
+      <main>
+        <HeroSection dictionary={dictionary} lang={lang} />
+        <CategoriesAndProductsSection 
+          categories={defaultCategories} 
+          products={products}
+          dictionary={dictionary} 
+          lang={lang} 
+        />
+        <CallToActionSection dictionary={dictionary} lang={lang} />
+        <NewsletterSection dictionary={dictionary} lang={lang} />
+      </main>
+    </PageTransition>
   );
 } 

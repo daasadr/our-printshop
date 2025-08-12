@@ -9,7 +9,7 @@ import { ProductWithRelations } from '@/types';
 import { getProductImages } from '@/utils/productImage';
 import { Button } from '@/components/ui/Button';
 import { useLocale } from '@/context/LocaleContext';
-import { FadeIn } from '@/components/PageTransition';
+import { FadeTransition } from '@/components/PageTransition';
 
 interface ProductListProps {
   products: ProductWithRelations[];
@@ -66,7 +66,7 @@ export function ProductList({ products, exchangeRates }: ProductListProps) {
           ) : 0;
         
         return (
-          <FadeIn key={product.id} delay={index * 100}>
+          <FadeTransition key={product.id}>
             <div className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
             <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
               <Image
@@ -111,7 +111,7 @@ export function ProductList({ products, exchangeRates }: ProductListProps) {
               </Button>
             </div>
           </div>
-          </FadeIn>
+          </FadeTransition>
         );
       })}
     </div>

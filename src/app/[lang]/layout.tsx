@@ -3,6 +3,7 @@ import { getDictionary } from '@/lib/getDictionary';
 import { WishlistProvider } from '@/context/WishlistContext';
 import { Header } from '@/components/main-header';
 import { Footer } from '@/components/layout/Footer';
+import ClientPageTransition from '@/components/ClientPageTransition';
 
 interface LayoutProps {
   children: ReactNode;
@@ -32,7 +33,9 @@ export default async function LocaleLayout({
       <div className="min-h-screen bg-gray-50">
         <Header dictionary={dictionary} />
         <main id="main-content" role="main" className="flex-1">
-          {children}
+          <ClientPageTransition>
+            {children}
+          </ClientPageTransition>
         </main>
         <Footer dictionary={dictionary} />
       </div>
