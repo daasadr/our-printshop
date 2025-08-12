@@ -3,7 +3,7 @@ import CategoryTiles from '@/components/CategoryTiles';
 import Pagination from '@/components/Pagination';
 import ProductFilter from '@/components/ProductFilter';
 import { ProductListSkeleton } from '@/components/ProductListSkeleton';
-import { PageTransition } from '@/components/PageTransition';
+import PageTransition from '@/components/PageTransition';
 import { getCategories } from '@/lib/directus';
 import { getDictionary } from '@/lib/getDictionary';
 import { getExchangeRatesForSSR } from '@/lib/exchangeRatesServer';
