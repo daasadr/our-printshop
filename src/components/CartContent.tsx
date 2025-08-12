@@ -8,9 +8,10 @@ import { formatPrice, convertCurrency } from '@/utils/currency';
 import { Button, QuantityButton } from '@/components/ui/Button';
 import { useEffect, useState, useMemo } from 'react';
 import { getDictionary } from '@/lib/getDictionary';
+import CartBulkActions from './CartBulkActions';
 
 export default function CartContent() {
-  const { items, removeFromCart, updateQuantity, totalPrice } = useCart();
+  const { items = [], removeFromCart, updateQuantity, totalPrice } = useCart();
   const { locale, currency } = useLocale();
   const [dictionary, setDictionary] = useState<any>(null);
 
@@ -53,6 +54,9 @@ export default function CartContent() {
 
   return (
     <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
+      {/* Bulk Actions */}
+      <CartBulkActions items={convertedItems} />
+      
       <div className="space-y-4">
         {convertedItems.map((item) => (
           <div

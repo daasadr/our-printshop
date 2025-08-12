@@ -19,6 +19,16 @@
     "view_product": "Zobraziť produkt",
     "out_of_stock": "Nie je skladom",
     "in_stock": "Skladom",
+    "on_demand": "Na objednávku",
+    "description": "Popis",
+    "variants": "Varianty",
+    "quantity": "Množstvo",
+    "color": "Farba",
+    "stock_status": {
+      "in_stock": "Skladom",
+      "out_of_stock": "Nie je skladom",
+      "on_demand": "Na objednávku"
+    },
     "description": {
       "men": "Štýlové {product_name} pre moderných mužov. Vyrobené z kvalitných materiálov pre maximálny komfort a trvanlivosť. Ideálne pre každodenné nosenie aj špeciálne príležitosti.",
       "women": "Elegantné {product_name} pre ženy, ktoré chcú vyjadriť svoj jedinečný štýl. Kvalitné materiály a starostlivé spracovanie zabezpečujú komfort a krásu.",
@@ -43,7 +53,31 @@
     "add_to_cart": "Do košíka",
     "items_count": "položiek v košíku",
     "opened": "Košík otvorený",
-    "closed": "Košík zatvorený"
+    "closed": "Košík zatvorený",
+    "confirm_remove": "Opravdu chcete odobrať",
+    "confirm_clear": "Opravdu chcete vyprázdniť košík?",
+    "clear": "Vyprázdniť košík",
+    "bulk_actions": {
+      "title": "Hromadné akcie",
+      "select_all": "Vybrať všetko",
+      "selected_items": "vybraných položiek",
+      "remove_selected": "Odobrať vybrané",
+      "move_to_wishlist": "Presunúť do obľúbených",
+      "export_cart": "Exportovať košík",
+      "share_cart": "Zdieľať košík",
+      "clear_cart": "Vyprázdniť košík"
+    },
+    "saved_for_later": "Uložené na neskôr",
+    "no_saved_items": "Nemáte uložené žiadne položky",
+    "move_to_cart": "Presunúť do košíka",
+    "saved_on": "Uložené"
+  },
+  "quick_view": {
+    "title": "Rýchly náhľad",
+    "view_full_details": "Zobraziť úplné detaily",
+    "add_to_cart": "Pridať do košíka",
+    "select_color": "Vybrať farbu",
+    "select_size": "Vybrať veľkosť"
   },
   "products": {
     "title": "Produkty",

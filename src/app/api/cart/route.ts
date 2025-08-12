@@ -28,10 +28,13 @@ export async function GET(req: NextRequest) {
     const user = await getUserFromRequest(req);
     
     if (!user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      // Pre teraz vrátime prázdny košík namiesto 401 chyby
+      return NextResponse.json({
+        id: null,
+        user: null,
+        items: [],
+        total: 0
+      });
     }
 
     const response = await readCart({

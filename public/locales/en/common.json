@@ -19,6 +19,16 @@
     "view_product": "View Product",
     "out_of_stock": "Out of Stock",
     "in_stock": "In Stock",
+    "on_demand": "On Demand",
+    "description": "Description",
+    "variants": "Variants",
+    "quantity": "Quantity",
+    "color": "Color",
+    "stock_status": {
+      "in_stock": "In Stock",
+      "out_of_stock": "Out of Stock",
+      "on_demand": "On Demand"
+    },
     "description": {
       "men": "Stylish {product_name} for modern men. Made from quality materials for maximum comfort and durability. Perfect for everyday wear and special occasions.",
       "women": "Elegant {product_name} for women who want to express their unique style. Quality materials and careful craftsmanship ensure comfort and beauty.",
@@ -43,7 +53,31 @@
     "add_to_cart": "Add to Cart",
     "items_count": "items in cart",
     "opened": "Cart opened",
-    "closed": "Cart closed"
+    "closed": "Cart closed",
+    "confirm_remove": "Do you really want to remove",
+    "confirm_clear": "Do you really want to clear the cart?",
+    "clear": "Clear Cart",
+    "bulk_actions": {
+      "title": "Bulk Actions",
+      "select_all": "Select All",
+      "selected_items": "selected items",
+      "remove_selected": "Remove Selected",
+      "move_to_wishlist": "Move to Wishlist",
+      "export_cart": "Export Cart",
+      "share_cart": "Share Cart",
+      "clear_cart": "Clear Cart"
+    },
+    "saved_for_later": "Saved for Later",
+    "no_saved_items": "You have no saved items",
+    "move_to_cart": "Move to Cart",
+    "saved_on": "Saved"
+  },
+  "quick_view": {
+    "title": "Quick View",
+    "view_full_details": "View Full Details",
+    "add_to_cart": "Add to Cart",
+    "select_color": "Select Color",
+    "select_size": "Select Size"
   },
   "products": {
     "title": "Products",
