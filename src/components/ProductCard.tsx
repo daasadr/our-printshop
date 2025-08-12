@@ -4,8 +4,11 @@ import { formatPrice, convertCurrency } from '@/utils/currency';
 import { getProductImages } from '@/utils/productImage';
 import { useLocale } from '@/context/LocaleContext';
 import { useWishlist } from '@/context/WishlistContext';
-import { FiHeart } from 'react-icons/fi';
+import { FiHeart, FiEye } from 'react-icons/fi';
 import { useState } from 'react';
+import StockIndicator from './StockIndicator';
+import ColorVariants from './ColorVariants';
+import QuickViewModal from './QuickViewModal';
 
 interface ProductCardProps {
   product: any;
@@ -15,6 +18,8 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { currency, locale } = useLocale();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [isWishlistLoading, setIsWishlistLoading] = useState(false);
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+  const [selectedColorVariant, setSelectedColorVariant] = useState<any>(null);
   
   const priceEur = product.variants[0]?.price || 0;
   const priceConverted = convertCurrency(priceEur, currency);
@@ -58,22 +63,46 @@ export default function ProductCard({ product }: ProductCardProps) {
     setTimeout(() => setIsWishlistLoading(false), 300);
   };
 
+  const handleQuickView = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsQuickViewOpen(true);
+  };
+
+  // Funkcia na určenie stavu skladu
+  const getStockStatus = () => {
+    // Pre Printful produkty - všetky sú "on demand"
+    return 'on_demand' as const;
+  };
+
+  // Extrahujeme farby z variantov
+  const colorVariants = product.variants?.filter((v: any) => v.color) || [];
+
   return (
     <Link href={`/products/${product.id}`} className="group">
       <div className="bg-white/5 backdrop-blur-md rounded-lg overflow-hidden transition-transform hover:scale-105 relative">
-        {/* Wishlist tlačidlo */}
-        <button
-          onClick={handleWishlistToggle}
-          disabled={isWishlistLoading}
-          className={`absolute top-3 right-3 z-10 p-2 rounded-full transition-all duration-300 ${
-            isInWishlistState 
-              ? 'bg-red-500 text-white shadow-lg' 
-              : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'
-          } ${isWishlistLoading ? 'opacity-50' : ''}`}
-          aria-label={isInWishlistState ? 'Odobrať z obľúbených' : 'Pridať do obľúbených'}
-        >
-          <FiHeart className={`w-5 h-5 ${isInWishlistState ? 'fill-current' : ''}`} />
-        </button>
+        {/* Action buttons */}
+        <div className="absolute top-3 right-3 z-10 flex gap-2">
+          <button
+            onClick={handleQuickView}
+            className="p-2 rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm transition-all duration-300"
+            aria-label="Rýchly náhľad"
+          >
+            <FiEye className="w-5 h-5" />
+          </button>
+          <button
+            onClick={handleWishlistToggle}
+            disabled={isWishlistLoading}
+            className={`p-2 rounded-full transition-all duration-300 ${
+              isInWishlistState 
+                ? 'bg-red-500 text-white shadow-lg' 
+                : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'
+            } ${isWishlistLoading ? 'opacity-50' : ''}`}
+            aria-label={isInWishlistState ? 'Odobrať z obľúbených' : 'Pridať do obľúbených'}
+          >
+            <FiHeart className={`w-5 h-5 ${isInWishlistState ? 'fill-current' : ''}`} />
+          </button>
+        </div>
         
         <div className="relative aspect-square">
           <Image
@@ -100,11 +129,36 @@ export default function ProductCard({ product }: ProductCardProps) {
               {product.description}
             </p>
           )}
-          <p className="text-green-200 font-medium">
+          
+          {/* Stock indicator */}
+          <div className="mt-2">
+            <StockIndicator stockStatus={getStockStatus()} className="text-xs" />
+          </div>
+          
+          {/* Color variants */}
+          {colorVariants.length > 1 && (
+            <div className="mt-3">
+              <ColorVariants 
+                variants={colorVariants} 
+                selectedVariant={selectedColorVariant} 
+                onVariantSelect={setSelectedColorVariant} 
+                className="text-xs" 
+              />
+            </div>
+          )}
+          
+          <p className="text-green-200 font-medium mt-3">
             {formatPrice(priceConverted, currency)}
           </p>
         </div>
       </div>
+      
+      {/* Quick View Modal */}
+      <QuickViewModal 
+        product={product} 
+        isOpen={isQuickViewOpen} 
+        onClose={() => setIsQuickViewOpen(false)} 
+      />
     </Link>
   );
 } 

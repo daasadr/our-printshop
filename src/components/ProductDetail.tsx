@@ -217,7 +217,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         quantity,
         name: `${product.name} ${selectedSize ? `- ${selectedSize}` : ''} ${selectedColor ? `- ${selectedColor}` : ''}`,
         price: priceInSelectedCurrency,
-        image: product.designs && product.designs.length > 0 ? (product.designs[0].previewUrl ?? '') : ''
+        image: product.designs && product.designs.length > 0 ? (product.designs[0].previewUrl ?? '') : '',
+        sourceCurrency: 'EUR'
       });
       
       // Zobrazíme potvrzení
