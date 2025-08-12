@@ -20,6 +20,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [isWishlistLoading, setIsWishlistLoading] = useState(false);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [selectedColorVariant, setSelectedColorVariant] = useState<any>(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
   
   const priceEur = product.variants[0]?.price || 0;
   const priceConverted = convertCurrency(priceEur, currency);
@@ -80,12 +81,12 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link href={`/products/${product.id}`} className="group">
-      <div className="bg-white/5 backdrop-blur-md rounded-lg overflow-hidden transition-transform hover:scale-105 relative">
+      <div className="relative glass-card rounded-lg overflow-hidden transition-all duration-500 hover:scale-105 hover-3d group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)]">
         {/* Action buttons */}
-        <div className="absolute top-3 right-3 z-10 flex gap-2">
+        <div className="absolute top-3 right-3 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
           <button
             onClick={handleQuickView}
-            className="p-2 rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm transition-all duration-300"
+            className="p-2 rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:shadow-lg"
             aria-label="Rýchly náhľad"
           >
             <FiEye className="w-5 h-5" />
@@ -93,7 +94,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <button
             onClick={handleWishlistToggle}
             disabled={isWishlistLoading}
-            className={`p-2 rounded-full transition-all duration-300 ${
+            className={`p-2 rounded-full transition-all duration-300 hover:scale-110 hover:shadow-lg ${
               isInWishlistState 
                 ? 'bg-red-500 text-white shadow-lg' 
                 : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'
@@ -104,19 +105,31 @@ export default function ProductCard({ product }: ProductCardProps) {
           </button>
         </div>
         
-        <div className="relative aspect-square">
+        <div className="relative aspect-square overflow-hidden">
+          {/* Loading skeleton */}
+          {!imageLoaded && (
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 animate-shimmer" />
+          )}
+          
           <Image
             src={getProductImages(product).main}
             alt={product.name}
             fill
-            className="object-cover"
+            className={`object-cover transition-all duration-500 group-hover:scale-110 ${
+              imageLoaded ? 'opacity-100' : 'opacity-0'
+            }`}
+            onLoad={() => setImageLoaded(true)}
           />
+          
+          {/* Hover overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
-        <div className="p-4">
-          <h3 className="text-lg font-semibold text-white mb-2">
+        
+        <div className="p-4 space-y-3">
+          <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-green-300 transition-colors duration-300">
             {product.icon_cs && (
               <span 
-                className="mr-1" 
+                className="mr-1 transition-transform duration-300 group-hover:scale-110 inline-block" 
                 style={{ fontFamily: 'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif' }}
               >
                 {product.icon_cs}
@@ -124,20 +137,21 @@ export default function ProductCard({ product }: ProductCardProps) {
             )}
             {getTranslatedProductName()}
           </h3>
+          
           {product.description && (
-            <p className="text-sm text-gray-300 mb-2 line-clamp-2">
+            <p className="text-sm text-gray-300 mb-2 line-clamp-2 group-hover:text-gray-200 transition-colors duration-300">
               {product.description}
             </p>
           )}
           
           {/* Stock indicator */}
-          <div className="mt-2">
+          <div className="mt-2 transform transition-transform duration-300 group-hover:scale-105">
             <StockIndicator stockStatus={getStockStatus()} className="text-xs" />
           </div>
           
           {/* Color variants */}
           {colorVariants.length > 1 && (
-            <div className="mt-3">
+            <div className="mt-3 transform transition-transform duration-300 group-hover:scale-105">
               <ColorVariants 
                 variants={colorVariants} 
                 selectedVariant={selectedColorVariant} 
@@ -147,18 +161,18 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
           )}
           
-          <p className="text-green-200 font-medium mt-3">
+          <p className="text-green-200 font-medium mt-3 text-lg group-hover:text-green-300 transition-all duration-300 group-hover:scale-105">
             {formatPrice(priceConverted, currency)}
           </p>
         </div>
+        
+        {/* Quick View Modal */}
+        <QuickViewModal 
+          product={product} 
+          isOpen={isQuickViewOpen} 
+          onClose={() => setIsQuickViewOpen(false)} 
+        />
       </div>
-      
-      {/* Quick View Modal */}
-      <QuickViewModal 
-        product={product} 
-        isOpen={isQuickViewOpen} 
-        onClose={() => setIsQuickViewOpen(false)} 
-      />
     </Link>
   );
 } 

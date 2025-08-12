@@ -5,6 +5,45 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  
+  /* Custom color scheme */
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --primary-light: #60a5fa;
+  --secondary: #10b981;
+  --secondary-dark: #059669;
+  --accent: #f59e0b;
+  --accent-dark: #d97706;
+  
+  /* Neutral colors */
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  
+  /* Status colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  
+  /* Transitions */
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 300ms ease-in-out;
+  --transition-slow: 500ms ease-in-out;
 }
 
 @theme inline {
@@ -25,6 +64,37 @@ body {
   background: #0a0a0a;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--gray-100);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gray-400);
+  border-radius: 4px;
+  transition: background var(--transition-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-500);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--gray-100);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gray-400) var(--gray-100);
 }
 
 /* Animácie pre kontaktnú stránku */
@@ -67,6 +137,178 @@ body {
   animation-delay: 400ms;
 }
 
+/* Enhanced loading animations */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--gray-200) 25%,
+    var(--gray-100) 50%,
+    var(--gray-200) 75%
+  );
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus styles for accessibility */
+*:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Glassmorphism effects */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px 0 rgba(31, 38, 135, 0.37),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Floating animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Pulse glow effect */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.8), 0 0 30px rgba(59, 130, 246, 0.6);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-animated {
+  background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 3s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* 3D hover effects */
+.hover-3d {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-3d:hover {
+  transform: translateY(-5px) rotateX(5deg) rotateY(5deg);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Parallax effect */
+.parallax {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.parallax-layer {
+  transform: translateZ(0);
+  transition: transform 0.1s ease-out;
+}
+
+.parallax-layer-slow {
+  transform: translateZ(-100px);
+  transition: transform 0.2s ease-out;
+}
+
+/* Interactive category tiles */
+.category-tile {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.category-tile::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.category-tile:hover::before {
+  left: 100%;
+}
+
+.category-tile:hover {
+  transform: scale(1.05);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
 /* Responzívne pravidlá pre registračnú stránku */
 @media (max-width: 1024px) {
   .registration-title {
@@ -105,50 +347,32 @@ body {
   .registration-subtitle {
     font-size: 0.75rem; /* text-xs */
     margin-top: 0.25rem;
-    /* Výrazný tmavý stín pre čitelnosť na akomkoľvek pozadí */
-    text-shadow: 
-      0 0 8px rgba(0,0,0,1),
-      0 0 16px rgba(0,0,0,1),
-      0 0 24px rgba(0,0,0,1),
-      0 0 32px rgba(0,0,0,1),
-      1px 1px 3px rgba(0,0,0,1),
-      -1px -1px 3px rgba(0,0,0,1),
-      1px -1px 3px rgba(0,0,0,1),
-      -1px 1px 3px rgba(0,0,0,1);
+    line-height: 1rem;
   }
   
   .registration-modal {
-    top: 10rem; /* top-40 - drží sa vysoko hore */
+    top: 6rem; /* top-24 */
     right: 1rem; /* right-4 */
-    max-width: calc(100vw - 2rem);
-    padding: 1.5rem 1rem; /* zmenšený padding */
+    left: 1rem; /* left-4 */
   }
 }
 
 @media (max-width: 640px) {
   .registration-title {
     font-size: 1.25rem; /* text-xl */
+    margin-top: 0.75rem;
   }
   
   .registration-subtitle {
-    /* Výrazný tmavý stín pre čitelnosť na akomkoľvek pozadí */
-    text-shadow: 
-      0 0 6px rgba(0,0,0,1),
-      0 0 12px rgba(0,0,0,1),
-      0 0 18px rgba(0,0,0,1),
-      0 0 24px rgba(0,0,0,1),
-      1px 1px 2px rgba(0,0,0,1),
-      -1px -1px 2px rgba(0,0,0,1),
-      1px -1px 2px rgba(0,0,0,1),
-      -1px 1px 2px rgba(0,0,0,1);
+    font-size: 0.625rem; /* text-xs */
+    margin-top: 0.125rem;
+    line-height: 0.875rem;
   }
   
   .registration-modal {
-    top: 12rem; /* top-48 - drží sa vysoko hore */
+    top: 4rem; /* top-16 */
     right: 0.5rem; /* right-2 */
-    max-width: calc(100vw - 1rem);
-    padding: 1rem 0.75rem; /* ešte menší padding */
-    font-size: 0.875rem; /* menší font */
+    left: 0.5rem; /* left-2 */
   }
 }
 
