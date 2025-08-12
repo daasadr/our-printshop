@@ -101,7 +101,6 @@
     "items_count": "Artikel im Warenkorb",
     "opened": "Warenkorb geöffnet",
     "closed": "Warenkorb geschlossen",
-<<<<<<< HEAD
     "confirm_remove": "Möchten Sie wirklich entfernen",
     "confirm_clear": "Möchten Sie wirklich den Warenkorb leeren?",
     "clear": "Warenkorb leeren",
@@ -111,22 +110,17 @@
       "selected_items": "ausgewählte Artikel",
       "remove_selected": "Ausgewählte entfernen",
       "move_to_wishlist": "Zur Wunschliste verschieben",
-=======
-    "select_all": "Alle auswählen",
-    "selected_items": "Artikel ausgewählt",
-    "bulk_actions": {
-      "remove_selected": "Ausgewählte entfernen",
-      "move_to_wishlist": "Zu Favoriten verschieben",
->>>>>>> origin/main
       "export_cart": "Warenkorb exportieren",
       "share_cart": "Warenkorb teilen",
       "clear_cart": "Warenkorb leeren"
     },
-<<<<<<< HEAD
     "saved_for_later": "Für später gespeichert",
     "no_saved_items": "Sie haben keine gespeicherten Artikel",
     "move_to_cart": "In den Warenkorb verschieben",
-    "saved_on": "Gespeichert"
+    "saved_on": "Gespeichert",
+    "recommendations": {
+      "title": "Empfohlene Produkte"
+    }
   },
   "quick_view": {
     "title": "Schnellansicht",
@@ -134,17 +128,6 @@
     "add_to_cart": "In den Warenkorb",
     "select_color": "Farbe auswählen",
     "select_size": "Größe auswählen"
-=======
-    "confirm_remove": "Möchten Sie wirklich entfernen",
-    "confirm_clear": "Möchten Sie wirklich den Warenkorb leeren?",
-    "saved_for_later": "Für später gespeichert",
-    "no_saved_items": "Sie haben keine gespeicherten Artikel",
-    "move_to_cart": "In den Warenkorb verschieben",
-    "saved_on": "Gespeichert am",
-    "recommendations": {
-      "title": "Empfohlene Produkte"
-    }
->>>>>>> origin/main
   },
   "products": {
     "title": "Produkte",

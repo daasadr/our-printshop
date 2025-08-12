@@ -101,7 +101,6 @@
     "items_count": "položiek v košíku",
     "opened": "Košík otvorený",
     "closed": "Košík zatvorený",
-<<<<<<< HEAD
     "confirm_remove": "Opravdu chcete odobrať",
     "confirm_clear": "Opravdu chcete vyprázdniť košík?",
     "clear": "Vyprázdniť košík",
@@ -109,22 +108,19 @@
       "title": "Hromadné akcie",
       "select_all": "Vybrať všetko",
       "selected_items": "vybraných položiek",
-=======
-    "select_all": "Vybrať všetko",
-    "selected_items": "položiek vybraných",
-    "bulk_actions": {
->>>>>>> origin/main
       "remove_selected": "Odobrať vybrané",
       "move_to_wishlist": "Presunúť do obľúbených",
       "export_cart": "Exportovať košík",
       "share_cart": "Zdieľať košík",
       "clear_cart": "Vyprázdniť košík"
     },
-<<<<<<< HEAD
     "saved_for_later": "Uložené na neskôr",
     "no_saved_items": "Nemáte uložené žiadne položky",
     "move_to_cart": "Presunúť do košíka",
-    "saved_on": "Uložené"
+    "saved_on": "Uložené",
+    "recommendations": {
+      "title": "Odporúčané produkty"
+    }
   },
   "quick_view": {
     "title": "Rýchly náhľad",
@@ -132,17 +128,6 @@
     "add_to_cart": "Pridať do košíka",
     "select_color": "Vybrať farbu",
     "select_size": "Vybrať veľkosť"
-=======
-    "confirm_remove": "Opravdu chcete odobrať",
-    "confirm_clear": "Opravdu chcete vyprázdniť košík?",
-    "saved_for_later": "Uložené na neskôr",
-    "no_saved_items": "Nemáte uložené položky",
-    "move_to_cart": "Presunúť do košíka",
-    "saved_on": "Uložené",
-    "recommendations": {
-      "title": "Odporúčané produkty"
-    }
->>>>>>> origin/main
   },
   "products": {
     "title": "Produkty",

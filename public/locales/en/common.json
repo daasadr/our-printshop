@@ -101,7 +101,6 @@
     "items_count": "items in cart",
     "opened": "Cart opened",
     "closed": "Cart closed",
-<<<<<<< HEAD
     "confirm_remove": "Do you really want to remove",
     "confirm_clear": "Do you really want to clear the cart?",
     "clear": "Clear Cart",
@@ -109,22 +108,19 @@
       "title": "Bulk Actions",
       "select_all": "Select All",
       "selected_items": "selected items",
-=======
-    "select_all": "Select All",
-    "selected_items": "items selected",
-    "bulk_actions": {
->>>>>>> origin/main
       "remove_selected": "Remove Selected",
       "move_to_wishlist": "Move to Wishlist",
       "export_cart": "Export Cart",
       "share_cart": "Share Cart",
       "clear_cart": "Clear Cart"
     },
-<<<<<<< HEAD
     "saved_for_later": "Saved for Later",
     "no_saved_items": "You have no saved items",
     "move_to_cart": "Move to Cart",
-    "saved_on": "Saved"
+    "saved_on": "Saved",
+    "recommendations": {
+      "title": "Recommended products"
+    }
   },
   "quick_view": {
     "title": "Quick View",
@@ -132,17 +128,6 @@
     "add_to_cart": "Add to Cart",
     "select_color": "Select Color",
     "select_size": "Select Size"
-=======
-    "confirm_remove": "Do you really want to remove",
-    "confirm_clear": "Do you really want to clear the cart?",
-    "saved_for_later": "Saved for Later",
-    "no_saved_items": "You have no saved items",
-    "move_to_cart": "Move to Cart",
-    "saved_on": "Saved on",
-    "recommendations": {
-      "title": "Recommended products"
-    }
->>>>>>> origin/main
   },
   "products": {
     "title": "Products",
