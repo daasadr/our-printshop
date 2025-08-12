@@ -1,5 +1,52 @@
 {
+  "auth": {
+    "register": {
+      "title": "Registrácia",
+      "subtitle": "Vytvorte si účet a získajte prístup k exkluzívnym ponukám",
+      "description": "Registrujte sa a získajte prístup k vášmu účtu",
+      "name": "Meno alebo prezývka",
+      "email": "E-mail",
+      "password": "Heslo",
+      "confirmPassword": "Potvrďte heslo",
+      "gdprConsent": "Súhlasím so spracovaním osobných údajov",
+      "registerButton": "Registrovať",
+      "loginLink": "Už máte účet? Prihláste sa",
+      "errors": {
+        "required": "Toto pole je povinné",
+        "invalidEmail": "Zadajte platnú e-mailovú adresu",
+        "passwordMismatch": "Heslá sa nezhodujú",
+        "passwordTooShort": "Heslo musí mať aspoň 6 znakov",
+        "general": "Nastala chyba počas registrácie"
+      },
+      "success": {
+        "title": "Registrácia úspešná",
+        "message": "Váš účet bol úspešne vytvorený"
+      }
+    },
+    "login": {
+      "title": "Prihlásenie",
+      "subtitle": "Prihláste sa do svojho účtu",
+      "description": "Prihláste sa a získajte prístup k vášmu účtu",
+      "email": "E-mail",
+      "password": "Heslo",
+      "loginButton": "Prihlásiť",
+      "forgotPassword": "Zabudli ste heslo?",
+      "registerLink": "Nemáte účet? Registrujte sa",
+      "errors": {
+        "required": "Toto pole je povinné",
+        "invalidEmail": "Zadajte platnú e-mailovú adresu",
+        "invalidCredentials": "Neplatný e-mail alebo heslo",
+        "general": "Nastala chyba počas prihlasovania"
+      },
+      "success": {
+        "title": "Prihlásenie úspešné",
+        "message": "Boli ste úspešne prihlásený"
+      }
+    }
+  },
   "welcome": "Originálne oblečenie s autorskými potlačami",
+  "welcome_back": "Vitajte!",
+  "welcome_back_message": "Tešíme sa, že ste späť, {name}",
   "subtitle": "Vyjadrite svoj jedinečný štýl s našimi kreatívnymi dizajnmi.",
   "cta_collection": "Pozrieť kolekciu",
   "cta_story": "Náš príbeh",
@@ -54,6 +101,7 @@
     "items_count": "položiek v košíku",
     "opened": "Košík otvorený",
     "closed": "Košík zatvorený",
+<<<<<<< HEAD
     "confirm_remove": "Opravdu chcete odobrať",
     "confirm_clear": "Opravdu chcete vyprázdniť košík?",
     "clear": "Vyprázdniť košík",
@@ -61,12 +109,18 @@
       "title": "Hromadné akcie",
       "select_all": "Vybrať všetko",
       "selected_items": "vybraných položiek",
+=======
+    "select_all": "Vybrať všetko",
+    "selected_items": "položiek vybraných",
+    "bulk_actions": {
+>>>>>>> origin/main
       "remove_selected": "Odobrať vybrané",
       "move_to_wishlist": "Presunúť do obľúbených",
       "export_cart": "Exportovať košík",
       "share_cart": "Zdieľať košík",
       "clear_cart": "Vyprázdniť košík"
     },
+<<<<<<< HEAD
     "saved_for_later": "Uložené na neskôr",
     "no_saved_items": "Nemáte uložené žiadne položky",
     "move_to_cart": "Presunúť do košíka",
@@ -78,6 +132,17 @@
     "add_to_cart": "Pridať do košíka",
     "select_color": "Vybrať farbu",
     "select_size": "Vybrať veľkosť"
+=======
+    "confirm_remove": "Opravdu chcete odobrať",
+    "confirm_clear": "Opravdu chcete vyprázdniť košík?",
+    "saved_for_later": "Uložené na neskôr",
+    "no_saved_items": "Nemáte uložené položky",
+    "move_to_cart": "Presunúť do košíka",
+    "saved_on": "Uložené",
+    "recommendations": {
+      "title": "Odporúčané produkty"
+    }
+>>>>>>> origin/main
   },
   "products": {
     "title": "Produkty",

@@ -1,5 +1,52 @@
 {
+  "auth": {
+    "register": {
+      "title": "Registrierung",
+      "subtitle": "Erstellen Sie ein Konto und erhalten Sie Zugang zu exklusiven Angeboten",
+      "description": "Registrieren Sie sich und erhalten Sie Zugang zu Ihrem Konto",
+      "name": "Name oder Spitzname",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "confirmPassword": "Passwort bestätigen",
+      "gdprConsent": "Ich stimme der Verarbeitung personenbezogener Daten zu",
+      "registerButton": "Registrieren",
+      "loginLink": "Haben Sie bereits ein Konto? Anmelden",
+      "errors": {
+        "required": "Dieses Feld ist erforderlich",
+        "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+        "passwordMismatch": "Passwörter stimmen nicht überein",
+        "passwordTooShort": "Passwort muss mindestens 6 Zeichen lang sein",
+        "general": "Bei der Registrierung ist ein Fehler aufgetreten"
+      },
+      "success": {
+        "title": "Registrierung erfolgreich",
+        "message": "Ihr Konto wurde erfolgreich erstellt"
+      }
+    },
+    "login": {
+      "title": "Anmeldung",
+      "subtitle": "Melden Sie sich bei Ihrem Konto an",
+      "description": "Melden Sie sich an und erhalten Sie Zugang zu Ihrem Konto",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "loginButton": "Anmelden",
+      "forgotPassword": "Passwort vergessen?",
+      "registerLink": "Haben Sie kein Konto? Registrieren",
+      "errors": {
+        "required": "Dieses Feld ist erforderlich",
+        "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+        "invalidCredentials": "Ungültige E-Mail oder Passwort",
+        "general": "Bei der Anmeldung ist ein Fehler aufgetreten"
+      },
+      "success": {
+        "title": "Anmeldung erfolgreich",
+        "message": "Sie wurden erfolgreich angemeldet"
+      }
+    }
+  },
   "welcome": "Originelle Kleidung mit Designer-Prints",
+  "welcome_back": "Willkommen!",
+  "welcome_back_message": "Wir freuen uns, dass Sie zurück sind, {name}",
   "subtitle": "Drücken Sie Ihren einzigartigen Stil mit unseren kreativen Designs aus.",
   "cta_collection": "Kollektion ansehen",
   "cta_story": "Unsere Geschichte",
@@ -54,6 +101,7 @@
     "items_count": "Artikel im Warenkorb",
     "opened": "Warenkorb geöffnet",
     "closed": "Warenkorb geschlossen",
+<<<<<<< HEAD
     "confirm_remove": "Möchten Sie wirklich entfernen",
     "confirm_clear": "Möchten Sie wirklich den Warenkorb leeren?",
     "clear": "Warenkorb leeren",
@@ -63,10 +111,18 @@
       "selected_items": "ausgewählte Artikel",
       "remove_selected": "Ausgewählte entfernen",
       "move_to_wishlist": "Zur Wunschliste verschieben",
+=======
+    "select_all": "Alle auswählen",
+    "selected_items": "Artikel ausgewählt",
+    "bulk_actions": {
+      "remove_selected": "Ausgewählte entfernen",
+      "move_to_wishlist": "Zu Favoriten verschieben",
+>>>>>>> origin/main
       "export_cart": "Warenkorb exportieren",
       "share_cart": "Warenkorb teilen",
       "clear_cart": "Warenkorb leeren"
     },
+<<<<<<< HEAD
     "saved_for_later": "Für später gespeichert",
     "no_saved_items": "Sie haben keine gespeicherten Artikel",
     "move_to_cart": "In den Warenkorb verschieben",
@@ -78,6 +134,17 @@
     "add_to_cart": "In den Warenkorb",
     "select_color": "Farbe auswählen",
     "select_size": "Größe auswählen"
+=======
+    "confirm_remove": "Möchten Sie wirklich entfernen",
+    "confirm_clear": "Möchten Sie wirklich den Warenkorb leeren?",
+    "saved_for_later": "Für später gespeichert",
+    "no_saved_items": "Sie haben keine gespeicherten Artikel",
+    "move_to_cart": "In den Warenkorb verschieben",
+    "saved_on": "Gespeichert am",
+    "recommendations": {
+      "title": "Empfohlene Produkte"
+    }
+>>>>>>> origin/main
   },
   "products": {
     "title": "Produkte",

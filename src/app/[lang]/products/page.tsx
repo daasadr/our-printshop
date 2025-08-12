@@ -6,6 +6,7 @@ import { ProductListSkeleton } from '@/components/ProductListSkeleton';
 import { PageTransition } from '@/components/PageTransition';
 import { getCategories } from '@/lib/directus';
 import { getDictionary } from '@/lib/getDictionary';
+import { getExchangeRatesForSSR } from '@/lib/exchangeRatesServer';
 import { ProductWithRelations } from '@/types';
 
 interface ProductsPageProps {
@@ -18,6 +19,10 @@ interface ProductsPageProps {
 export default async function ProductsPage({ params, searchParams }: ProductsPageProps) {
   const { lang } = params;
   const dict = await getDictionary(lang);
+  
+  // Načtení aktuálních kurzů pro server-side rendering
+  const exchangeRates = await getExchangeRatesForSSR();
+  console.log('ProductsPage - Exchange rates for SSR:', exchangeRates);
   
   const category = typeof searchParams?.category === 'string' ? searchParams.category : undefined;
   const page = typeof searchParams?.page === 'string' ? parseInt(searchParams.page, 10) : 1;
@@ -157,7 +162,7 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
           
           {currentProducts.length > 0 ? (
             <>
-              <ProductList products={currentProducts} />
+              <ProductList products={currentProducts} exchangeRates={exchangeRates} />
               <Pagination
                 currentPage={page}
                 totalPages={totalPages}

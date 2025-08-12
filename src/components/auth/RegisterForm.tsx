@@ -114,7 +114,7 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
 
   if (success) {
     return (
-      <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8">
+      <div className="max-w-md mx-auto bg-white/95 backdrop-blur-lg rounded-lg shadow-md p-4">
         <div className="text-center">
           <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
             <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,11 +130,7 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
   }
 
   return (
-    <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8">
-      <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">{dict.title}</h1>
-        <p className="text-gray-600 mt-2">{dict.subtitle}</p>
-      </div>
+    <div className="max-w-md mx-auto bg-white/95 backdrop-blur-lg rounded-lg shadow-md p-4">
 
       {error && (
         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
@@ -142,9 +138,9 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-3">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
             {dict.name}
           </label>
           <input
@@ -153,13 +149,13 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
             name="name"
             value={formData.name}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+            className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
             required
           />
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
             {dict.email}
           </label>
           <input
@@ -168,13 +164,13 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
             name="email"
             value={formData.email}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+            className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
             required
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
             {dict.password}
           </label>
           <input
@@ -183,13 +179,13 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
             name="password"
             value={formData.password}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+            className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
             required
           />
         </div>
 
         <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
             {dict.confirmPassword}
           </label>
           <input
@@ -198,7 +194,7 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
             name="confirmPassword"
             value={formData.confirmPassword}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+            className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
             required
           />
         </div>

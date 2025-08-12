@@ -167,11 +167,11 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
               </span>
             )}
           </Link>
-          <Link href="/cart" className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100 relative" aria-label="Košík">
+          <Link href={`/${locale}/cart`} className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100 relative" aria-label="Košík">
             <FaShoppingCart className="w-5 h-5" />
-            {items.length > 0 && (
+            {items.reduce((total, item) => total + item.quantity, 0) > 0 && (
               <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
-                {items.length}
+                {items.reduce((total, item) => total + item.quantity, 0)}
               </span>
             )}
           </Link>
@@ -232,11 +232,11 @@ const HeaderActions: React.FC<HeaderActionsProps> = ({
             </span>
           )}
         </Link>
-        <Link href="/cart" className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100 relative" aria-label="Košík">
+        <Link href={`/${locale}/cart`} className="p-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-100 relative" aria-label="Košík">
           <FaShoppingCart className="w-5 h-5" />
-          {items.length > 0 && (
+          {items.reduce((total, item) => total + item.quantity, 0) > 0 && (
             <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
-              {items.length}
+              {items.reduce((total, item) => total + item.quantity, 0)}
             </span>
           )}
         </Link>

@@ -5,9 +5,12 @@ import { Logo } from './Logo';
 import Navigation from './Navigation';
 import { HeaderActions } from './HeaderActions';
 import { useLocale } from '@/context/LocaleContext';
-import { getDictionary } from '@/lib/getDictionary';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  dictionary: any;
+}
+
+const Header: React.FC<HeaderProps> = ({ dictionary }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { locale } = useLocale();
@@ -21,22 +24,6 @@ const Header: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  // Načtení dictionary pro aktuální jazyk
-  const [dictionary, setDictionary] = useState<any>(null);
-
-  useEffect(() => {
-    const loadDictionary = async () => {
-      try {
-        const dict = await getDictionary(locale);
-        setDictionary(dict);
-      } catch (error) {
-        console.warn('Failed to load dictionary:', error);
-      }
-    };
-
-    loadDictionary();
-  }, [locale]);
 
   return (
     <header
@@ -89,4 +76,4 @@ const Header: React.FC = () => {
   );
 };
 
-export { Header};
+export { Header };

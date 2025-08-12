@@ -1,12 +1,12 @@
 'use client';
 
-// import { SessionProvider } from 'next-auth/react'; // ODSTRANĚNO
+import { LocaleProvider } from '@/context/LocaleContext';
 import { CartProvider } from '@/hooks/useCart';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    // <SessionProvider> // ODSTRANĚNO
+    <LocaleProvider>
       <CartProvider>{children}</CartProvider>
-    // </SessionProvider> // ODSTRANĚNO
+    </LocaleProvider>
   );
 } 

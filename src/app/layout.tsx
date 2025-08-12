@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Inter } from 'next/font/google';
 import { Providers } from './providers';
-import { CartProvider } from '@/context/CartContext';
+// import { CartProvider } from '@/context/CartContext'; // ODSTRANĚNO - používáme localStorage cart
 import { WishlistProvider } from '@/context/WishlistContext';
 import { AuthProvider } from '@/context/AuthContext';
 
@@ -118,11 +118,9 @@ export default function RootLayout({
         
         <AuthProvider>
           <Providers>
-            <CartProvider>
-              <WishlistProvider>
-                {children}
-              </WishlistProvider>
-            </CartProvider>
+            <WishlistProvider>
+              {children}
+            </WishlistProvider>
           </Providers>
         </AuthProvider>
       </body>

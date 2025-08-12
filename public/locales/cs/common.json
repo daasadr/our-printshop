@@ -7,7 +7,7 @@
       "title": "Registrace",
       "subtitle": "Vytvořte si účet a získejte přístup k exkluzivním nabídkám",
       "description": "Registrujte se a získejte přístup k vašemu účtu",
-      "name": "Jméno a příjmení",
+      "name": "Jméno či přezdívka",
       "email": "E-mail",
       "password": "Heslo",
       "confirmPassword": "Potvrďte heslo",
@@ -48,6 +48,8 @@
     }
   },
   "welcome": "Originální oblečení s autorskými potisky",
+  "welcome_back": "Vítejte!",
+  "welcome_back_message": "Jsme rádi, že jste zpět, {name}",
   "subtitle": "Vyjádřete svůj jedinečný styl s našimi kreativními designy.",
   "cta_collection": "Prohlédnout kolekci",
   "cta_story": "Náš příběh",
@@ -102,6 +104,7 @@
     "items_count": "položek v košíku",
     "opened": "Košík otevřen",
     "closed": "Košík zavřen",
+<<<<<<< HEAD
     "confirm_remove": "Opravdu chcete odebrat",
     "confirm_clear": "Opravdu chcete vyprázdnit košík?",
     "clear": "Vyprázdnit košík",
@@ -109,12 +112,18 @@
       "title": "Hromadné akce",
       "select_all": "Vybrat vše",
       "selected_items": "vybraných položek",
+=======
+    "select_all": "Vybrat vše",
+    "selected_items": "položek vybráno",
+    "bulk_actions": {
+>>>>>>> origin/main
       "remove_selected": "Odebrat vybrané",
       "move_to_wishlist": "Přesunout do oblíbených",
       "export_cart": "Exportovat košík",
       "share_cart": "Sdílet košík",
       "clear_cart": "Vyprázdnit košík"
     },
+<<<<<<< HEAD
     "saved_for_later": "Uložené na později",
     "no_saved_items": "Nemáte uložené žádné položky",
     "move_to_cart": "Přesunout do košíku",
@@ -126,6 +135,17 @@
     "add_to_cart": "Přidat do košíku",
     "select_color": "Vybrat barvu",
     "select_size": "Vybrat velikost"
+=======
+    "confirm_remove": "Opravdu chcete odebrat",
+    "confirm_clear": "Opravdu chcete vyprázdnit košík?",
+    "saved_for_later": "Uložené na později",
+    "no_saved_items": "Nemáte uložené položky",
+    "move_to_cart": "Přesunout do košíku",
+    "saved_on": "Uloženo",
+    "recommendations": {
+      "title": "Doporučené produkty"
+    }
+>>>>>>> origin/main
   },
   "products": {
     "title": "Produkty",

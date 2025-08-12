@@ -22,7 +22,7 @@
 }
 
 body {
-  background: var(--background);
+  background: #0a0a0a;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -43,10 +43,184 @@ body {
   animation: fade-in 0.8s ease-out forwards;
 }
 
+/* Paralax animácie pre registračnú stránku */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px) translateX(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(4px);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 1.2s ease-out forwards;
+}
+
+.animation-delay-200 {
+  animation-delay: 200ms;
+}
+
+.animation-delay-400 {
+  animation-delay: 400ms;
+}
+
+/* Responzívne pravidlá pre registračnú stránku */
+@media (max-width: 1024px) {
+  .registration-title {
+    font-size: 1.875rem; /* text-3xl */
+    margin-top: 1.5rem;
+  }
+  
+  .registration-subtitle {
+    font-size: 0.875rem; /* text-sm */
+    margin-top: 0.5rem;
+    line-height: 1.25rem;
+    /* Výrazný tmavý stín pre čitelnosť na akomkoľvek pozadí */
+    text-shadow: 
+      0 0 10px rgba(0,0,0,1),
+      0 0 20px rgba(0,0,0,1),
+      0 0 30px rgba(0,0,0,1),
+      0 0 40px rgba(0,0,0,1),
+      2px 2px 4px rgba(0,0,0,1),
+      -2px -2px 4px rgba(0,0,0,1),
+      2px -2px 4px rgba(0,0,0,1),
+      -2px 2px 4px rgba(0,0,0,1);
+  }
+  
+  .registration-modal {
+    top: 8rem; /* top-32 - drží sa vysoko hore */
+    right: 2rem; /* right-8 */
+  }
+}
+
+@media (max-width: 768px) {
+  .registration-title {
+    font-size: 1.5rem; /* text-2xl */
+    margin-top: 1rem;
+  }
+  
+  .registration-subtitle {
+    font-size: 0.75rem; /* text-xs */
+    margin-top: 0.25rem;
+    /* Výrazný tmavý stín pre čitelnosť na akomkoľvek pozadí */
+    text-shadow: 
+      0 0 8px rgba(0,0,0,1),
+      0 0 16px rgba(0,0,0,1),
+      0 0 24px rgba(0,0,0,1),
+      0 0 32px rgba(0,0,0,1),
+      1px 1px 3px rgba(0,0,0,1),
+      -1px -1px 3px rgba(0,0,0,1),
+      1px -1px 3px rgba(0,0,0,1),
+      -1px 1px 3px rgba(0,0,0,1);
+  }
+  
+  .registration-modal {
+    top: 10rem; /* top-40 - drží sa vysoko hore */
+    right: 1rem; /* right-4 */
+    max-width: calc(100vw - 2rem);
+    padding: 1.5rem 1rem; /* zmenšený padding */
+  }
+}
+
+@media (max-width: 640px) {
+  .registration-title {
+    font-size: 1.25rem; /* text-xl */
+  }
+  
+  .registration-subtitle {
+    /* Výrazný tmavý stín pre čitelnosť na akomkoľvek pozadí */
+    text-shadow: 
+      0 0 6px rgba(0,0,0,1),
+      0 0 12px rgba(0,0,0,1),
+      0 0 18px rgba(0,0,0,1),
+      0 0 24px rgba(0,0,0,1),
+      1px 1px 2px rgba(0,0,0,1),
+      -1px -1px 2px rgba(0,0,0,1),
+      1px -1px 2px rgba(0,0,0,1),
+      -1px 1px 2px rgba(0,0,0,1);
+  }
+  
+  .registration-modal {
+    top: 12rem; /* top-48 - drží sa vysoko hore */
+    right: 0.5rem; /* right-2 */
+    max-width: calc(100vw - 1rem);
+    padding: 1rem 0.75rem; /* ešte menší padding */
+    font-size: 0.875rem; /* menší font */
+  }
+}
+
 /* Hover efekty pre formulár */
 .form-input:focus {
   transform: scale(1.02);
   transition: transform 0.2s ease;
+}
+
+/* Magické rozmlžené okraje pre registračný modal */
+.registration-modal {
+  /* Viacnásobný blur efekt */
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  
+  /* Rozmlžené okraje s viacnásobnými tieňmi */
+  box-shadow: 
+    0 0 30px rgba(147, 51, 234, 0.4),
+    0 0 60px rgba(147, 51, 234, 0.3),
+    0 0 90px rgba(147, 51, 234, 0.2),
+    0 0 120px rgba(147, 51, 234, 0.1),
+    0 0 150px rgba(147, 51, 234, 0.05),
+    0 0 180px rgba(147, 51, 234, 0.03),
+    inset 0 0 30px rgba(147, 51, 234, 0.15),
+    inset 0 0 60px rgba(147, 51, 234, 0.08);
+  
+  /* Animovaný glow efekt */
+  animation: modal-glow 3s ease-in-out infinite alternate;
+  
+  /* Pozícia pre pseudo-element */
+  position: relative;
+}
+
+/* Pseudo-element pre rozmlžené okraje bez ovplyvnenia obsahu */
+.registration-modal::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  background: radial-gradient(circle, rgba(147, 51, 234, 0.1) 0%, transparent 70%);
+  filter: blur(15px);
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Animácia pre glow efekt */
+@keyframes modal-glow {
+  0% {
+    box-shadow: 
+      0 0 20px rgba(147, 51, 234, 0.3),
+      0 0 40px rgba(147, 51, 234, 0.2),
+      0 0 60px rgba(147, 51, 234, 0.1),
+      0 0 80px rgba(147, 51, 234, 0.05),
+      0 0 100px rgba(147, 51, 234, 0.03),
+      0 0 120px rgba(147, 51, 234, 0.02),
+      inset 0 0 20px rgba(147, 51, 234, 0.1),
+      inset 0 0 40px rgba(147, 51, 234, 0.05);
+  }
+  100% {
+    box-shadow: 
+      0 0 30px rgba(147, 51, 234, 0.4),
+      0 0 60px rgba(147, 51, 234, 0.3),
+      0 0 90px rgba(147, 51, 234, 0.2),
+      0 0 120px rgba(147, 51, 234, 0.1),
+      0 0 150px rgba(147, 51, 234, 0.05),
+      0 0 180px rgba(147, 51, 234, 0.03),
+      inset 0 0 30px rgba(147, 51, 234, 0.15),
+      inset 0 0 60px rgba(147, 51, 234, 0.08);
+  }
 }
 
 /* Konfety animácia */
