@@ -30,6 +30,7 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
   const priceFrom = typeof searchParams?.priceFrom === 'string' ? searchParams.priceFrom : undefined;
   const priceTo = typeof searchParams?.priceTo === 'string' ? searchParams.priceTo : undefined;
   const sortBy = typeof searchParams?.sortBy === 'string' ? searchParams.sortBy : undefined;
+  const page = typeof searchParams?.page === 'string' ? searchParams.page : '1';
   
   console.log('ProductsPage - searchParams:', searchParams);
   console.log('ProductsPage - category:', category);
