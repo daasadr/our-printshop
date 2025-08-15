@@ -8,8 +8,7 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const category = searchParams.get('category') || searchParams.get('main_category'); // Podporuje oba parametry
-    const page = parseInt(searchParams.get('page') || '1', 10);
-    const limit = parseInt(searchParams.get('limit') || '12', 10); // Default na 12 produktov na stránku
+    const limit = parseInt(searchParams.get('limit') || '1000', 10); // Vysoký limit pro všechny produkty
     const sort = searchParams.get('sort') || '-id'; // Změna na -id místo -date_created
     const locale = searchParams.get('locale') || 'cs'; // Jazyk pre preklady
     
@@ -35,8 +34,7 @@ export async function GET(req: Request) {
         'icon_de'
       ],
       sort,
-      limit: limit, // Vždy nastavit limit
-      offset: (page - 1) * limit // Paginácia
+      limit: limit // Vždy nastavit limit
     };
     
     console.log('API Products - Request params:', { category, limit, sort, locale, search, priceFrom, priceTo, sortBy });

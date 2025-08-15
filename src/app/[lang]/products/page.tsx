@@ -1,4 +1,4 @@
-import InfiniteProductList from '@/components/InfiniteProductList';
+import { ProductList } from '@/components/ProductList';
 import CategoryTiles from '@/components/CategoryTiles';
 import ProductFilter from '@/components/ProductFilter';
 import { ProductListSkeleton } from '@/components/ProductListSkeleton';
@@ -139,16 +139,7 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
             </h1>
           </div>
           
-          <InfiniteProductList
-            initialProducts={initialProducts}
-            category={category}
-            search={search}
-            priceFrom={priceFrom}
-            priceTo={priceTo}
-            sortBy={sortBy}
-            exchangeRates={exchangeRates}
-            lang={lang}
-          />
+          <ProductList products={initialProducts} exchangeRates={exchangeRates} />
         </div>
       </div>
     </PageTransition>

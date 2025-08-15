@@ -25,7 +25,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   
   const priceEur = product.variants[0]?.price || 0;
   const priceConverted = convertCurrency(priceEur, currency);
-  const previewUrl = product.designs[0]?.previewUrl || '';
+  const previewUrl = product.designs?.[0]?.previewUrl || '';
   const isInWishlistState = isInWishlist(product.id);
 
   // Funkce pro překlad názvu produktu
