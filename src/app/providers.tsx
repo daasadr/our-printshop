@@ -20,4 +20,4 @@ export function Providers({ children }: { children: React.ReactNode }) {
       </LocaleProvider>
     </DarkModeProvider>
   );
-} 
+}

@@ -109,6 +109,26 @@ export default function RootLayout({
     <html lang="cs">
       <head>
         <style dangerouslySetInnerHTML={{ __html: skipLinkStyles }} />
+        {/* Early dark mode script to prevent FOUC */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var darkMode = localStorage.getItem('darkMode');
+                  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  
+                  if (darkMode === 'true' || (darkMode === null && prefersDark)) {
+                    document.documentElement.classList.add('dark');
+                    document.body.classList.add('dark-mode');
+                  }
+                } catch (e) {
+                  console.warn('Failed to apply early dark mode:', e);
+                }
+              })();
+            `,
+          }}
+        />
       </head>
       <body className={inter.className}>
         {/* Skip Navigation */}

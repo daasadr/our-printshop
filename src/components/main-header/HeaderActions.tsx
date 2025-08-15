@@ -9,7 +9,7 @@ import { useCart } from '@/hooks/useCart';
 import { useWishlist } from '@/context/WishlistContext';
 import { useLocale } from '@/context/LocaleContext';
 import LocaleSwitch from '@/components/LocaleSwitch';
-import HeaderDarkModeToggle from '@/components/ui/DarkModeToggle';
+import { HeaderDarkModeToggle } from '@/components/ui/DarkModeToggle';
 
 interface HeaderActionsProps {
   isMenuOpen: boolean;

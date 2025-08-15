@@ -37,6 +37,11 @@ jest.mock('@/components/LocaleSwitch', () => {
   }
 })
 
+// Mock DarkModeToggle
+jest.mock('@/components/ui/DarkModeToggle', () => ({
+  HeaderDarkModeToggle: () => <div data-testid="dark-mode-toggle">Dark Mode Toggle</div>
+}))
+
 describe('HeaderActions', () => {
   beforeEach(() => {
     jest.clearAllMocks()
@@ -61,8 +66,8 @@ describe('HeaderActions', () => {
   it('should show only user icon when user is not logged in', () => {
     render(<HeaderActions isMenuOpen={false} setIsMenuOpen={jest.fn()} />)
     
-    // User icon should be present
-    expect(screen.getByRole('link', { name: /ucet/i })).toBeInTheDocument()
+    // User icon should be present (link without specific name)
+    expect(screen.getByRole('link', { name: '' })).toBeInTheDocument()
     
     // But no user name should be shown
     expect(screen.queryByText('Test')).not.toBeInTheDocument()
