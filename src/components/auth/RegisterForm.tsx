@@ -140,7 +140,7 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
 
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             {dict.name}
           </label>
           <input
@@ -149,13 +149,13 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
             name="name"
             value={formData.name}
             onChange={handleInputChange}
-            className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+            className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 bg-white dark:bg-gray-800"
             required
           />
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             {dict.email}
           </label>
           <input
@@ -164,13 +164,13 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
             name="email"
             value={formData.email}
             onChange={handleInputChange}
-            className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+            className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 bg-white dark:bg-gray-800"
             required
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             {dict.password}
           </label>
           <input
@@ -179,13 +179,13 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
             name="password"
             value={formData.password}
             onChange={handleInputChange}
-            className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+            className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 bg-white dark:bg-gray-800"
             required
           />
         </div>
 
         <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             {dict.confirmPassword}
           </label>
           <input
@@ -194,7 +194,7 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
             name="confirmPassword"
             value={formData.confirmPassword}
             onChange={handleInputChange}
-            className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+            className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 bg-white dark:bg-gray-800"
             required
           />
         </div>
@@ -209,7 +209,7 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
             className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1"
             required
           />
-          <label htmlFor="gdpr_consent" className="ml-2 block text-sm text-gray-700">
+          <label htmlFor="gdpr_consent" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
             {dict.gdprConsent}
           </label>
         </div>
@@ -224,10 +224,10 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
       </form>
 
       <div className="mt-6 text-center">
-        <p className="text-sm text-gray-600">
-          {dict.loginLink}{' '}
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          {dict.loginLink.split('?')[0]}?{' '}
           <Link href="/cs/prihlaseni" className="text-blue-600 hover:text-blue-500 font-medium">
-            Přihlásit se
+            {dict.loginLink.split('?')[1] || 'Přihlásit se'}
           </Link>
         </p>
       </div>
