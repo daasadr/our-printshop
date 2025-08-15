@@ -9,6 +9,7 @@ import { getProductImages } from '@/utils/productImage';
 import { Button } from '@/components/ui/Button';
 import { useLocale } from '@/context/LocaleContext';
 import { FiHeart } from 'react-icons/fi';
+import { ClientOnlyPrice } from '@/components/ClientOnly';
 
 const fallbackImage = '/images/placeholder.jpg';
 
@@ -117,9 +118,9 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ products = [], dictiona
               
               <div className="mt-4 flex justify-between items-center">
                 {product.convertedPrice > 0 ? (
-                  <p className="text-lg font-medium text-gray-900">
+                  <ClientOnlyPrice className="text-lg font-medium text-gray-900">
                     {formatPrice(product.convertedPrice, currency)}
-                  </p>
+                  </ClientOnlyPrice>
                 ) : (
                   <p className="text-sm text-gray-500">
                     {dictionary?.product?.price_not_available || "Cena není k dispozici"}
@@ -184,9 +185,9 @@ const ProductPlaceholders: React.FC<ProductPlaceholdersProps> = ({ dictionary, c
             <h3 className="text-sm font-medium text-gray-900">{product.name}</h3>
             <p className="mt-1 text-sm text-gray-500">Více variant</p>
             <div className="mt-4 flex justify-between items-center">
-              <p className="text-lg font-medium text-gray-900">
+              <ClientOnlyPrice className="text-lg font-medium text-gray-900">
                 {formatPrice(product.price, currency as any)}
-              </p>
+              </ClientOnlyPrice>
               <button className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
                 {dictionary?.product?.add_to_cart || "Do košíku"}
               </button>

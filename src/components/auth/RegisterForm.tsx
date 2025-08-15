@@ -15,6 +15,7 @@ interface RegisterFormProps {
     gdprConsent: string;
     registerButton: string;
     loginLink: string;
+    loginButton?: string;
     errors: {
       required: string;
       invalidEmail: string;
@@ -27,9 +28,10 @@ interface RegisterFormProps {
       message: string;
     };
   };
+  lang: string;
 }
 
-export default function RegisterForm({ dict }: RegisterFormProps) {
+export default function RegisterForm({ dict, lang }: RegisterFormProps) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -222,15 +224,15 @@ export default function RegisterForm({ dict }: RegisterFormProps) {
           {isLoading ? 'Registruji...' : dict.registerButton}
         </button>
       </form>
-
-      <div className="mt-6 text-center">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          {dict.loginLink.split('?')[0]}?{' '}
-          <Link href="/cs/prihlaseni" className="text-blue-600 hover:text-blue-500 font-medium">
-            {dict.loginLink.split('?')[1] || 'Přihlásit se'}
-          </Link>
-        </p>
-      </div>
+<div className="mt-6 text-center">
+  <p className="text-sm text-gray-600 dark:text-gray-400">
+    {dict.loginLink}{' '}
+    <Link href={`/${lang}/prihlaseni`} className="text-blue-600 hover:text-blue-500">
+      {dict.loginButton || 'Přihlásit se'}
+    </Link>
+  </p>
+</div>
+     
     </div>
   );
 } 

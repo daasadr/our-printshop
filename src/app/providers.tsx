@@ -3,6 +3,7 @@
 import { LocaleProvider } from '@/context/LocaleContext';
 import { CartProvider } from '@/hooks/useCart';
 import { ToastProvider } from '@/components/ui/Toast';
+import { TransitionProvider } from '@/context/TransitionContext';
 import { DarkModeProvider } from '@/context/DarkModeContext';
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -11,10 +12,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <LocaleProvider>
         <CartProvider>
           <ToastProvider>
-            {children}
+            <TransitionProvider>
+              {children}
+            </TransitionProvider>
           </ToastProvider>
         </CartProvider>
       </LocaleProvider>
     </DarkModeProvider>
   );
-} 
+}

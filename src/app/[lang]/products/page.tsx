@@ -1,9 +1,8 @@
-import { ProductList } from '@/components/ProductList';
+import InfiniteProductList from '@/components/InfiniteProductList';
 import CategoryTiles from '@/components/CategoryTiles';
-import Pagination from '@/components/Pagination';
 import ProductFilter from '@/components/ProductFilter';
 import { ProductListSkeleton } from '@/components/ProductListSkeleton';
-import { PageTransition } from '@/components/PageTransition';
+import PageTransition from '@/components/PageTransition';
 import { getCategories } from '@/lib/directus';
 import { getDictionary } from '@/lib/getDictionary';
 import { getExchangeRatesForSSR } from '@/lib/exchangeRatesServer';
@@ -25,14 +24,13 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
   console.log('ProductsPage - Exchange rates for SSR:', exchangeRates);
   
   const category = typeof searchParams?.category === 'string' ? searchParams.category : undefined;
-  const page = typeof searchParams?.page === 'string' ? parseInt(searchParams.page, 10) : 1;
-  const productsPerPage = 12;
   
   // Nové filtre
   const search = typeof searchParams?.search === 'string' ? searchParams.search : undefined;
   const priceFrom = typeof searchParams?.priceFrom === 'string' ? searchParams.priceFrom : undefined;
   const priceTo = typeof searchParams?.priceTo === 'string' ? searchParams.priceTo : undefined;
   const sortBy = typeof searchParams?.sortBy === 'string' ? searchParams.sortBy : undefined;
+  const page = typeof searchParams?.page === 'string' ? searchParams.page : '1';
   
   console.log('ProductsPage - searchParams:', searchParams);
   console.log('ProductsPage - category:', category);
@@ -85,9 +83,10 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
     baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://happywilderness.cz';
   }
   
-  // Vytvorenie URL s filtrami
+  // Načítanie prvých produktov pre infinite scroll
   const apiParams = new URLSearchParams();
-  apiParams.set('limit', '1000');
+  apiParams.set('page', '1');
+  apiParams.set('limit', '12');
   apiParams.set('locale', lang);
   
   if (category) apiParams.set('category', category);
@@ -101,7 +100,7 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
   console.log('ProductsPage - apiUrl:', apiUrl);
   console.log('ProductsPage - isLocalhost:', isLocalhost);
   
-  let allProducts: ProductWithRelations[] = [];
+  let initialProducts: ProductWithRelations[] = [];
   
   try {
     const response = await fetch(apiUrl, { 
@@ -111,32 +110,15 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
       }
     });
     if (response.ok) {
-      allProducts = await response.json();
-      console.log('ProductsPage - fetched all products count:', allProducts.length);
-      console.log('ProductsPage - first 3 products:', allProducts.slice(0, 3).map(p => ({ id: p.id, name: p.name, main_category: p.main_category })));
+      initialProducts = await response.json();
+      console.log('ProductsPage - fetched initial products count:', initialProducts.length);
+      console.log('ProductsPage - first 3 products:', initialProducts.slice(0, 3).map(p => ({ id: p.id, name: p.name, main_category: p.main_category })));
     } else {
       console.error('Failed to fetch products:', response.status, response.statusText);
     }
   } catch (error) {
     console.error('Error fetching products:', error);
   }
-
-  // Paginace
-  const totalProducts = allProducts.length;
-  const totalPages = Math.ceil(totalProducts / productsPerPage);
-  const startIndex = (page - 1) * productsPerPage;
-  const endIndex = startIndex + productsPerPage;
-  const currentProducts = allProducts.slice(startIndex, endIndex);
-
-  console.log('ProductsPage - pagination:', {
-    totalProducts,
-    totalPages,
-    currentPage: page,
-    productsPerPage,
-    startIndex,
-    endIndex,
-    currentProductsCount: currentProducts.length
-  });
 
   return (
     <PageTransition>
@@ -155,35 +137,18 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
             <h1 className="text-3xl font-bold text-gray-900">
               {category ? `${dict.products?.title || 'Produkty'} - ${category}` : dict.products?.all_products || 'Všechny produkty'}
             </h1>
-            <div className="text-sm text-gray-600">
-              {dict.products?.showing || 'Zobrazeno'} {startIndex + 1}-{Math.min(endIndex, totalProducts)} {dict.products?.of || 'z'} {totalProducts} {dict.products?.products || 'produktů'}
-            </div>
           </div>
           
-          {currentProducts.length > 0 ? (
-            <>
-              <ProductList products={currentProducts} exchangeRates={exchangeRates} />
-              <Pagination
-                currentPage={page}
-                totalPages={totalPages}
-                totalProducts={totalProducts}
-                productsPerPage={productsPerPage}
-                category={category}
-              />
-            </>
-          ) : (
-            <div className="text-center py-12">
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                {dict.products?.no_products_found || 'Žádné produkty nenalezeny'}
-              </h3>
-              <p className="text-gray-600">
-                {category 
-                  ? `${dict.products?.no_products_in_category || 'V kategorii'} "${category}" ${dict.products?.no_products_found_in_category || 'nebyly nalezeny žádné produkty.'}`
-                  : dict.products?.no_products_available || 'Momentálně nejsou k dispozici žádné produkty.'
-                }
-              </p>
-            </div>
-          )}
+          <InfiniteProductList
+            initialProducts={initialProducts}
+            category={category}
+            search={search}
+            priceFrom={priceFrom}
+            priceTo={priceTo}
+            sortBy={sortBy}
+            exchangeRates={exchangeRates}
+            lang={lang}
+          />
         </div>
       </div>
     </PageTransition>

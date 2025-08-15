@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { getDictionary } from '@/lib/getDictionary';
 import { Locale } from '@/context/LocaleContext';
 import FAQContactModal from '@/components/FAQContactModal';
+import PageTransition from '@/components/PageTransition';
 
 interface FAQPageProps {
   params: {
@@ -33,7 +34,8 @@ export default function FAQPage({ params: { lang } }: FAQPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <PageTransition>
+      <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
@@ -138,6 +140,7 @@ export default function FAQPage({ params: { lang } }: FAQPageProps) {
         onClose={() => setIsContactModalOpen(false)}
         dictionary={dictionary}
       />
-    </div>
+      </div>
+    </PageTransition>
   );
 }

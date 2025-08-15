@@ -35,7 +35,8 @@ export default function RegisterPage({ params }: RegisterPageProps) {
                   confirmPassword: "Potvrďte heslo",
                   gdprConsent: "Souhlasím se zpracováním osobních údajů",
                   registerButton: "Registrovat",
-                  loginLink: "Již máte účet? Přihlaste se",
+                  loginLink: "Již máte účet?",
+                  loginButton: "Přihlaste se",
                   errors: {
                     required: "Toto pole je povinné",
                     invalidEmail: "Zadejte platný e-mail",
@@ -63,7 +64,8 @@ export default function RegisterPage({ params }: RegisterPageProps) {
                   confirmPassword: "Potvrďte heslo",
                   gdprConsent: "Súhlasím so spracovaním osobných údajov",
                   registerButton: "Registrovať",
-                  loginLink: "Už máte účet? Prihláste sa",
+                  loginLink: "Už máte účet?",
+                  loginButton: "Prihláste sa",
                   errors: {
                     required: "Toto pole je povinné",
                     invalidEmail: "Zadajte platný e-mail",
@@ -91,7 +93,8 @@ export default function RegisterPage({ params }: RegisterPageProps) {
                   confirmPassword: "Passwort bestätigen",
                   gdprConsent: "Ich stimme der Verarbeitung personenbezogener Daten zu",
                   registerButton: "Registrieren",
-                  loginLink: "Haben Sie bereits ein Konto? Anmelden",
+                  loginLink: "Haben Sie bereits ein Konto?",
+                  loginButton: "Anmelden",
                   errors: {
                     required: "Dieses Feld ist erforderlich",
                     invalidEmail: "Bitte geben Sie eine gültige E-Mail-Adresse ein",
@@ -119,7 +122,8 @@ export default function RegisterPage({ params }: RegisterPageProps) {
                   confirmPassword: "Confirm password",
                   gdprConsent: "I agree to the processing of personal data",
                   registerButton: "Register",
-                  loginLink: "Already have an account? Sign in",
+                  loginLink: "Already have an account?",
+                  loginButton: "Sign in",
                   errors: {
                     required: "This field is required",
                     invalidEmail: "Please enter a valid email address",
@@ -147,7 +151,8 @@ export default function RegisterPage({ params }: RegisterPageProps) {
                   confirmPassword: "Potvrďte heslo",
                   gdprConsent: "Souhlasím se zpracováním osobních údajů",
                   registerButton: "Registrovat",
-                  loginLink: "Již máte účet? Přihlaste se",
+                  loginLink: "Již máte účet?",
+                  loginButton: "Přihlaste se",
                   errors: {
                     required: "Toto pole je povinné",
                     invalidEmail: "Zadejte platný e-mail",
@@ -178,7 +183,8 @@ export default function RegisterPage({ params }: RegisterPageProps) {
               confirmPassword: "Potvrďte heslo",
               gdprConsent: "Souhlasím se zpracováním osobních údajů",
               registerButton: "Registrovat",
-              loginLink: "Již máte účet? Přihlaste se",
+              loginLink: "Již máte účet?",
+              loginButton: "Přihlaste se",
               errors: {
                 required: "Toto pole je povinné",
                 invalidEmail: "Zadejte platný e-mail",
@@ -304,7 +310,7 @@ export default function RegisterPage({ params }: RegisterPageProps) {
             />
             {/* Form content - no drag functionality */}
             <div style={{ pointerEvents: 'all', position: 'relative', zIndex: 1 }}>
-              <RegisterForm dict={dict.auth.register} />
+              <RegisterForm dict={dict.auth.register} lang={params.lang} />
             </div>
           </div>
         </div>
