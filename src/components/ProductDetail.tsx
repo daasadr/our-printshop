@@ -391,7 +391,10 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             width="full"
             state={isAddingToCart ? "loading" : "default"}
           >
-            {isAddingToCart ? 'Přidávám...' : 'Přidat do košíku'}
+            {isAddingToCart 
+              ? (locale === 'sk' ? 'Pridávam...' : locale === 'en' ? 'Adding...' : locale === 'de' ? 'Hinzufügen...' : 'Přidávám...') 
+              : (locale === 'sk' ? 'Pridať do košíka' : locale === 'en' ? 'Add to Cart' : locale === 'de' ? 'In den Warenkorb' : 'Přidat do košíku')
+            }
           </Button>
           
           {/* Wishlist tlačidlo */}
@@ -415,7 +418,10 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             className="flex items-center justify-center gap-2"
           >
             <FiHeart className={`w-5 h-5 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
-            {isInWishlist(product.id) ? 'Odobrať z obľúbených' : 'Pridať do obľúbených'}
+            {isInWishlist(product.id) 
+              ? (locale === 'sk' ? 'Odobrať z obľúbených' : locale === 'en' ? 'Remove from Wishlist' : locale === 'de' ? 'Aus Favoriten entfernen' : 'Odebrat z oblíbených') 
+              : (locale === 'sk' ? 'Pridať do obľúbených' : locale === 'en' ? 'Add to Wishlist' : locale === 'de' ? 'Zu Favoriten hinzufügen' : 'Přidat do oblíbených')
+            }
           </Button>
           
           {!hasVariants && (

@@ -29,7 +29,7 @@ const Header: React.FC<HeaderProps> = ({ dictionary }) => {
     <header
       role="banner"
       className={`sticky top-0 z-30 w-full transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-md py-2' : 'bg-white/95 backdrop-blur-sm py-3'
+        isScrolled ? 'bg-gray-50 shadow-md py-2' : 'bg-gray-50/95 backdrop-blur-sm py-3'
       }`}
       suppressHydrationWarning
     >

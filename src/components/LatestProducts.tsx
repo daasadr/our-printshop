@@ -84,7 +84,10 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ products = [], dictiona
                   ? 'bg-red-500 text-white shadow-lg' 
                   : 'bg-white/80 text-gray-600 hover:bg-white hover:text-red-500'
               }`}
-              aria-label={isInWishlist(product.id) ? 'Odobrať z obľúbených' : 'Pridať do obľúbených'}
+              aria-label={isInWishlist(product.id) 
+                ? (lang === 'sk' ? 'Odobrať z obľúbených' : lang === 'en' ? 'Remove from Wishlist' : lang === 'de' ? 'Aus Favoriten entfernen' : 'Odebrat z oblíbených') 
+                : (lang === 'sk' ? 'Pridať do obľúbených' : lang === 'en' ? 'Add to Wishlist' : lang === 'de' ? 'Zu Favoriten hinzufügen' : 'Přidat do oblíbených')
+              }
             >
               <FiHeart className={`w-5 h-5 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
             </button>

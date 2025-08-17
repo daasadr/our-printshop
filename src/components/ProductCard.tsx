@@ -13,9 +13,10 @@ import { ClientOnlyPrice } from './ClientOnly';
 
 interface ProductCardProps {
   product: any;
+  dictionary?: any;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, dictionary }: ProductCardProps) {
   const { currency, locale } = useLocale();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [isWishlistLoading, setIsWishlistLoading] = useState(false);
@@ -25,7 +26,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   
   const priceEur = product.variants[0]?.price || 0;
   const priceConverted = convertCurrency(priceEur, currency);
-  const previewUrl = product.designs[0]?.previewUrl || '';
+  const previewUrl = product.designs?.[0]?.previewUrl || '';
   const isInWishlistState = isInWishlist(product.id);
 
   // Funkce pro překlad názvu produktu
@@ -88,7 +89,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <button
             onClick={handleQuickView}
             className="p-2 rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:shadow-lg"
-            aria-label="Rýchly náhľad"
+            aria-label={locale === 'sk' ? 'Rýchly náhľad' : locale === 'en' ? 'Quick View' : locale === 'de' ? 'Schnellansicht' : 'Rychlý náhled'}
           >
             <FiEye className="w-5 h-5" />
           </button>
@@ -100,7 +101,10 @@ export default function ProductCard({ product }: ProductCardProps) {
                 ? 'bg-red-500 text-white shadow-lg' 
                 : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'
             } ${isWishlistLoading ? 'opacity-50' : ''}`}
-            aria-label={isInWishlistState ? 'Odobrať z obľúbených' : 'Pridať do obľúbených'}
+            aria-label={isInWishlistState 
+              ? (locale === 'sk' ? 'Odobrať z obľúbených' : locale === 'en' ? 'Remove from Wishlist' : locale === 'de' ? 'Aus Favoriten entfernen' : 'Odebrat z oblíbených') 
+              : (locale === 'sk' ? 'Pridať do obľúbených' : locale === 'en' ? 'Add to Wishlist' : locale === 'de' ? 'Zu Favoriten hinzufügen' : 'Přidat do oblíbených')
+            }
           >
             <FiHeart className={`w-5 h-5 ${isInWishlistState ? 'fill-current' : ''}`} />
           </button>

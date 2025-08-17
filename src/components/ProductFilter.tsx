@@ -70,7 +70,7 @@ export default function ProductFilter({ categories = [], dictionary }: ProductFi
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+    <div className="bg-gray-50 rounded-lg shadow-md p-6 mb-8">
       {/* Hlavný riadok s filtrami */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold text-gray-900">
