@@ -106,6 +106,7 @@
     "quantity": "Quantity",
     "remove": "Remove",
     "add_to_cart": "Add to Cart",
+    "adding": "Adding...",
     "items_count": "items in cart",
     "opened": "Cart opened",
     "closed": "Cart closed",

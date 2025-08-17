@@ -93,7 +93,7 @@ export default function Pagination({
         {currentPage > 1 && (
           <Link
             href={category ? createCategoryUrl(currentPage - 1) : createPageUrl(currentPage - 1)}
-            className="flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+            className="flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-gray-50 border border-gray-300 rounded-md hover:bg-gray-100"
           >
             <FiChevronLeft className="w-4 h-4 mr-1" />
             {dictionary?.pagination?.previous || 'Předchozí'}
@@ -105,7 +105,7 @@ export default function Pagination({
           <>
             <Link
               href={category ? createCategoryUrl(1) : createPageUrl(1)}
-              className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              className="px-3 py-2 text-sm font-medium text-gray-500 bg-gray-50 border border-gray-300 rounded-md hover:bg-gray-100"
             >
               1
             </Link>
@@ -122,7 +122,7 @@ export default function Pagination({
             className={`px-3 py-2 text-sm font-medium rounded-md ${
               page === currentPage
                 ? 'bg-blue-600 text-white'
-                : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50'
+                : 'text-gray-500 bg-gray-50 border border-gray-300 hover:bg-gray-100'
             }`}
           >
             {page}
@@ -136,7 +136,7 @@ export default function Pagination({
             )}
             <Link
               href={category ? createCategoryUrl(totalPages) : createPageUrl(totalPages)}
-              className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              className="px-3 py-2 text-sm font-medium text-gray-500 bg-gray-50 border border-gray-300 rounded-md hover:bg-gray-100"
             >
               {totalPages}
             </Link>
@@ -147,7 +147,7 @@ export default function Pagination({
         {currentPage < totalPages && (
           <Link
             href={category ? createCategoryUrl(currentPage + 1) : createPageUrl(currentPage + 1)}
-            className="flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+            className="flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-gray-50 border border-gray-300 rounded-md hover:bg-gray-100"
           >
             {dictionary?.pagination?.next || 'Následující'}
             <FiChevronRight className="w-4 h-4 ml-1" />

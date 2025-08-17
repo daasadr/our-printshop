@@ -3,6 +3,7 @@ import CategoryTiles from '@/components/CategoryTiles';
 import ProductFilter from '@/components/ProductFilter';
 import { ProductListSkeleton } from '@/components/ProductListSkeleton';
 import PageTransition from '@/components/PageTransition';
+import Pagination from '@/components/Pagination';
 import { getCategories } from '@/lib/directus';
 import { getDictionary } from '@/lib/getDictionary';
 import { getExchangeRatesForSSR } from '@/lib/exchangeRatesServer';
@@ -83,10 +84,9 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
     baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://happywilderness.cz';
   }
   
-  // Načítanie prvých produktov pre infinite scroll
+  // Načítanie všetkých produktov pre pagináciu
   const apiParams = new URLSearchParams();
-  apiParams.set('page', '1');
-  apiParams.set('limit', '12');
+  apiParams.set('limit', '1000');
   apiParams.set('locale', lang);
   
   if (category) apiParams.set('category', category);
@@ -100,7 +100,7 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
   console.log('ProductsPage - apiUrl:', apiUrl);
   console.log('ProductsPage - isLocalhost:', isLocalhost);
   
-  let initialProducts: ProductWithRelations[] = [];
+  let allProducts: ProductWithRelations[] = [];
   
   try {
     const response = await fetch(apiUrl, { 
@@ -110,9 +110,9 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
       }
     });
     if (response.ok) {
-      initialProducts = await response.json();
-      console.log('ProductsPage - fetched initial products count:', initialProducts.length);
-      console.log('ProductsPage - first 3 products:', initialProducts.slice(0, 3).map(p => ({ id: p.id, name: p.name, main_category: p.main_category })));
+      allProducts = await response.json();
+      console.log('ProductsPage - fetched all products count:', allProducts.length);
+      console.log('ProductsPage - first 3 products:', allProducts.slice(0, 3).map(p => ({ id: p.id, name: p.name, main_category: p.main_category })));
     } else {
       console.error('Failed to fetch products:', response.status, response.statusText);
     }
@@ -120,9 +120,27 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
     console.error('Error fetching products:', error);
   }
 
+  // Paginácia
+  const productsPerPage = 12;
+  const totalProducts = allProducts.length;
+  const totalPages = Math.ceil(totalProducts / productsPerPage);
+  const currentPage = parseInt(page, 10);
+  const startIndex = (currentPage - 1) * productsPerPage;
+  const endIndex = startIndex + productsPerPage;
+  const currentProducts = allProducts.slice(startIndex, endIndex);
+
+  console.log('ProductsPage - Pagination info:', {
+    totalProducts,
+    totalPages,
+    currentPage,
+    startIndex,
+    endIndex,
+    currentProductsCount: currentProducts.length
+  });
+
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-amber-50 to-teal-50">
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 via-slate-50 to-stone-50">
         {/* Kategorie tiles nahoře */}
         <div className="bg-gradient-to-br from-[#1a2a1b] via-[#3a4a3b] to-[#1a2a1b] text-white py-16">
           <CategoryTiles categories={categories} />
@@ -139,7 +157,24 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
             </h1>
           </div>
           
-          <ProductList products={initialProducts} exchangeRates={exchangeRates} />
+          {currentProducts.length > 0 ? (
+            <>
+              <ProductList products={currentProducts} exchangeRates={exchangeRates} />
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalProducts={totalProducts}
+                productsPerPage={productsPerPage}
+                category={category}
+              />
+            </>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">
+                {dict.products?.no_products || 'Žádné produkty nebyly nalezeny'}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </PageTransition>
