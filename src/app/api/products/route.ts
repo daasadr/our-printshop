@@ -46,8 +46,6 @@ export async function GET(req: Request) {
         'women': 'women',
         'kids': 'kids',
         'kids-youth-clothing': 'kids',
-        'home-decor': 'home/decor',
-        'accessories': 'home/decor',
         'unisex': 'unisex',
         'mens-clothing': 'men',
         'womens-clothing': 'women',
@@ -56,28 +54,47 @@ export async function GET(req: Request) {
       const mainCategory = SLUG_TO_MAIN_CATEGORY[category.toLowerCase()] || category;
       console.log('API Products - Category mapping:', { category, mainCategory });
       
-      // Speciální logika pro men a women - zahrnout i unisex produkty
-      if (mainCategory === 'men' || mainCategory === 'women') {
-        params.filter = {
-          _or: [
-            { main_category: { _eq: mainCategory } },
-            { main_category: { _eq: 'unisex' } }
-          ]
-        };
-      } else {
-        params.filter = {
-          main_category: { _eq: mainCategory }
-        };
+      // Pre home-decor nepoužívame Directus filter, lebo taká kategória neexistuje
+      if (category !== 'home-decor') {
+        // Speciální logika pro men a women - zahrnout i unisex produkty
+        if (mainCategory === 'men' || mainCategory === 'women') {
+          params.filter = {
+            _or: [
+              { main_category: { _eq: mainCategory } },
+              { main_category: { _eq: 'unisex' } }
+            ]
+          };
+        } else {
+          params.filter = {
+            main_category: { _eq: mainCategory }
+          };
+        }
+        
+        console.log('API Products - Filter params:', params.filter);
       }
-      
-      console.log('API Products - Filter params:', params.filter);
     }
     
     const response = await readProducts(params);
-    console.log('API Products - Response count:', response.length);
+    console.log('API Products - Directus response count:', response.length);
     
     // Preklad produktov podľa jazyka
     let translatedProducts = translateProducts(response, locale);
+    
+    // Pre home-decor používame len Printful produkty
+    if (category === 'home-decor') {
+      try {
+        // Priamo voláme Printful API endpoint
+        const { GET: getPrintfulProducts } = await import('../products/all/route');
+        const printfulRequest = new Request(`http://localhost:3000/api/products/all?locale=${locale}&category=home-decor`);
+        const printfulResponse = await getPrintfulProducts(printfulRequest);
+        const printfulProducts = await printfulResponse.json();
+        console.log('API Products - Printful home-decor products count:', printfulProducts.length);
+        translatedProducts = printfulProducts; // Používame len Printful produkty
+      } catch (error) {
+        console.error('Error fetching Printful home-decor products:', error);
+        translatedProducts = []; // Ak sa nepodarí načítať, vrátime prázdny array
+      }
+    }
     
     // Aplikovanie dodatočných filtrov na preložené produkty
     if (search) {

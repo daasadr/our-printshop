@@ -37,6 +37,8 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
   console.log('ProductsPage - category:', category);
   console.log('ProductsPage - page:', page);
   console.log('ProductsPage - filters:', { search, priceFrom, priceTo, sortBy });
+  console.log('ProductsPage - categories:', categories);
+  console.log('ProductsPage - category mapping:', category ? categories.find(c => c.slug === category) : 'no category');
   
   // Načítání kategorií pro tiles a filtry
   const categories = await getCategories();
@@ -136,7 +138,7 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
           
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-3xl font-bold text-gray-900">
-              {category ? `${dict.products?.title || 'Produkty'} - ${category}` : dict.products?.all_products || 'Všechny produkty'}
+              {category ? `${dict.products?.title || 'Produkty'} - ${categories.find(c => c.slug === category)?.name || category}` : dict.products?.all_products || 'Všechny produkty'}
             </h1>
           </div>
           
