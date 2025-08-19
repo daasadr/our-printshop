@@ -58,28 +58,11 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
     }
   };
   
-  // Automatická detekce portu
+  // Používame port 3000
   let baseUrl;
   if (isLocalhost) {
-    // Zkusíme porty 3000, 3001, 3002...
-    let port = 3000;
-    let foundPort = false;
-    
-    for (let i = 0; i < 5; i++) {
-      if (await testPort(port)) {
-        baseUrl = `http://localhost:${port}`;
-        foundPort = true;
-        console.log(`ProductsPage - Found server on port ${port}`);
-        break;
-      }
-      port++;
-    }
-    
-    if (!foundPort) {
-      // Fallback na 3000
-      baseUrl = 'http://localhost:3000';
-      console.log('ProductsPage - Using fallback port 3000');
-    }
+    baseUrl = 'http://localhost:3000';
+    console.log('ProductsPage - Using port 3000');
   } else {
     baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://happywilderness.cz';
   }

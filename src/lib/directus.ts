@@ -124,8 +124,8 @@ export const deleteNewsletterSubscriber = (email: string) => {
 
 export { readItem, updateItem };
 
-// Get four latest products sorted by creation date
-export const getLatestProducts = async (limit: number = 8) => {
+// Get latest products sorted by creation date
+export const getLatestProducts = async (limit: number = 41) => {
   console.log('getLatestProducts - called with limit:', limit);
   
   const result = await directus.request(readItems('products', {

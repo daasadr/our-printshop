@@ -12,7 +12,7 @@ interface HomePageProps {
 
 async function getLatestProducts(lang: string) {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/products/latest?locale=${lang}`, {
+    const response = await fetch(`http://localhost:3000/api/products/all?locale=${lang}`, {
       cache: 'no-store'
     });
     
