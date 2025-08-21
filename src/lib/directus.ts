@@ -167,30 +167,40 @@ export const getLatestProducts = async (limit: number = 41) => {
 };
 
 // Get categories for category tiles
-export const getCategories = async (limit: number = 4) => {
-  // Statické kategorie místo načítání z Directusu
+export const getCategories = async (lang: string = 'cs') => {
+  // Načítanie prekladov z public/locales
+  let translations;
+  try {
+    const dict = await import(`../../public/locales/${lang}/common.json`);
+    translations = dict.default || dict;
+  } catch (error) {
+    // Fallback na české preklady ak sa nepodarí načítať
+    const fallbackDict = await import(`../../public/locales/cs/common.json`);
+    translations = fallbackDict.default || fallbackDict;
+  }
+
   return [
     {
       id: 'men',
-      name: 'Men',
+      name: translations.category_men || 'Pánská kolekce',
       slug: 'men',
       image_url: '/images/men.jpg'
     },
     {
       id: 'women', 
-      name: 'Women',
+      name: translations.category_women || 'Stylově pro dámy',
       slug: 'women',
       image_url: '/images/women.jpeg'
     },
     {
       id: 'kids',
-      name: 'Kids',
+      name: translations.category_kids || 'Pro malé objevitele',
       slug: 'kids',
       image_url: '/images/kids.jpeg'
     },
     {
       id: 'home-decor',
-      name: 'Home/Decor',
+      name: translations['category_home-decor'] || 'Domov a dekorace',
       slug: 'home-decor',
       image_url: '/images/home.jpg'
     }

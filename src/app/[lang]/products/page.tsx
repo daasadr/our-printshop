@@ -37,11 +37,12 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
   console.log('ProductsPage - category:', category);
   console.log('ProductsPage - page:', page);
   console.log('ProductsPage - filters:', { search, priceFrom, priceTo, sortBy });
-  console.log('ProductsPage - categories:', categories);
-  console.log('ProductsPage - category mapping:', category ? categories.find(c => c.slug === category) : 'no category');
   
   // Načítání kategorií pro tiles a filtry
-  const categories = await getCategories();
+  const categories = await getCategories(lang);
+  
+  console.log('ProductsPage - categories:', categories);
+  console.log('ProductsPage - category mapping:', category ? categories.find(c => c.slug === category) : 'no category');
   
   // Načítání produktů z API endpoint
   // Automaticky detekuje prostředí a port
@@ -89,7 +90,7 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
   
   try {
     const response = await fetch(apiUrl, { 
-      cache: 'no-store',
+      cache: 'force-cache',
       headers: {
         'Content-Type': 'application/json',
       }
@@ -128,7 +129,7 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
       <div className="min-h-screen bg-gradient-to-b from-gray-50 via-slate-50 to-stone-50">
         {/* Kategorie tiles nahoře */}
         <div className="bg-gradient-to-br from-[#1a2a1b] via-[#3a4a3b] to-[#1a2a1b] text-white py-16">
-          <CategoryTiles categories={categories} />
+          <CategoryTiles categories={categories} dictionary={dict} lang={lang} />
         </div>
 
         {/* Produkty s filtry a paginací */}
@@ -144,7 +145,7 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
           
           {currentProducts.length > 0 ? (
             <>
-              <ProductList products={currentProducts} exchangeRates={exchangeRates} />
+              <ProductList products={currentProducts} exchangeRates={exchangeRates} dictionary={dict} />
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}

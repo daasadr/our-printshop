@@ -1,9 +1,11 @@
 import React from 'react';
 import HeroSection from './homepage/HeroSection';
 import CategoriesAndProductsSection from './homepage/CategoriesAndProductsSection';
+import ShippingInfoSection from './homepage/ShippingInfoSection';
 import CallToActionSection from './homepage/CallToActionSection';
 import NewsletterSection from './homepage/NewsletterSection';
 import PageTransition from './PageTransition';
+import { getCategories } from '@/lib/directus';
 
 interface HomePageProps {
   dictionary: any;
@@ -12,7 +14,7 @@ interface HomePageProps {
 
 async function getLatestProducts(lang: string) {
   try {
-    const response = await fetch(`http://localhost:3000/api/products/all?locale=${lang}`, {
+    const response = await fetch(`http://localhost:3000/api/products/latest?locale=${lang}`, {
       cache: 'no-store'
     });
     
@@ -33,24 +35,20 @@ export default async function HomePage({ dictionary, lang }: HomePageProps) {
   // Načítanie skutočných produktov z API
   const products = await getLatestProducts(lang);
   
-  // Default kategórie
-  const defaultCategories = [
-    { id: 1, name: 'Domov a dekorace', slug: 'home-decor' },
-    { id: 2, name: 'Stylově pro dámy', slug: 'women' },
-    { id: 3, name: 'Pánská kolekce', slug: 'men' },
-    { id: 4, name: 'Pro malé objevitele', slug: 'kids' },
-  ];
+  // Načítanie lokalizovaných kategórií
+  const categories = await getCategories(lang);
 
   return (
     <PageTransition>
       <main>
         <HeroSection dictionary={dictionary} lang={lang} />
         <CategoriesAndProductsSection 
-          categories={defaultCategories} 
+          categories={categories} 
           products={products}
           dictionary={dictionary} 
           lang={lang} 
         />
+        <ShippingInfoSection dictionary={dictionary} lang={lang} />
         <CallToActionSection dictionary={dictionary} lang={lang} />
         <NewsletterSection dictionary={dictionary} lang={lang} />
       </main>

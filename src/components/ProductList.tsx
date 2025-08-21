@@ -14,14 +14,15 @@ import { ClientOnlyPrice } from '@/components/ClientOnly';
 
 interface ProductListProps {
   products: ProductWithRelations[];
-  exchangeRates?: { [key: string]: number };
+  exchangeRates?: Record<string, number>;
+  dictionary?: any;
 }
 
 const fallbackImage = '/images/placeholder.jpg';
 
-export function ProductList({ products, exchangeRates }: ProductListProps) {
+export function ProductList({ products, exchangeRates, dictionary }: ProductListProps) {
   const { addToCart } = useCart();
-  const { currency } = useLocale();
+  const { currency, locale } = useLocale();
 
   // Filtrovat produkty bez názvu (např. ty, které mají jen cenu)
   const safeProducts = Array.isArray(products)
@@ -84,7 +85,7 @@ export function ProductList({ products, exchangeRates }: ProductListProps) {
                 }}
               />
             </div>
-            <Link href={`/products/${product.id}`}>
+            <Link href={`/${locale}/products/${product.id}`}>
               <h3 className="text-sm font-medium text-gray-900 hover:text-blue-600">
                 {product.name}
               </h3>
@@ -108,7 +109,7 @@ export function ProductList({ products, exchangeRates }: ProductListProps) {
                 size="sm"
                 disabled={!firstVariant}
               >
-                Do košíku
+                {dictionary?.addToCart || 'Do košíku'}
               </Button>
             </div>
           </div>

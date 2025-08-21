@@ -18,6 +18,11 @@ let lastFetchTime = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minút
 const RATE_LIMIT_DELAY = 1000; // 1 sekunda medzi volaniami
 
+// Globálny cache pre detaily produktov
+let globalProductDetailsCache = new Map();
+let globalProductDetailsCacheTime = 0;
+const PRODUCT_DETAILS_CACHE_DURATION = 10 * 60 * 1000; // 10 minút
+
 // Helper function pre delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -185,19 +190,26 @@ export async function GET(req: Request) {
     const productsWithDetails = [];
     const processedIds = new Set(); // Pre sledovanie spracovaných ID
     
-    // Cache pre product details
-    let productDetailsCache = new Map();
+    // Kontrola globálneho cache pre detaily produktov
+    const now = Date.now();
+    if (globalProductDetailsCache.size > 0 && (now - globalProductDetailsCacheTime) < PRODUCT_DETAILS_CACHE_DURATION) {
+      console.log(`Using global product details cache (${globalProductDetailsCache.size} items)`);
+    } else {
+      console.log('Clearing global product details cache');
+      globalProductDetailsCache.clear();
+      globalProductDetailsCacheTime = now;
+    }
     
     for (const product of allProducts) { // Bez limitu - všetky produkty
       if (!processedIds.has(product.id)) {
         processedIds.add(product.id);
         
-        // Skontrolujeme cache
-        let details = productDetailsCache.get(product.id);
+        // Skontrolujeme globálny cache
+        let details = globalProductDetailsCache.get(product.id);
         if (!details) {
           details = await fetchPrintfulProductDetails(product.id);
           if (details) {
-            productDetailsCache.set(product.id, details);
+            globalProductDetailsCache.set(product.id, details);
           }
         }
         

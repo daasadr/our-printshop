@@ -24,9 +24,68 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ products = [], dictiona
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { currency } = useLocale();
 
+  // Rotácia produktov - 4 produkty, rotujúce každých 5 sekúnd
+  const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
+  const [shuffleSeed, setShuffleSeed] = useState(Date.now());
+
+  // Náhodne premiešané produkty s seed pre konzistentné poradie
+  const shuffledProducts = useMemo(() => {
+    if (!products || products.length === 0) return [];
+    
+    // Vytvoríme kópiu produktov a premiešame ich
+    const productsCopy = [...products];
+    const shuffled = [];
+    
+    // Použijeme seed pre konzistentné premiešanie
+    let seed = shuffleSeed;
+    const random = () => {
+      seed = (seed * 9301 + 49297) % 233280;
+      return seed / 233280;
+    };
+    
+    while (productsCopy.length > 0) {
+      const index = Math.floor(random() * productsCopy.length);
+      shuffled.push(productsCopy.splice(index, 1)[0]);
+    }
+    
+    return shuffled;
+  }, [products, shuffleSeed]);
+
+  // Rozdelenie produktov do skupín po 4
+  const groupedProducts = useMemo(() => {
+    const groups = [];
+    for (let i = 0; i < shuffledProducts.length; i += 4) {
+      groups.push(shuffledProducts.slice(i, i + 4));
+    }
+    return groups;
+  }, [shuffledProducts]);
+
+  // Rotácia každých 5 sekúnd
+  useEffect(() => {
+    if (groupedProducts.length <= 1) return;
+    
+    const interval = setInterval(() => {
+      setCurrentGroupIndex((prev) => (prev + 1) % groupedProducts.length);
+    }, 5000); // 5 sekúnd
+
+    return () => clearInterval(interval);
+  }, [groupedProducts.length]);
+
+  // Zmena seed každých 30 sekúnd pre nové poradie
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setShuffleSeed(Date.now());
+    }, 30000); // 30 sekúnd
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Aktuálne zobrazované produkty
+  const currentProducts = groupedProducts[currentGroupIndex] || [];
+
   // Přepočítáme ceny produktů podle aktuální měny
   const productsWithConvertedPrices = useMemo(() => {
-    return products.map(product => {
+    return currentProducts.map(product => {
       const priceEur = product.price || product.variants?.[0]?.price || 0;
       const priceConverted = convertCurrency(priceEur, currency);
       return {
@@ -34,7 +93,7 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ products = [], dictiona
         convertedPrice: priceConverted
       };
     });
-  }, [products, currency]);
+  }, [currentProducts, currency]);
 
   const handleAddToCart = (product: any) => {
     if (product.variants && product.variants.length > 0) {
@@ -57,92 +116,76 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ products = [], dictiona
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {productsWithConvertedPrices.map((product) => {
-        return (
-          <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
-            {/* Wishlist tlačidlo */}
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (isInWishlist(product.id)) {
-                  removeFromWishlist(product.id);
-                } else {
-                  const priceEur = product.price || product.variants?.[0]?.price || 0;
-                  addToWishlist({
-                    productId: product.id,
-                    variantId: product.variants[0]?.id || '',
-                    name: product.name,
-                    price: priceEur,
-                    image: product.designs && product.designs.length > 0 ? product.designs[0].previewUrl : ''
-                  });
+    <div className="relative">
+      {/* Produkty s animáciou */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {productsWithConvertedPrices.map((product) => {
+          return (
+            <div key={product.id} className="group relative bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300">
+              {/* Wishlist tlačidlo */}
+              <button
+                onClick={() => isInWishlist(product.id) 
+                  ? removeFromWishlist(product.id) 
+                  : addToWishlist(product.id)
                 }
-              }}
-              className={`absolute top-3 right-3 z-10 p-2 rounded-full transition-all duration-300 ${
-                isInWishlist(product.id) 
-                  ? 'bg-red-500 text-white shadow-lg' 
-                  : 'bg-white/80 text-gray-600 hover:bg-white hover:text-red-500'
-              }`}
-              aria-label={isInWishlist(product.id) 
-                ? (lang === 'sk' ? 'Odobrať z obľúbených' : lang === 'en' ? 'Remove from Wishlist' : lang === 'de' ? 'Aus Favoriten entfernen' : 'Odebrat z oblíbených') 
-                : (lang === 'sk' ? 'Pridať do obľúbených' : lang === 'en' ? 'Add to Wishlist' : lang === 'de' ? 'Zu Favoriten hinzufügen' : 'Přidat do oblíbených')
-              }
-            >
-              <FiHeart className={`w-5 h-5 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
-            </button>
-            
-            <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
-              <Image
-                src={getProductImages(product).main}
-                alt={product.name}
-                width={500}
-                height={500}
-                className="h-full w-full object-cover object-center group-hover:opacity-75"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  if (target.src !== '/images/placeholder.jpg') {
-                    target.src = '/images/placeholder.jpg';
-                  }
-                }}
-              />
-            </div>
-            
-            <div className="p-4">
-              <Link href={`/${lang}/products/${product.id}`}>
-                <h3 className="text-sm font-medium text-gray-900 hover:text-blue-600">
-                  {product.name}
-                </h3>
-              </Link>
+                className="absolute top-2 right-2 z-10 p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors"
+                aria-label={isInWishlist(product.id) ? 'Odobrať z obľúbených' : 'Pridať do obľúbených'}
+              >
+                <FiHeart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-current text-red-500' : 'text-gray-400'}`} />
+              </button>
               
-              <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                {product.description}
-              </p>
+              <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
+                <Image
+                  src={getProductImages(product).main}
+                  alt={product.name}
+                  width={500}
+                  height={500}
+                  className="h-full w-full object-cover object-center group-hover:opacity-75 transition-opacity duration-300"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    if (target.src !== '/images/placeholder.jpg') {
+                      target.src = '/images/placeholder.jpg';
+                    }
+                  }}
+                />
+              </div>
               
-              <div className="mt-4 flex justify-between items-center">
-                {product.convertedPrice > 0 ? (
-                  <ClientOnlyPrice className="text-lg font-medium text-gray-900">
-                    {formatPrice(product.convertedPrice, currency)}
-                  </ClientOnlyPrice>
-                ) : (
-                  <p className="text-sm text-gray-500">
-                    {dictionary?.product?.price_not_available || "Cena není k dispozici"}
-                  </p>
-                )}
+              <div className="p-4">
+                <Link href={`/${lang}/products/${product.id}`}>
+                  <h3 className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors">
+                    {product.name}
+                  </h3>
+                </Link>
                 
-                <Button
-                  onClick={() => handleAddToCart(product)}
-                  variant={product.variants && product.variants.length > 0 ? "primary" : "secondary"}
-                  size="sm"
-                  disabled={!product.variants || product.variants.length === 0}
-                >
-                  {dictionary?.product?.add_to_cart || "Do košíku"}
-                </Button>
+                <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+                  {product.description}
+                </p>
+                
+                <div className="mt-4 flex justify-between items-center">
+                  {product.convertedPrice > 0 ? (
+                    <ClientOnlyPrice className="text-lg font-medium text-gray-900">
+                      {formatPrice(product.convertedPrice, currency)}
+                    </ClientOnlyPrice>
+                  ) : (
+                    <p className="text-sm text-gray-500">
+                      {dictionary?.product?.price_not_available || "Cena není k dispozici"}
+                    </p>
+                  )}
+                  
+                  <Button
+                    onClick={() => handleAddToCart(product)}
+                    variant={product.variants && product.variants.length > 0 ? "primary" : "secondary"}
+                    size="sm"
+                    disabled={!product.variants || product.variants.length === 0}
+                  >
+                    {dictionary?.product?.add_to_cart || "Do košíku"}
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 };
