@@ -82,7 +82,7 @@ export default function ProductCard({ product, dictionary }: ProductCardProps) {
   const colorVariants = product.variants?.filter((v: any) => v.color) || [];
 
   return (
-    <Link href={`/products/${product.id}`} className="group">
+    <Link href={`/${locale}/products/${product.id}`} className="group">
       <div className="relative glass-card rounded-lg overflow-hidden transition-all duration-500 hover:scale-105 hover-3d group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)]">
         {/* Action buttons */}
         <div className="absolute top-3 right-3 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">

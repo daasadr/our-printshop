@@ -132,11 +132,11 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     setLocaleState(newLocale);
     localStorage.setItem('locale', newLocale);
     
-    // Navigovat na nový jazyk pomocí router.push pro zachování košíku
+    // Rýchle prepínanie jazyka pomocou window.location.href
     const currentPath = window.location.pathname;
     const pathWithoutLang = currentPath.replace(/^\/(cs|sk|en|de)/, '');
-    router.push(`/${newLocale}${pathWithoutLang}`);
-  }, [router]);
+    window.location.href = `/${newLocale}${pathWithoutLang}`;
+  }, []);
 
   const setCurrency = React.useCallback((newCurrency: Currency) => {
     console.log('LocaleContext - setCurrency called with:', newCurrency);

@@ -39,7 +39,10 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
   console.log('ProductsPage - filters:', { search, priceFrom, priceTo, sortBy });
   
   // Načítání kategorií pro tiles a filtry
-  const categories = await getCategories();
+  const categories = await getCategories(lang);
+  
+  console.log('ProductsPage - categories:', categories);
+  console.log('ProductsPage - category mapping:', category ? categories.find(c => c.slug === category) : 'no category');
   
   // Načítání produktů z API endpoint
   // Automaticky detekuje prostředí a port
@@ -58,28 +61,11 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
     }
   };
   
-  // Automatická detekce portu
+  // Používame port 3000
   let baseUrl;
   if (isLocalhost) {
-    // Zkusíme porty 3000, 3001, 3002...
-    let port = 3000;
-    let foundPort = false;
-    
-    for (let i = 0; i < 5; i++) {
-      if (await testPort(port)) {
-        baseUrl = `http://localhost:${port}`;
-        foundPort = true;
-        console.log(`ProductsPage - Found server on port ${port}`);
-        break;
-      }
-      port++;
-    }
-    
-    if (!foundPort) {
-      // Fallback na 3000
-      baseUrl = 'http://localhost:3000';
-      console.log('ProductsPage - Using fallback port 3000');
-    }
+    baseUrl = 'http://localhost:3000';
+    console.log('ProductsPage - Using port 3000');
   } else {
     baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://happywilderness.cz';
   }
@@ -104,7 +90,7 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
   
   try {
     const response = await fetch(apiUrl, { 
-      cache: 'no-store',
+      cache: 'force-cache',
       headers: {
         'Content-Type': 'application/json',
       }
@@ -143,7 +129,7 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
       <div className="min-h-screen bg-gradient-to-b from-gray-50 via-slate-50 to-stone-50">
         {/* Kategorie tiles nahoře */}
         <div className="bg-gradient-to-br from-[#1a2a1b] via-[#3a4a3b] to-[#1a2a1b] text-white py-16">
-          <CategoryTiles categories={categories} />
+          <CategoryTiles categories={categories} dictionary={dict} lang={lang} />
         </div>
 
         {/* Produkty s filtry a paginací */}
@@ -153,13 +139,13 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
           
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-3xl font-bold text-gray-900">
-              {category ? `${dict.products?.title || 'Produkty'} - ${category}` : dict.products?.all_products || 'Všechny produkty'}
+              {category ? `${dict.products?.title || 'Produkty'} - ${categories.find(c => c.slug === category)?.name || category}` : dict.products?.all_products || 'Všechny produkty'}
             </h1>
           </div>
           
           {currentProducts.length > 0 ? (
             <>
-              <ProductList products={currentProducts} exchangeRates={exchangeRates} />
+              <ProductList products={currentProducts} exchangeRates={exchangeRates} dictionary={dict} />
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}

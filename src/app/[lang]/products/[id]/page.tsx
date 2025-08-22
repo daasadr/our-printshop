@@ -5,6 +5,7 @@ import ProductDetail from '@/components/ProductDetail';
 import { Suspense } from 'react';
 import ProductSkeleton from '@/components/ProductSkeleton';
 import { convertEurToCzk } from '@/utils/currency';
+import { getDictionary } from '@/lib/getDictionary';
 
 // Pro využití v app routeru je lepší načítat data přímo v komponentě stránky
 async function getProduct(id: string, locale: string = 'cs'): Promise<ProductWithRelations | null> {
@@ -86,12 +87,13 @@ type ProductPageProps = {
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const product = await getProduct(params.id, params.lang);
+  const dict = await getDictionary(params.lang);
 
   if (!product || !Array.isArray(product.variants) || product.variants.length === 0) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-4">Produkt není dostupný</h1>
-        <p className="text-gray-600">Omlouváme se, tento produkt není aktuálně k dispozici.</p>
+        <h1 className="text-2xl font-bold mb-4">{dict.product_not_available.title}</h1>
+        <p className="text-gray-600">{dict.product_not_available.message}</p>
       </div>
     );
   }

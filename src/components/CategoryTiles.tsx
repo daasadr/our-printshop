@@ -34,15 +34,8 @@ interface CategoryTilesProps {
 
 const CategoryTiles = ({ categories = [], dictionary, lang = 'cs' }: CategoryTilesProps) => {
   
-  // Default kategórie ak nie sú poskytnuté
-  const defaultCategories = [
-    { id: 1, name: 'Domov a dekorace', slug: 'home-decor' },
-    { id: 2, name: 'Stylově pro dámy', slug: 'women' },
-    { id: 3, name: 'Pánská kolekce', slug: 'men' },
-    { id: 4, name: 'Pro malé objevitele', slug: 'kids' },
-  ];
-
-  const displayCategories = categories.length > 0 ? categories : defaultCategories;
+  // Používame len kategórie predané z parent komponentu
+  const displayCategories = categories;
 
   return (
     <div className={`container mx-auto px-4`}>
@@ -54,9 +47,8 @@ const CategoryTiles = ({ categories = [], dictionary, lang = 'cs' }: CategoryTil
           const slug = category.slug || normalizeKey(category.name || '');
           const imageSrc = placeholderImages[slug] || '/images/home.jpg';
           
-          // Preklady pre kategórie
+          // Používame lokalizovaný názov z kategórie
           const categoryName = category.name || '';
-          const translatedName = dictionary?.[`category_${slug}`] || categoryName;
           
           return (
             <Link
@@ -66,7 +58,7 @@ const CategoryTiles = ({ categories = [], dictionary, lang = 'cs' }: CategoryTil
             >
               <Image
                 src={imageSrc}
-                alt={translatedName}
+                alt={categoryName}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                 className="object-cover group-hover:scale-110 transition-all duration-500"
@@ -74,7 +66,7 @@ const CategoryTiles = ({ categories = [], dictionary, lang = 'cs' }: CategoryTil
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent group-hover:from-black/90 transition-all duration-300" />
               <div className="absolute inset-x-0 bottom-0 p-6 transform transition-transform duration-300 group-hover:translate-y-[-10px]">
                 <h3 className="text-xl font-semibold text-white group-hover:text-green-300 transition-colors duration-300">
-                  {translatedName.charAt(0).toUpperCase() + translatedName.slice(1)}
+                  {categoryName.charAt(0).toUpperCase() + categoryName.slice(1)}
                 </h3>
               </div>
             </Link>

@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createDirectus, rest, staticToken, readItem } from '@directus/sdk';
-
-const directus = createDirectus(process.env.NEXT_PUBLIC_DIRECTUS_URL!)
-  .with(staticToken(process.env.DIRECTUS_TOKEN!))
-  .with(rest());
+import { readProducts } from '@/lib/directus';
 
 export async function GET(
   request: NextRequest,
@@ -14,28 +10,34 @@ export async function GET(
     
     console.log('Fetching product:', productId);
 
-    // Načítaj produkt z Directus
-    const product = await directus.request(readItem('products', productId, {
+    // Načítaj všetky produkty z Directus (rovnako ako v /api/products)
+    const products = await readProducts({
       fields: [
         '*',
-        'variants.id',
-        'variants.name',
-        'variants.size',
-        'variants.color',
-        'variants.price',
-        'variants.is_active',
-        'variants.sku',
+        'variants.*',
         'designs.*',
+        'main_category',
         'description_cs',
         'description_sk',
         'description_en',
         'description_de',
-        'name_cs',
-        'name_sk',
-        'name_en',
-        'name_de'
+        'icon_cs',
+        'icon_sk',
+        'icon_en',
+        'icon_de'
       ]
-    }));
+    });
+
+    // Nájdi produkt podľa ID
+    const product = products.find(p => p.id.toString() === productId || p.id === parseInt(productId));
+
+    if (!product) {
+      console.log('Product not found:', productId);
+      return NextResponse.json(
+        { error: 'Produkt nenalezen' },
+        { status: 404 }
+      );
+    }
 
     console.log('Product found:', product.id, product.name);
 
@@ -44,13 +46,6 @@ export async function GET(
   } catch (error) {
     console.error('Error fetching product:', error);
     
-    if (error.message?.includes('not found') || error.message?.includes('404')) {
-      return NextResponse.json(
-        { error: 'Produkt nenalezen' },
-        { status: 404 }
-      );
-    }
-
     return NextResponse.json(
       { error: 'Chyba při načítání produktu' },
       { status: 500 }

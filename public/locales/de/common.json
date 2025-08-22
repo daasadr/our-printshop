@@ -45,6 +45,7 @@
     }
   },
   "welcome": "Originelle Kleidung mit Designer-Prints",
+  "addToCart": "In den Warenkorb",
   "welcome_back": "Willkommen!",
   "welcome_back_message": "Wir freuen uns, dass Sie zurück sind, {name}",
   "subtitle": "Drücken Sie Ihren einzigartigen Stil mit unseren kreativen Designs aus.",
@@ -383,9 +384,60 @@
   "faq_contact_title": "Haben Sie noch Fragen?",
   "faq_contact_text": "Wenn Sie keine Antwort auf Ihre Frage gefunden haben, zögern Sie nicht, uns zu kontaktieren.",
   "faq_contact_button": "Support kontaktieren",
-  "faq_coming_soon_shipping": "Informationen über Versand und Packeta-Dienste werden bald verfügbar sein...",
+  "faq_shipping_title": "Welche Versanddienste verwenden Sie?",
+  "faq_shipping_content": "Wir verwenden mehrere Versanddienste nach Region: Packeta für Tschechische Republik und Slowakei (1-2 Tage, 2.99€), DHL Express für weltweiten Versand (2-4 Tage, 8.99€) und UPS Standard als wirtschaftliche Alternative (3-5 Tage, 6.99€).",
+  "faq_delivery_time_title": "Wie lange ist die Gesamtlieferzeit?",
+  "faq_delivery_time_content": "Die Gesamtlieferzeit besteht aus der Produktion über Printful (5-7 Tage) und dem Versand. Für Tschechische Republik und Slowakei sind es 6-9 Tage, weltweit 7-12 Tage.",
+  "faq_tracking_info_title": "Wie funktioniert die Paketverfolgung?",
+  "faq_tracking_info_content": "Sie erhalten eine Tracking-Nummer per E-Mail innerhalb von 24 Stunden nach der Bestellung. Sie können den Produktionsstatus und Versand bis zur Lieferung verfolgen.",
+  "faq_shipping_costs_title": "Was sind die Versandkosten?",
+  "faq_shipping_costs_content": "Der Versand kostet 2.99€ für Tschechische Republik und Slowakei (Packeta), 8.99€ für weltweiten Versand (DHL Express) oder 6.99€ für wirtschaftlichen weltweiten Versand (UPS Standard).",
   "faq_coming_soon_payments": "Informationen über Zahlungsmethoden und Sicherheit werden bald verfügbar sein...",
-  "faq_coming_soon_returns": "Informationen über Reklamationen und Produktrückgaben werden bald verfügbar sein...",
+  "faq_returns_title": "Wie funktionieren Rückgaben und Reklamationen?",
+  "faq_returns_content": "Wir bieten eine 30-tägige Garantie auf die Herstellung. Wenn das Problem auf Seiten von Printful liegt (Druckfehler, falsche Größe, Beschädigung), bieten wir kostenlosen Ersatz oder Rückerstattung. Der Kunde zahlt Versand nur, wenn das Problem auf seiner Seite liegt.",
+  "faq_returns_process_title": "Wie läuft der Reklamationsprozess ab?",
+  "faq_returns_process_content": "1. Kontaktieren Sie uns mit Fotos und Beschreibung des Problems. 2. Wir bewerten die Situation und kontaktieren Printful. 3. Nach Genehmigung senden wir Ihnen ein Ersatzprodukt oder Rückerstattung. 4. Der gesamte Prozess dauert 3-7 Werktage.",
+  "faq_returns_photos_title": "Welche Fotos benötigen Sie?",
+  "faq_returns_photos_content": "Wir benötigen klare Fotos des Problems aus verschiedenen Winkeln, Bestellnummer und Lieferdatum. Fotos sollten das gesamte Produkt und Detail des Problems zeigen.",
+  "faq_returns_shipping_title": "Wer zahlt den Versand bei Reklamationen?",
+  "faq_returns_shipping_content": "Wenn das Problem auf Seiten von Printful liegt (Druckfehler, Beschädigung), zahlen wir den Versand. Wenn das Problem auf Seiten des Kunden liegt (falsche Größe, Meinungsänderung), zahlt der Kunde den Versand.",
+  "faq_returns_time_title": "Wie lange dauert die Bearbeitung von Reklamationen?",
+  "faq_returns_time_content": "Die Bewertung der Reklamation dauert 1-2 Werktage. Nach Genehmigung senden wir Ersatzprodukt innerhalb von 5-7 Werktagen oder Rückerstattung innerhalb von 3-5 Werktagen.",
+  "submit_returns_form": "Reklamation einreichen",
+  "returns_form": {
+    "title": "Reklamationsformular",
+    "personal_info": "Persönliche Informationen",
+    "order_info": "Bestellinformationen",
+    "problem_info": "Probleminformationen",
+    "photo_upload": "Problemfotos",
+    "name": "Vor- und Nachname",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "order_number": "Bestellnummer",
+    "delivery_date": "Lieferdatum",
+    "product_name": "Produktname",
+    "problem_type": "Problemtyp",
+    "select_problem": "Problemtyp auswählen",
+    "description": "Problembeschreibung",
+    "description_placeholder": "Bitte beschreiben Sie das Problem mit dem Produkt detailliert...",
+    "upload_photos": "Fotos hochladen",
+    "max_photos": "Problemfotos hochladen (max. 5 Fotos)",
+    "select_photos": "Fotos auswählen",
+    "cancel": "Abbrechen",
+    "submit": "Reklamation einreichen",
+    "submitting": "Wird eingereicht...",
+    "success_title": "Reklamation eingereicht!",
+    "success_message": "Vielen Dank für Ihre Reklamation. Wir werden Sie innerhalb von 24 Stunden kontaktieren.",
+    "max_photos_alert": "Sie können maximal 5 Fotos hochladen",
+    "problem_types": {
+      "printing_error": "Druckfehler",
+      "wrong_size": "Falsche Größe",
+      "damaged": "Beschädigtes Produkt",
+      "wrong_product": "Falsches Produkt",
+      "quality_issue": "Qualitätsproblem",
+      "other": "Andere"
+    }
+  },
   "sort_by": "Sortieren nach",
   "sort_default": "Standard",
   "sort_price_asc": "Preis: niedrigste zuerst",
@@ -402,5 +454,55 @@
     "view_products": "Produkte anzeigen",
     "clear_wishlist": "Favoriten löschen",
     "items_count": "Artikel in Favoriten"
+  },
+  "product_not_available": {
+    "title": "Produkt nicht verfügbar",
+    "message": "Entschuldigung, dieses Produkt ist derzeit nicht verfügbar."
+  },
+  "shipping": {
+    "title": "Versand",
+    "subtitle": "Informationen über Versand und Lieferzeit",
+    "printful_production": {
+      "title": "Printful Produktion",
+      "description": "Unsere Produkte werden auf Bestellung über Printful hergestellt",
+      "days": "5-7 Tage"
+    },
+    "local_shipping": {
+      "title": "Lokaler Versand",
+      "packeta": {
+        "name": "Packeta",
+        "description": "Schneller und zuverlässiger Versand in CZ und SK",
+        "days": "1-2 Tage",
+        "price": "2.99 €",
+        "regions": "Tschechische Republik, Slowakei"
+      }
+    },
+    "worldwide_shipping": {
+      "title": "Weltweiter Versand",
+      "dhl": {
+        "name": "DHL Express",
+        "description": "Schneller und zuverlässiger weltweiter Versand",
+        "days": "2-4 Tage",
+        "price": "8.99 €",
+        "regions": "Weltweit"
+      },
+      "ups": {
+        "name": "UPS Standard",
+        "description": "Wirtschaftlicher weltweiter Versand",
+        "days": "3-5 Tage",
+        "price": "6.99 €",
+        "regions": "Weltweit"
+      }
+    },
+    "total_delivery_time": {
+      "title": "Gesamtlieferzeit",
+      "description": "Produktion + Versand",
+      "cz_sk": "6-9 Tage",
+      "worldwide": "7-12 Tage"
+    },
+    "tracking": {
+      "title": "Paketverfolgung",
+      "description": "Sie erhalten eine Tracking-Nummer per E-Mail innerhalb von 24 Stunden nach der Bestellung"
+    }
   }
 } 

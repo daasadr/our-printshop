@@ -45,6 +45,7 @@
     }
   },
   "welcome": "Original clothing with designer prints",
+  "addToCart": "Add to cart",
   "welcome_back": "Welcome!",
   "welcome_back_message": "We're glad you're back, {name}",
   "subtitle": "Express your unique style with our creative designs.",
@@ -378,9 +379,60 @@
   "faq_contact_title": "Still have questions?",
   "faq_contact_text": "If you haven't found the answer to your question, don't hesitate to contact us.",
   "faq_contact_button": "Contact support",
-  "faq_coming_soon_shipping": "Information about shipping and Packeta services will be available soon...",
+  "faq_shipping_title": "What shipping services do you use?",
+  "faq_shipping_content": "We use several shipping services by region: Packeta for Czech Republic and Slovakia (1-2 days, 2.99€), DHL Express for worldwide shipping (2-4 days, 8.99€) and UPS Standard as an economical alternative (3-5 days, 6.99€).",
+  "faq_delivery_time_title": "What is the total delivery time?",
+  "faq_delivery_time_content": "Total delivery time consists of production through Printful (5-7 days) and shipping. For Czech Republic and Slovakia it's 6-9 days, for worldwide 7-12 days.",
+  "faq_tracking_info_title": "How does package tracking work?",
+  "faq_tracking_info_content": "You'll receive a tracking number by email within 24 hours of ordering. You can track the production status and shipping until delivery.",
+  "faq_shipping_costs_title": "What are the shipping costs?",
+  "faq_shipping_costs_content": "Shipping costs 2.99€ for Czech Republic and Slovakia (Packeta), 8.99€ for worldwide shipping (DHL Express) or 6.99€ for economical worldwide shipping (UPS Standard).",
   "faq_coming_soon_payments": "Information about payment methods and security will be available soon...",
-  "faq_coming_soon_returns": "Information about complaints and product returns will be available soon...",
+  "faq_returns_title": "How do returns and complaints work?",
+  "faq_returns_content": "We provide a 30-day warranty on manufacturing. If the problem is on Printful's side (printing errors, wrong size, damage), we provide free replacement or refund. Customer pays shipping only if the problem is on their side.",
+  "faq_returns_process_title": "How does the complaint process work?",
+  "faq_returns_process_content": "1. Contact us with photos and description of the problem. 2. We evaluate the situation and contact Printful. 3. After approval, we send you a replacement product or refund. 4. The entire process takes 3-7 business days.",
+  "faq_returns_photos_title": "What photos do you need?",
+  "faq_returns_photos_content": "We need clear photos of the problem from different angles, order number and delivery date. Photos should show the entire product and detail of the problem.",
+  "faq_returns_shipping_title": "Who pays shipping for complaints?",
+  "faq_returns_shipping_content": "If the problem is on Printful's side (printing errors, damage), we pay shipping. If the problem is on customer's side (wrong size, change of mind), customer pays shipping.",
+  "faq_returns_time_title": "How long does complaint processing take?",
+  "faq_returns_time_content": "Complaint evaluation takes 1-2 business days. After approval, we send replacement product within 5-7 business days or refund within 3-5 business days.",
+  "submit_returns_form": "Submit Complaint",
+  "returns_form": {
+    "title": "Complaint Form",
+    "personal_info": "Personal Information",
+    "order_info": "Order Information",
+    "problem_info": "Problem Information",
+    "photo_upload": "Problem Photos",
+    "name": "Full Name",
+    "email": "Email",
+    "phone": "Phone",
+    "order_number": "Order Number",
+    "delivery_date": "Delivery Date",
+    "product_name": "Product Name",
+    "problem_type": "Problem Type",
+    "select_problem": "Select problem type",
+    "description": "Problem Description",
+    "description_placeholder": "Please describe the problem with the product in detail...",
+    "upload_photos": "Upload Photos",
+    "max_photos": "Upload problem photos (max. 5 photos)",
+    "select_photos": "Select Photos",
+    "cancel": "Cancel",
+    "submit": "Submit Complaint",
+    "submitting": "Submitting...",
+    "success_title": "Complaint Submitted!",
+    "success_message": "Thank you for your complaint. We will contact you within 24 hours.",
+    "max_photos_alert": "You can upload maximum 5 photos",
+    "problem_types": {
+      "printing_error": "Printing Error",
+      "wrong_size": "Wrong Size",
+      "damaged": "Damaged Product",
+      "wrong_product": "Wrong Product",
+      "quality_issue": "Quality Issue",
+      "other": "Other"
+    }
+  },
   "sort_by": "Sort by",
   "sort_default": "Default",
   "sort_price_asc": "Price: lowest first",
@@ -397,5 +449,55 @@
     "view_products": "View products",
     "clear_wishlist": "Clear favorites",
     "items_count": "items in favorites"
+  },
+  "product_not_available": {
+    "title": "Product not available",
+    "message": "Sorry, this product is not currently available."
+  },
+  "shipping": {
+    "title": "Shipping",
+    "subtitle": "Information about shipping and delivery time",
+    "printful_production": {
+      "title": "Printful Production",
+      "description": "Our products are made to order through Printful",
+      "days": "5-7 days"
+    },
+    "local_shipping": {
+      "title": "Local Shipping",
+      "packeta": {
+        "name": "Packeta",
+        "description": "Fast and reliable shipping in CZ and SK",
+        "days": "1-2 days",
+        "price": "2.99 €",
+        "regions": "Czech Republic, Slovakia"
+      }
+    },
+    "worldwide_shipping": {
+      "title": "Worldwide Shipping",
+      "dhl": {
+        "name": "DHL Express",
+        "description": "Fast and reliable worldwide shipping",
+        "days": "2-4 days",
+        "price": "8.99 €",
+        "regions": "Worldwide"
+      },
+      "ups": {
+        "name": "UPS Standard",
+        "description": "Economical worldwide shipping",
+        "days": "3-5 days",
+        "price": "6.99 €",
+        "regions": "Worldwide"
+      }
+    },
+    "total_delivery_time": {
+      "title": "Total Delivery Time",
+      "description": "Production + shipping",
+      "cz_sk": "6-9 days",
+      "worldwide": "7-12 days"
+    },
+    "tracking": {
+      "title": "Package Tracking",
+      "description": "You'll receive a tracking number by email within 24 hours of ordering"
+    }
   }
 } 

@@ -48,6 +48,7 @@
     }
   },
   "welcome": "Originální oblečení s autorskými potisky",
+  "addToCart": "Do košíku",
   "welcome_back": "Vítejte!",
   "welcome_back_message": "Jsme rádi, že jste zpět, {name}",
   "subtitle": "Vyjádřete svůj jedinečný styl s našimi kreativními designy.",
@@ -371,9 +372,60 @@
   "faq_contact_title": "Pořád máte dotazy?",
   "faq_contact_text": "Pokud jste nenašli odpověď na svou otázku, neváhejte nás kontaktovat.",
   "faq_contact_button": "Kontaktovat podporu",
-  "faq_coming_soon_shipping": "Informace o dopravě a Packeta službách budou brzy dostupné...",
+  "faq_shipping_title": "Jaké dopravní služby používáte?",
+  "faq_shipping_content": "Používáme několik dopravních služeb podle regionu: Packeta pro Českou republiku a Slovensko (1-2 dny, 2.99€ / 75 Kč), DHL Express pro celosvětovou dopravu (2-4 dny, 8.99€ / 225 Kč) a UPS Standard jako ekonomickou alternativu (3-5 dní, 6.99€ / 175 Kč).",
+  "faq_delivery_time_title": "Jaká je celková doba dodání?",
+  "faq_delivery_time_content": "Celková doba dodání se skládá z výroby přes Printful (5-7 dní) a dopravy. Pro Českou republiku a Slovensko je to 6-9 dní, pro celý svět 7-12 dní.",
+  "faq_tracking_info_title": "Jak funguje sledování zásilky?",
+  "faq_tracking_info_content": "Tracking číslo dostanete emailem do 24 hodin od objednávky. Můžete sledovat stav výroby i dopravy až k doručení.",
+  "faq_shipping_costs_title": "Jaké jsou náklady na dopravu?",
+  "faq_shipping_costs_content": "Doprava stojí 2.99€ (75 Kč) pro Českou republiku a Slovensko (Packeta), 8.99€ (225 Kč) pro celosvětovou dopravu (DHL Express) nebo 6.99€ (175 Kč) pro ekonomickou celosvětovou dopravu (UPS Standard).",
   "faq_coming_soon_payments": "Informace o platebních metodách a bezpečnosti budou brzy dostupné...",
-  "faq_coming_soon_returns": "Informace o reklamacích a vrácení produktů budou brzy dostupné...",
+  "faq_returns_title": "Jak fungují reklamace a vrácení?",
+  "faq_returns_content": "Poskytujeme 30denní záruku na výrobu. Pokud je problém na straně Printful (tiskové chyby, nesprávná velikost, poškození), poskytneme bezplatnou náhradu nebo refund. Zákazník platí dopravu pouze pokud je problém na jeho straně.",
+  "faq_returns_process_title": "Jak probíhá proces reklamace?",
+  "faq_returns_process_content": "1. Kontaktujte nás s fotkami a popisem problému. 2. Vyhodnotíme situaci a kontaktujeme Printful. 3. Po schválení vám zašleme náhradní produkt nebo refund. 4. Celý proces trvá 3-7 pracovních dní.",
+  "faq_returns_photos_title": "Jaké fotografie potřebujete?",
+  "faq_returns_photos_content": "Potřebujeme jasné fotografie problému z různých úhlů, číslo objednávky a datum doručení. Fotografie by měly ukazovat celý produkt a detail problému.",
+  "faq_returns_shipping_title": "Kdo platí dopravu při reklamaci?",
+  "faq_returns_shipping_content": "Pokud je problém na straně Printful (tiskové chyby, poškození), dopravu platíme my. Pokud je problém na straně zákazníka (nesprávná velikost, změna názoru), dopravu platí zákazník.",
+  "faq_returns_time_title": "Jak dlouho trvá vyřízení reklamace?",
+  "faq_returns_time_content": "Vyhodnocení reklamace trvá 1-2 pracovní dny. Po schválení vám zašleme náhradní produkt do 5-7 pracovních dní nebo refund do 3-5 pracovních dní.",
+  "submit_returns_form": "Podat reklamaci",
+  "returns_form": {
+    "title": "Reklamační formulář",
+    "personal_info": "Osobní údaje",
+    "order_info": "Informace o objednávce",
+    "problem_info": "Informace o problému",
+    "photo_upload": "Fotografie problému",
+    "name": "Jméno a příjmení",
+    "email": "Email",
+    "phone": "Telefon",
+    "order_number": "Číslo objednávky",
+    "delivery_date": "Datum doručení",
+    "product_name": "Název produktu",
+    "problem_type": "Typ problému",
+    "select_problem": "Vyberte typ problému",
+    "description": "Popis problému",
+    "description_placeholder": "Podrobně popište problém s produktem...",
+    "upload_photos": "Nahrát fotografie",
+    "max_photos": "Nahrajte fotografie problému (max. 5 fotografií)",
+    "select_photos": "Vybrat fotografie",
+    "cancel": "Zrušit",
+    "submit": "Odeslat reklamaci",
+    "submitting": "Odesílám...",
+    "success_title": "Reklamace odeslána!",
+    "success_message": "Děkujeme za vaši reklamaci. Budeme vás kontaktovat do 24 hodin.",
+    "max_photos_alert": "Můžete nahrát maximálně 5 fotografií",
+    "problem_types": {
+      "printing_error": "Tisková chyba",
+      "wrong_size": "Nesprávná velikost",
+      "damaged": "Poškozený produkt",
+      "wrong_product": "Nesprávný produkt",
+      "quality_issue": "Problém s kvalitou",
+      "other": "Jiné"
+    }
+  },
   "sort_by": "Seřadit podle",
   "sort_default": "Výchozí",
   "sort_price_asc": "Ceny: od nejlevnější",
@@ -390,5 +442,55 @@
     "view_products": "Prohlédnout produkty",
     "clear_wishlist": "Vymazat oblíbené",
     "items_count": "produktů v oblíbených"
+  },
+  "product_not_available": {
+    "title": "Produkt není dostupný",
+    "message": "Omlouváme se, tento produkt není aktuálně k dispozici."
+  },
+  "shipping": {
+    "title": "Doprava",
+    "subtitle": "Informace o dopravě a době dodání",
+    "printful_production": {
+      "title": "Výroba přes Printful",
+      "description": "Naše produkty se vyrábí na objednávku přes Printful",
+      "days": "5-7 dní"
+    },
+    "local_shipping": {
+      "title": "Lokální doprava",
+      "packeta": {
+        "name": "Packeta",
+        "description": "Rychlá a spolehlivá doprava v ČR a SR",
+        "days": "1-2 dny",
+        "price": "2.99 €",
+        "regions": "Česká republika, Slovensko"
+      }
+    },
+    "worldwide_shipping": {
+      "title": "Celosvětová doprava",
+      "dhl": {
+        "name": "DHL Express",
+        "description": "Rychlá a spolehlivá celosvětová doprava",
+        "days": "2-4 dny",
+        "price": "8.99 €",
+        "regions": "Celý svět"
+      },
+      "ups": {
+        "name": "UPS Standard",
+        "description": "Ekonomická celosvětová doprava",
+        "days": "3-5 dní",
+        "price": "6.99 €",
+        "regions": "Celý svět"
+      }
+    },
+    "total_delivery_time": {
+      "title": "Celková doba dodání",
+      "description": "Výroba + doprava",
+      "cz_sk": "6-9 dní",
+      "worldwide": "7-12 dní"
+    },
+    "tracking": {
+      "title": "Sledování zásilky",
+      "description": "Tracking číslo dostanete emailem do 24 hodin od objednávky"
+    }
   }
 } 
