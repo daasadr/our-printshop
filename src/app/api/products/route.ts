@@ -13,7 +13,7 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const category = searchParams.get('category') || searchParams.get('main_category'); // Podporuje oba parametry
-    const limit = parseInt(searchParams.get('limit') || '12', 10); // Default limit 12
+    const limit = parseInt(searchParams.get('limit') || '1000', 10); // Default limit 1000
     const page = parseInt(searchParams.get('page') || '1', 10); // Default page 1
     const sort = searchParams.get('sort') || '-id'; // Změna na -id místo -date_created
     const locale = searchParams.get('locale') || 'cs'; // Jazyk pre preklady
