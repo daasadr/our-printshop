@@ -61,10 +61,10 @@ export async function GET(req: Request) {
       // Preklad cached produktov
       const translatedProducts = translateProducts(cachedProducts, locale);
       // Uloženie do cache
-    productsCache = response;
-    cacheTimestamp = now;
+      productsCache = translatedProducts;
+      cacheTimestamp = now;
     
-    return NextResponse.json(translatedProducts);
+      return NextResponse.json(translatedProducts);
     }
     
     const params: any = {

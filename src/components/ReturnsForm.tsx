@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { FiUpload, FiX, FiCamera, FiFileText, FiUser, FiMail, FiPhone } from 'react-icons/fi';
 
 interface ReturnsFormProps {
@@ -293,9 +294,11 @@ const ReturnsForm: React.FC<ReturnsFormProps> = ({ dictionary, lang, onClose }) 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {formData.photos.map((photo, index) => (
                   <div key={index} className="relative">
-                    <img
+                    <Image
                       src={URL.createObjectURL(photo)}
                       alt={`Photo ${index + 1}`}
+                      width={96}
+                      height={96}
                       className="w-full h-24 object-cover rounded-lg"
                     />
                     <button

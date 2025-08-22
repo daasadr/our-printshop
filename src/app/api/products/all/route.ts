@@ -19,7 +19,7 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minút
 const RATE_LIMIT_DELAY = 1000; // 1 sekunda medzi volaniami
 
 // Globálny cache pre detaily produktov
-let globalProductDetailsCache = new Map();
+const globalProductDetailsCache = new Map();
 let globalProductDetailsCacheTime = 0;
 const PRODUCT_DETAILS_CACHE_DURATION = 10 * 60 * 1000; // 10 minút
 
