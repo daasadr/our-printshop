@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { formatPrice, convertCurrency } from '@/utils/currency';
 import { useLocale } from '@/context/LocaleContext';
+import { useGeolocation } from '@/hooks/useGeolocation';
+import { formatPriceForDisplay, getRegionalPrice } from '@/utils/pricing';
 import { useCart } from '@/hooks/useCart';
 import { Button } from '@/components/ui/Button';
 import { FiPlus, FiHeart } from 'react-icons/fi';
@@ -17,6 +18,7 @@ interface CartRecommendationsProps {
 
 export default function CartRecommendations({ className = '' }: CartRecommendationsProps) {
   const { currency, locale } = useLocale();
+  const { countryCode } = useGeolocation();
   const { addToCart } = useCart();
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -99,7 +101,7 @@ export default function CartRecommendations({ className = '' }: CartRecommendati
       <div className="grid grid-cols-2 gap-4">
         {recommendations.map((product) => {
           const firstVariant = product.variants?.[0];
-          const priceConverted = firstVariant ? convertCurrency(firstVariant.price, currency) : 0;
+          const priceConverted = firstVariant ? getRegionalPrice(firstVariant.price, countryCode).price : 0;
           
           return (
             <div key={product.id} className="group relative bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 overflow-hidden hover:shadow-lg hover:bg-white/20 transition-all">
@@ -123,7 +125,7 @@ export default function CartRecommendations({ className = '' }: CartRecommendati
                 
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-semibold text-green-300">
-                    {formatPrice(priceConverted, currency)}
+                    {formatPriceForDisplay(priceConverted, 'EUR', currency)}
                   </p>
                   
                   <button

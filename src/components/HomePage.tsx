@@ -24,6 +24,7 @@ async function getLatestProducts(lang: string) {
     }
     
     const products = await response.json();
+    console.log(`getLatestProducts - got ${products.length} products from API`);
     return products;
   } catch (error) {
     console.error('Error fetching latest products:', error);

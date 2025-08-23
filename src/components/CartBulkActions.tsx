@@ -4,88 +4,96 @@ import React, { useState, useEffect } from 'react';
 import { useCart } from '@/hooks/useCart';
 import { useWishlist } from '@/context/WishlistContext';
 import { useLocale } from '@/context/LocaleContext';
-import { getDictionary } from '@/lib/getDictionary';
 import { Button } from '@/components/ui/Button';
 import { FiTrash2, FiHeart, FiDownload, FiShare2 } from 'react-icons/fi';
+import ConfirmModal from '@/components/ConfirmModal';
 
 interface CartBulkActionsProps {
   items: any[];
+  selectedItems?: Set<string>;
+  isSelectAll?: boolean;
   onSelectAll?: (selected: boolean) => void;
+  onItemSelect?: (itemId: string) => void;
   onBulkAction?: (action: string, selectedItems: string[]) => void;
   className?: string;
+  dictionary?: any;
 }
 
 export default function CartBulkActions({ 
   items, 
+  selectedItems: externalSelectedItems,
+  isSelectAll: externalIsSelectAll,
   onSelectAll, 
+  onItemSelect,
   onBulkAction, 
-  className = '' 
+  className = '',
+  dictionary: externalDictionary
 }: CartBulkActionsProps) {
   const { clearCart, removeFromCart } = useCart();
   const { addToWishlist } = useWishlist();
   const { locale } = useLocale();
-  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
-  const [isSelectAll, setIsSelectAll] = useState(false);
-  const [dictionary, setDictionary] = useState<any>(null);
+  // Používame externý state ak je poskytnutý, inak vlastný
+  const selectedItems = externalSelectedItems || new Set<string>();
+  const isSelectAll = externalIsSelectAll || false;
+  const [dictionary, setDictionary] = useState<any>(externalDictionary || null);
+  const [showClearCartModal, setShowClearCartModal] = useState(false);
+  const [showBulkRemoveModal, setShowBulkRemoveModal] = useState(false);
 
-  // Load dictionary
+  // Používame externý dictionary
   useEffect(() => {
-    const loadDictionary = async () => {
-      try {
-        const dict = await getDictionary(locale);
-        setDictionary(dict);
-      } catch (error) {
-        console.warn('Failed to load dictionary:', error);
-      }
-    };
-    loadDictionary();
-  }, [locale]);
-
-  // Automaticky vybrať všetky položky pri načítaní
-  useEffect(() => {
-    if (items.length > 0 && selectedItems.size === 0) {
-      const allItemIds = new Set(items.map(item => item.variantId));
-      setSelectedItems(allItemIds);
-      setIsSelectAll(true);
+    if (externalDictionary) {
+      console.log('CartBulkActions - Using external dictionary:', externalDictionary?.cart?.confirm_remove);
+      setDictionary(externalDictionary);
     }
-  }, [items, selectedItems.size]);
+  }, [externalDictionary]);
+
+  // Automaticky vybrať všetky položky pri načítaní (len ak nemáme externý state)
+  useEffect(() => {
+    if (!externalSelectedItems && items.length > 0 && selectedItems.size === 0) {
+      const allItemIds = new Set(items.map(item => item.variantId));
+      if (onSelectAll) {
+        onSelectAll(true);
+      }
+    }
+  }, [items, selectedItems.size, externalSelectedItems, onSelectAll]);
 
   const handleSelectAll = () => {
     const newSelectAll = !isSelectAll;
-    setIsSelectAll(newSelectAll);
     
     if (newSelectAll) {
       const allItemIds = new Set(items.map(item => item.variantId));
-      setSelectedItems(allItemIds);
+      // Ak máme externý callback, použijeme ho
+      if (onSelectAll) {
+        onSelectAll(true);
+      }
     } else {
-      setSelectedItems(new Set());
+      // Ak máme externý callback, použijeme ho
+      if (onSelectAll) {
+        onSelectAll(false);
+      }
     }
-    
-    onSelectAll?.(newSelectAll);
   };
 
   const handleItemSelect = (itemId: string) => {
-    const newSelected = new Set(selectedItems);
-    if (newSelected.has(itemId)) {
-      newSelected.delete(itemId);
-    } else {
-      newSelected.add(itemId);
-    }
-    setSelectedItems(newSelected);
-    setIsSelectAll(newSelected.size === items.length);
+    onItemSelect?.(itemId);
   };
 
   const handleBulkRemove = () => {
     if (selectedItems.size === 0) return;
-    
-    if (confirm(`${dictionary?.cart?.confirm_remove || 'Opravdu chcete odobrať'} ${selectedItems.size} položiek z košíka?`)) {
-      selectedItems.forEach(itemId => {
-        removeFromCart(itemId);
-      });
-      setSelectedItems(new Set());
-      setIsSelectAll(false);
-      onBulkAction?.('remove', Array.from(selectedItems));
+    setShowBulkRemoveModal(true);
+  };
+
+  const handleConfirmBulkRemove = () => {
+    console.log('CartBulkActions - Removing items:', Array.from(selectedItems));
+    selectedItems.forEach(itemId => {
+      console.log('CartBulkActions - Removing item:', itemId);
+      removeFromCart(itemId);
+    });
+    // Resetujeme externý state cez callback
+    if (onSelectAll) {
+      onSelectAll(false);
     }
+    onBulkAction?.('remove', Array.from(selectedItems));
   };
 
   const handleBulkMoveToWishlist = () => {
@@ -108,19 +116,27 @@ export default function CartBulkActions({
       removeFromCart(itemId);
     });
     
-    setSelectedItems(new Set());
-    setIsSelectAll(false);
+    // Resetujeme externý state cez callback
+    if (onSelectAll) {
+      onSelectAll(false);
+    }
     onBulkAction?.('moveToWishlist', Array.from(selectedItems));
   };
 
   const handleClearCart = () => {
-    if (confirm(dictionary?.cart?.confirm_clear || 'Opravdu chcete vyprázdniť celý košík?')) {
-      clearCart();
-      setSelectedItems(new Set());
-      setIsSelectAll(false);
-      onBulkAction?.('clear', []);
-    }
+    setShowClearCartModal(true);
   };
+
+  const handleConfirmClearCart = () => {
+    clearCart();
+    // Resetujeme externý state cez callback
+    if (onSelectAll) {
+      onSelectAll(false);
+    }
+    onBulkAction?.('clear', []);
+  };
+
+
 
   const handleExportCart = () => {
     const cartData = {
@@ -150,11 +166,21 @@ export default function CartBulkActions({
         title: 'Môj košík',
         text: shareText,
         url: window.location.href
+      }).catch(error => {
+        console.log('Share cancelled or failed:', error);
+        // Fallback - copy to clipboard
+        navigator.clipboard.writeText(shareText).then(() => {
+          alert('Košík bol skopírovaný do schránky!');
+        }).catch(clipboardError => {
+          console.error('Clipboard write failed:', clipboardError);
+        });
       });
     } else {
       // Fallback - copy to clipboard
       navigator.clipboard.writeText(shareText).then(() => {
         alert('Košík bol skopírovaný do schránky!');
+      }).catch(error => {
+        console.error('Clipboard write failed:', error);
       });
     }
   };
@@ -164,32 +190,10 @@ export default function CartBulkActions({
   }
 
   return (
-    <div className={`bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-4 ${className}`}>
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center space-x-3">
-          <label className="flex items-center space-x-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={isSelectAll}
-              onChange={handleSelectAll}
-              className="rounded border-white/30 text-green-600 focus:ring-green-500 bg-white/20"
-            />
-            <span className="text-sm font-medium text-white">
-              {dictionary?.cart?.select_all || 'Vybrať všetko'} ({items.reduce((total, item) => total + item.quantity, 0)})
-            </span>
-          </label>
-        </div>
-        
-        <div className="text-sm text-white/70">
-          {Array.from(selectedItems).reduce((total, itemId) => {
-            const item = items.find(i => i.variantId === itemId);
-            return total + (item?.quantity || 0);
-          }, 0)} {dictionary?.cart?.selected_items || 'položiek vybraných'}
-        </div>
-      </div>
-
+    <>
+      <div className={`bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-4 ${className}`}>
       {/* Bulk action buttons */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 mb-4">
         <Button
           onClick={handleBulkRemove}
           disabled={selectedItems.size === 0}
@@ -243,25 +247,58 @@ export default function CartBulkActions({
         </Button>
       </div>
 
-      {/* Individual item checkboxes */}
-      <div className="mt-4 space-y-2">
-        {items.map((item) => (
-          <label key={item.variantId} className="flex items-center space-x-3 cursor-pointer p-2 hover:bg-white/10 rounded transition-colors">
+      {/* Selection info */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center space-x-3">
+          <label className="flex items-center space-x-2 cursor-pointer">
             <input
               type="checkbox"
-              checked={selectedItems.has(item.variantId)}
-              onChange={() => handleItemSelect(item.variantId)}
+              checked={isSelectAll}
+              onChange={handleSelectAll}
               className="rounded border-white/30 text-green-600 focus:ring-green-500 bg-white/20"
             />
-            <div className="flex-1">
-              <span className="text-sm font-medium text-white">{item.name}</span>
-              <span className="text-sm text-white/70 ml-2">
-                ({item.quantity}x)
-              </span>
-            </div>
+            <span className="text-sm font-medium text-white">
+              {dictionary?.cart?.select_all || 'Vybrať všetko'} ({items.reduce((total, item) => total + item.quantity, 0)})
+            </span>
           </label>
-        ))}
+        </div>
+        
+        <div className="text-sm text-white/70">
+          {Array.from(selectedItems).reduce((total, itemId) => {
+            const item = items.find(i => i.variantId === itemId);
+            return total + (item?.quantity || 0);
+          }, 0)} {dictionary?.cart?.selected_items || 'položiek vybraných'}
+        </div>
       </div>
     </div>
+    
+    {/* Modal pre potvrdenie vyprázdnenia košíka */}
+    <ConfirmModal
+      isOpen={showClearCartModal}
+      onClose={() => setShowClearCartModal(false)}
+      onConfirm={handleConfirmClearCart}
+      title={dictionary?.cart?.clear_cart || 'Vyprázdniť košík'}
+      message={dictionary?.cart?.confirm_clear || 'Opravdu chcete vyprázdniť celý košík?'}
+      dictionary={dictionary}
+    />
+
+    {/* Modal pre potvrdenie odobrania vybraných položiek */}
+    <ConfirmModal
+      isOpen={showBulkRemoveModal}
+      onClose={() => setShowBulkRemoveModal(false)}
+      onConfirm={handleConfirmBulkRemove}
+      title={dictionary?.cart?.bulk_actions?.remove_selected || 'Odobrať vybrané'}
+      message={`${dictionary?.cart?.confirm_remove || 'Opravdu chcete odobrať'} ${selectedItems.size} ${dictionary?.cart?.items_from_cart || 'položiek z košíka'}?`}
+      dictionary={dictionary}
+    />
+    {/* Debug info */}
+    {showBulkRemoveModal && (
+      <div style={{display: 'none'}}>
+        Debug: locale={locale}, confirm_remove={dictionary?.cart?.confirm_remove}, items_from_cart={dictionary?.cart?.items_from_cart}
+      </div>
+    )}
+    
+
+    </>
   );
 }

@@ -4,10 +4,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
 import { useWishlist } from '@/context/WishlistContext';
-import { formatPrice, convertCurrency } from '@/utils/currency';
+import { formatPrice, formatPriceForDisplay, getRegionalPrice } from '@/utils/pricing';
 import { getProductImages } from '@/utils/productImage';
 import { Button } from '@/components/ui/Button';
 import { useLocale } from '@/context/LocaleContext';
+import { useGeolocation } from '@/hooks/useGeolocation';
 import { FiHeart } from 'react-icons/fi';
 import { ClientOnlyPrice } from '@/components/ClientOnly';
 
@@ -22,7 +23,10 @@ interface LatestProductsProps {
 const LatestProducts: React.FC<LatestProductsProps> = ({ products = [], dictionary, lang = 'cs' }) => {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-  const { currency } = useLocale();
+  const { locale, currency } = useLocale();
+  const { countryCode, isLoading: geolocationLoading } = useGeolocation();
+  
+  console.log('LatestProducts - Geolocation:', { countryCode, geolocationLoading, locale, currency });
 
   // Rotácia produktov - 4 produkty, rotujúce každých 5 sekúnd
   const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
@@ -83,33 +87,56 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ products = [], dictiona
   // Aktuálne zobrazované produkty
   const currentProducts = groupedProducts[currentGroupIndex] || [];
 
-  // Přepočítáme ceny produktů podle aktuální měny
+  // Přepočítáme ceny produktů podle regionálnej cenovej politiky
   const productsWithConvertedPrices = useMemo(() => {
     return currentProducts.map(product => {
-      const priceEur = product.price || product.variants?.[0]?.price || 0;
-      const priceConverted = convertCurrency(priceEur, currency);
+      let priceEur = product.price || product.variants?.[0]?.price || 0;
+      
+      // Fallback cena pre produkty bez cien
+      if (priceEur === 0) {
+        console.warn(`⚠️ PRODUCT WITHOUT PRICE: ${product.name} (ID: ${product.id}) - using fallback price`);
+        priceEur = 15.99; // Fallback cena v EUR
+      }
+      
+      console.log(`LatestProducts - Product ${product.name}: price=${product.price}, variantPrice=${product.variants?.[0]?.price}, finalPrice=${priceEur}`);
+      
+      // Použijeme regionálnu cenovú politiku podľa geolokácie
+      const regionalPrice = getRegionalPrice(priceEur, countryCode);
+      console.log(`LatestProducts - Regional price for ${product.name}: ${regionalPrice.price} ${regionalPrice.zone.currency} (country: ${countryCode})`);
+      
       return {
         ...product,
-        convertedPrice: priceConverted
+        convertedPrice: regionalPrice.price, // Regionálna cena
+        regionalPrice: regionalPrice
       };
     });
-  }, [currentProducts, currency]);
+  }, [currentProducts, countryCode]);
 
   const handleAddToCart = (product: any) => {
     if (product.variants && product.variants.length > 0) {
-      // Převedeme cenu na správnou měnu pro košík
+      // Použijeme základnú cenu v EUR pre košík (regionálne úpravy sa aplikujú v useCart)
       const priceEur = product.price || product.variants?.[0]?.price || 0;
-      const priceConverted = convertCurrency(priceEur, currency);
+      console.log('LatestProducts - Adding to cart:', {
+        name: product.name,
+        basePrice: priceEur,
+        countryCode,
+        regionalPrice: product.convertedPrice
+      });
       addToCart({
         variantId: product.variants[0].id,
         quantity: 1,
         name: product.name,
-        price: priceConverted,
-        image: product.designs && product.designs.length > 0 ? product.designs[0].previewUrl : '',
+        price: priceEur, // Základná cena v EUR
+        image: getProductImages(product).main,
         sourceCurrency: 'EUR'
       });
     }
   };
+
+  // Čakáme na načítanie geolokácie, aby sme predišli hydration erroru
+  if (geolocationLoading) {
+    return <ProductPlaceholders dictionary={dictionary} currency={currency} />;
+  }
 
   if (!products || products.length === 0) {
     return <ProductPlaceholders dictionary={dictionary} currency={currency} />;
@@ -163,13 +190,13 @@ const LatestProducts: React.FC<LatestProductsProps> = ({ products = [], dictiona
                 
                 <div className="mt-4 flex justify-between items-center">
                   {product.convertedPrice > 0 ? (
-                    <ClientOnlyPrice className="text-lg font-medium text-gray-900">
-                      {formatPrice(product.convertedPrice, currency)}
-                    </ClientOnlyPrice>
+                            <span className="text-xl font-bold text-gray-800">
+          {formatPriceForDisplay(product.convertedPrice, 'EUR', currency)}
+        </span>
                   ) : (
-                    <p className="text-sm text-gray-500">
-                      {dictionary?.product?.price_not_available || "Cena není k dispozici"}
-                    </p>
+                            <span className="text-xl font-bold text-gray-800">
+          {formatPriceForDisplay(16, 'EUR', currency)} {/* Fallback cena pre testovanie */}
+        </span>
                   )}
                   
                   <Button
@@ -231,8 +258,8 @@ const ProductPlaceholders: React.FC<ProductPlaceholdersProps> = ({ dictionary, c
             <h3 className="text-sm font-medium text-gray-900">{product.name}</h3>
             <p className="mt-1 text-sm text-gray-500">Více variant</p>
             <div className="mt-4 flex justify-between items-center">
-              <ClientOnlyPrice className="text-lg font-medium text-gray-900">
-                {formatPrice(product.price, currency as any)}
+              <ClientOnlyPrice className="text-xl font-bold text-gray-900">
+                {formatPriceForDisplay(product.price, 'EUR', currency as any)}
               </ClientOnlyPrice>
               <button className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
                 {dictionary?.product?.add_to_cart || "Do košíku"}

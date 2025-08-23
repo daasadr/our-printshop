@@ -28,7 +28,8 @@ const ContactForm = ({ dictionary }: ContactFormProps) => {
     email: '',
     subject: '',
     message: '',
-    honeypot: '' // Spam ochrana - skryté pole
+    honeypot: '', // Spam ochrana - skryté pole
+    gdpr_consent: false
   });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
@@ -86,6 +87,10 @@ const ContactForm = ({ dictionary }: ContactFormProps) => {
       newErrors.message = dictionary?.contact?.validation?.message_required || 'Zpráva je povinná.';
     }
     
+    if (!formData.gdpr_consent) {
+      newErrors.gdpr_consent = dictionary?.contact?.gdpr_required || 'Musíte souhlasit se zpracováním osobních údajů.';
+    }
+    
     // Spam ochrana - ak je honeypot vyplnené, je to spam
     if (formData.honeypot.trim()) {
       console.log('Spam detected - honeypot field filled');
@@ -123,7 +128,7 @@ const ContactForm = ({ dictionary }: ContactFormProps) => {
 
       setStatus('success');
       setMessage(`${dictionary?.contact?.success?.title || 'Děkujeme za vaši zprávu!'} ${dictionary?.contact?.success?.message || 'Budeme vás kontaktovat co nejdříve.'}`);
-      setFormData({ name: '', email: '', subject: '', message: '', honeypot: '' });
+      setFormData({ name: '', email: '', subject: '', message: '', honeypot: '', gdpr_consent: false });
       setErrors({});
       announce('Zpráva byla úspěšně odeslána!', 'assertive');
     } catch (error) {
@@ -135,10 +140,10 @@ const ContactForm = ({ dictionary }: ContactFormProps) => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target as HTMLInputElement;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
@@ -258,6 +263,30 @@ const ContactForm = ({ dictionary }: ContactFormProps) => {
             error={errors.message}
             aria-required="true"
           />
+        </div>
+
+        {/* GDPR Consent */}
+        <div className="flex items-start space-x-2">
+          <input
+            type="checkbox"
+            id="gdpr_consent"
+            name="gdpr_consent"
+            checked={formData.gdpr_consent}
+            onChange={handleChange}
+            className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            required
+          />
+          <label htmlFor="gdpr_consent" className="text-sm text-gray-700">
+            {dictionary?.contact?.gdpr_consent || 'Souhlasím se zpracováním osobních údajů pro účely odpovědi na mou zprávu'}
+          </label>
+        </div>
+
+        {errors.gdpr_consent && (
+          <p className="text-sm text-red-600">{errors.gdpr_consent}</p>
+        )}
+
+        <div className="text-xs text-gray-500 mb-4">
+          {dictionary?.contact?.gdpr_info || 'Vaše údaje potřebujeme k odpovědi na vaši zprávu. Zpracováváme je v souladu s GDPR.'}
         </div>
 
         <Button

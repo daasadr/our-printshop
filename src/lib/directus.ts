@@ -1,4 +1,4 @@
-import { createDirectus, rest, staticToken, readItems, createItem, updateItem, deleteItem, readItem } from '@directus/sdk';
+import { createDirectus, rest, authentication, readItems, createItem, updateItem, deleteItem, readItem } from '@directus/sdk';
 import { Product, Variant, Category, Design, Order, OrderItem } from '@/types';
 
 if (!process.env.NEXT_PUBLIC_DIRECTUS_URL) {
@@ -10,7 +10,7 @@ if (!process.env.DIRECTUS_TOKEN) {
 
 // Připojení ke klientovi
 export const directus = createDirectus(process.env.NEXT_PUBLIC_DIRECTUS_URL!)
-  .with(staticToken(process.env.DIRECTUS_TOKEN!))
+  .with(authentication())
   .with(rest());
 
 // Typy podle skutečných kolekcí

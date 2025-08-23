@@ -46,6 +46,17 @@
   },
   "welcome": "Original clothing with designer prints",
   "addToCart": "Add to cart",
+  "floating_cart": {
+    "title": "Cart",
+    "view_cart": "View cart",
+    "checkout": "Proceed to checkout",
+    "pay": "Pay",
+    "empty": "Empty cart",
+    "empty_message": "Add products to your cart",
+    "items": "items",
+    "item": "item",
+    "items_2_4": "items"
+  },
   "welcome_back": "Welcome!",
   "welcome_back_message": "We're glad you're back, {name}",
   "subtitle": "Express your unique style with our creative designs.",
@@ -73,6 +84,8 @@
     "quantity": "Quantity",
     "color": "Color",
     "size": "Size",
+    "added_to_cart": "Product has been added to cart!",
+    "close": "Close",
     "stock_status": {
       "in_stock": "In Stock",
       "out_of_stock": "Out of Stock",
@@ -121,6 +134,7 @@
       "clear_cart": "Clear Cart"
     },
     "confirm_remove": "Do you really want to remove",
+    "items_from_cart": "items from cart",
     "confirm_clear": "Do you really want to clear the cart?",
     "saved_for_later": "Saved for Later",
     "no_saved_items": "You have no saved items",
@@ -254,7 +268,24 @@
     "unsubscribe_reason_other": "Other reason",
     "unsubscribe_button": "Unsubscribe",
     "unsubscribe_success": "You have been successfully unsubscribed.",
-    "unsubscribing": "Unsubscribing..."
+    "unsubscribing": "Unsubscribing...",
+    "privacy_notice": "By subscribing, you agree to the processing of your personal data in accordance with our",
+    "privacy_policy": "privacy policy",
+    "gdpr_required": "You must agree to the processing of personal data.",
+    "privacy_policy_title": "Privacy Policy",
+    "gdpr_title": "GDPR - General Data Protection Regulation",
+    "gdpr_intro": "In accordance with Regulation (EU) 2016/679 of the European Parliament and Council (GDPR), we inform you about the processing of your personal data:",
+    "data_controller": "Data Controller:",
+    "purpose": "Purpose of processing:",
+    "purpose_text": "Sending newsletter with news and offers",
+    "legal_basis": "Legal basis:",
+    "legal_basis_text": "Your consent (Art. 6(1)(a) GDPR)",
+    "retention": "Retention period:",
+    "retention_text": "Until consent is withdrawn or 3 years from last activity",
+    "rights": "Your rights:",
+    "rights_text": "Right to access, correction, deletion, restriction of processing and data portability",
+    "gdpr_contact": "To exercise your rights, contact us at:",
+    "close": "Close"
   },
   
   "wishlist": {
@@ -419,6 +450,7 @@
     "max_photos": "Upload problem photos (max. 5 photos)",
     "select_photos": "Select Photos",
     "cancel": "Cancel",
+    "confirm": "Confirm",
     "submit": "Submit Complaint",
     "submitting": "Submitting...",
     "success_title": "Complaint Submitted!",
@@ -499,5 +531,36 @@
       "title": "Package Tracking",
       "description": "You'll receive a tracking number by email within 24 hours of ordering"
     }
+  },
+  "faq_gdpr": "Data Protection (GDPR)",
+  "faq_gdpr_what_title": "What is GDPR and how does it affect your data?",
+  "faq_gdpr_what_content": "GDPR (General Data Protection Regulation) is a European regulation that protects your personal data. In accordance with GDPR, we inform you about how we process your data and what rights you have.",
+  "faq_gdpr_data_title": "What data do we process about you?",
+  "faq_gdpr_data_content": "We process your name, email, delivery address and order information. We need this data to process orders, communicate and send newsletters (only with your consent).",
+  "faq_gdpr_purpose_title": "What do we use your data for?",
+  "faq_gdpr_purpose_content": "We use your data for: processing orders, communicating order status, sending newsletters (with your consent), improving our services and complying with legal obligations.",
+  "faq_gdpr_rights_title": "What rights do you have?",
+  "faq_gdpr_rights_content": "You have the right to: access your data, correct incorrect data, delete data, restrict processing, data portability and withdraw consent. You can exercise these rights by contacting us.",
+  "faq_gdpr_retention_title": "How long do we keep your data?",
+  "faq_gdpr_retention_content": "We keep order data for 5 years (accounting purposes). Newsletter data is kept until consent is withdrawn or 3 years from last activity. After this period, we securely delete the data.",
+  "faq_gdpr_contact_title": "How can you contact us regarding GDPR?",
+  "faq_gdpr_contact_content": "For questions regarding data protection, contact us at privacy@happywilderness.sk. We will respond within 30 days. You can also use the contact form on our website.",
+  "checkout": {
+    "title": "Complete Order",
+    "shipping_details": "Shipping Details",
+    "order_summary": "Order Summary",
+    "gdpr_consent": "I agree to the processing of personal data for order delivery purposes",
+    "gdpr_required": "You must agree to the processing of personal data for delivery",
+    "gdpr_info": "We need your data to deliver the order. We process it in accordance with GDPR.",
+    "complete_order": "Complete Order",
+    "processing": "Processing..."
+  },
+  "contact": {
+    "gdpr_consent": "I agree to the processing of personal data for the purpose of responding to my message",
+    "gdpr_required": "You must agree to the processing of personal data",
+    "gdpr_info": "We need your data to respond to your message. We process it in accordance with GDPR."
+  },
+  "login": {
+    "gdpr_info": "By logging in, you agree to the processing of your data in accordance with our privacy policy."
   }
 } 

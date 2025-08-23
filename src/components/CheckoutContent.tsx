@@ -6,17 +6,35 @@ import { useRouter } from 'next/navigation';
 import CheckoutForm from '@/components/CheckoutForm';
 import { CartItem as SimpleCartItem } from '@/types/cart';
 import { useCart } from '@/hooks/useCart';
+import { useLocale } from '@/context/LocaleContext';
+import { getDictionary } from '@/lib/getDictionary';
 
 export default function CheckoutContent() {
   const router = useRouter();
+  const { locale } = useLocale();
   const { items: localCartItems, totalPrice: localTotalPrice } = useCart();
   const [serverCart, setServerCart] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [dictionary, setDictionary] = useState<any>(null);
   
   // JWT Auth state
   const [user, setUser] = useState<any>(null);
   const [authStatus, setAuthStatus] = useState<'loading' | 'authenticated' | 'unauthenticated'>('loading');
+
+  // Load dictionary
+  useEffect(() => {
+    const loadDictionary = async () => {
+      try {
+        const dict = await getDictionary(locale);
+        setDictionary(dict);
+      } catch (error) {
+        console.warn('Failed to load dictionary:', error);
+      }
+    };
+
+    loadDictionary();
+  }, [locale]);
 
   // JWT Auth check
   useEffect(() => {
@@ -143,6 +161,7 @@ export default function CheckoutContent() {
         <CheckoutForm 
           cartItems={cartItems} 
           total={totalPrice}
+          dictionary={dictionary}
         />
       </div>
     </div>

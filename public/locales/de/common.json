@@ -46,6 +46,17 @@
   },
   "welcome": "Originelle Kleidung mit Designer-Prints",
   "addToCart": "In den Warenkorb",
+  "floating_cart": {
+    "title": "Warenkorb",
+    "view_cart": "Warenkorb anzeigen",
+    "checkout": "Zur Kasse gehen",
+    "pay": "Bezahlen",
+    "empty": "Leerer Warenkorb",
+    "empty_message": "Fügen Sie Produkte zum Warenkorb hinzu",
+    "items": "Artikel",
+    "item": "Artikel",
+    "items_2_4": "Artikel"
+  },
   "welcome_back": "Willkommen!",
   "welcome_back_message": "Wir freuen uns, dass Sie zurück sind, {name}",
   "subtitle": "Drücken Sie Ihren einzigartigen Stil mit unseren kreativen Designs aus.",
@@ -73,6 +84,8 @@
     "quantity": "Menge",
     "color": "Farbe",
     "size": "Größe",
+    "added_to_cart": "Produkt wurde zum Warenkorb hinzugefügt!",
+    "close": "Schließen",
     "stock_status": {
       "in_stock": "Auf Lager",
       "out_of_stock": "Nicht verfügbar",
@@ -121,6 +134,7 @@
       "clear_cart": "Warenkorb leeren"
     },
     "confirm_remove": "Möchten Sie wirklich entfernen",
+    "items_from_cart": "Artikel aus dem Warenkorb",
     "confirm_clear": "Möchten Sie wirklich den Warenkorb leeren?",
     "saved_for_later": "Für später gespeichert",
     "no_saved_items": "Sie haben keine gespeicherten Artikel",
@@ -254,7 +268,24 @@
     "unsubscribe_reason_other": "Anderer Grund",
     "unsubscribe_button": "Abbestellen",
     "unsubscribe_success": "Sie wurden erfolgreich abgemeldet.",
-    "unsubscribing": "Abmelden..."
+    "unsubscribing": "Abmelden...",
+    "privacy_notice": "Mit der Anmeldung stimmen Sie der Verarbeitung Ihrer personenbezogenen Daten gemäß unseren",
+    "privacy_policy": "Datenschutzrichtlinien",
+    "gdpr_required": "Sie müssen der Verarbeitung personenbezogener Daten zustimmen.",
+    "privacy_policy_title": "Datenschutzrichtlinien",
+    "gdpr_title": "GDPR - Datenschutz-Grundverordnung",
+    "gdpr_intro": "Gemäß der Verordnung (EU) 2016/679 des Europäischen Parlaments und Rates (GDPR) informieren wir Sie über die Verarbeitung Ihrer personenbezogenen Daten:",
+    "data_controller": "Datenverantwortlicher:",
+    "purpose": "Zweck der Verarbeitung:",
+    "purpose_text": "Versand von Newsletter mit Neuigkeiten und Angeboten",
+    "legal_basis": "Rechtsgrundlage:",
+    "legal_basis_text": "Ihre Zustimmung (Art. 6 Abs. 1 lit. a) GDPR)",
+    "retention": "Aufbewahrungsfrist:",
+    "retention_text": "Bis zum Widerruf der Zustimmung oder 3 Jahre nach der letzten Aktivität",
+    "rights": "Ihre Rechte:",
+    "rights_text": "Recht auf Zugang, Berichtigung, Löschung, Einschränkung der Verarbeitung und Datenübertragbarkeit",
+    "gdpr_contact": "Zur Ausübung Ihrer Rechte kontaktieren Sie uns unter:",
+    "close": "Schließen"
   },
   
   "wishlist": {
@@ -424,6 +455,7 @@
     "max_photos": "Problemfotos hochladen (max. 5 Fotos)",
     "select_photos": "Fotos auswählen",
     "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
     "submit": "Reklamation einreichen",
     "submitting": "Wird eingereicht...",
     "success_title": "Reklamation eingereicht!",
@@ -504,5 +536,36 @@
       "title": "Paketverfolgung",
       "description": "Sie erhalten eine Tracking-Nummer per E-Mail innerhalb von 24 Stunden nach der Bestellung"
     }
+  },
+  "faq_gdpr": "Datenschutz (GDPR)",
+  "faq_gdpr_what_title": "Was ist GDPR und wie betrifft es Ihre Daten?",
+  "faq_gdpr_what_content": "GDPR (Datenschutz-Grundverordnung) ist eine europäische Verordnung, die Ihre persönlichen Daten schützt. Gemäß GDPR informieren wir Sie darüber, wie wir Ihre Daten verarbeiten und welche Rechte Sie haben.",
+  "faq_gdpr_data_title": "Welche Daten verarbeiten wir über Sie?",
+  "faq_gdpr_data_content": "Wir verarbeiten Ihren Namen, E-Mail, Lieferadresse und Bestellinformationen. Diese Daten benötigen wir zur Bearbeitung von Bestellungen, Kommunikation und Versand von Newslettern (nur mit Ihrer Zustimmung).",
+  "faq_gdpr_purpose_title": "Wofür verwenden wir Ihre Daten?",
+  "faq_gdpr_purpose_content": "Wir verwenden Ihre Daten für: Bearbeitung von Bestellungen, Kommunikation über Bestellstatus, Versand von Newslettern (mit Ihrer Zustimmung), Verbesserung unserer Dienstleistungen und Einhaltung gesetzlicher Verpflichtungen.",
+  "faq_gdpr_rights_title": "Welche Rechte haben Sie?",
+  "faq_gdpr_rights_content": "Sie haben das Recht auf: Zugang zu Ihren Daten, Berichtigung falscher Daten, Löschung von Daten, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerruf der Zustimmung. Sie können diese Rechte durch Kontaktaufnahme mit uns ausüben.",
+  "faq_gdpr_retention_title": "Wie lange speichern wir Ihre Daten?",
+  "faq_gdpr_retention_content": "Bestelldaten speichern wir 5 Jahre (Buchhaltungszwecke). Newsletter-Daten werden bis zum Widerruf der Zustimmung oder 3 Jahre nach der letzten Aktivität gespeichert. Nach dieser Zeit löschen wir die Daten sicher.",
+  "faq_gdpr_contact_title": "Wie können Sie uns bezüglich GDPR kontaktieren?",
+  "faq_gdpr_contact_content": "Für Fragen zum Datenschutz kontaktieren Sie uns unter privacy@happywilderness.sk. Wir antworten innerhalb von 30 Tagen. Sie können auch das Kontaktformular auf unserer Website verwenden.",
+  "checkout": {
+    "title": "Bestellung abschließen",
+    "shipping_details": "Versanddetails",
+    "order_summary": "Bestellübersicht",
+    "gdpr_consent": "Ich stimme der Verarbeitung personenbezogener Daten für Zwecke der Bestelllieferung zu",
+    "gdpr_required": "Sie müssen der Verarbeitung personenbezogener Daten für die Lieferung zustimmen",
+    "gdpr_info": "Wir benötigen Ihre Daten für die Lieferung der Bestellung. Wir verarbeiten sie gemäß GDPR.",
+    "complete_order": "Bestellung abschließen",
+    "processing": "Verarbeite..."
+  },
+  "contact": {
+    "gdpr_consent": "Ich stimme der Verarbeitung personenbezogener Daten zum Zweck der Beantwortung meiner Nachricht zu",
+    "gdpr_required": "Sie müssen der Verarbeitung personenbezogener Daten zustimmen",
+    "gdpr_info": "Wir benötigen Ihre Daten, um auf Ihre Nachricht zu antworten. Wir verarbeiten sie gemäß GDPR."
+  },
+  "login": {
+    "gdpr_info": "Durch die Anmeldung stimmen Sie der Verarbeitung Ihrer Daten gemäß unserer Datenschutzrichtlinie zu."
   }
 } 

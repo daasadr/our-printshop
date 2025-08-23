@@ -16,7 +16,7 @@ const Footer: React.FC<FooterProps> = ({ dictionary }) => {
   };
 
   return (
-    <footer role="contentinfo" className="bg-gray-100 pt-12 pb-8">
+    <footer role="contentinfo" className="bg-gray-100 pt-8 pb-6">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* O nás */}
@@ -42,7 +42,7 @@ const Footer: React.FC<FooterProps> = ({ dictionary }) => {
 
           {/* Rychlé odkazy */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">{dictionary?.footer?.quick_links || "Rychlé odkazy"}</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-4">{dictionary?.footer?.quick_links || "Rychlé odkazy"}</h3>
             <nav className="flex flex-col space-y-2">
               <Link href={getLocalizedLink('/about')} className="text-gray-600 hover:text-blue-600">
                 {dictionary?.footer?.about || "O nás"}
@@ -64,7 +64,7 @@ const Footer: React.FC<FooterProps> = ({ dictionary }) => {
 
           {/* Kontakt */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">{dictionary?.footer?.about_title || "O nás"}</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-4">{dictionary?.footer?.about_title || "O nás"}</h3>
             <p className="text-gray-700 mb-4">
               {dictionary?.footer?.brand || "HappyWilderness"}
             </p>
@@ -78,7 +78,7 @@ const Footer: React.FC<FooterProps> = ({ dictionary }) => {
         </div>
 
         {/* Copyright */}
-        <div className="mt-12 pt-8 border-t border-gray-200 text-center text-gray-500 text-sm">
+        <div className="mt-8 pt-6 border-t border-gray-200 text-center text-gray-500 text-sm">
           <p>
             {dictionary?.footer?.copyright?.replace('{{year}}', new Date().getFullYear().toString()) || 
              `©${new Date().getFullYear()} AnnLibertas & LuGo všechna práva vyhrazena.`}

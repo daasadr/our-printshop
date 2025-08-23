@@ -1,16 +1,13 @@
 import { JWTAuth } from '../jwt-auth'
 
-// Mock Directus SDK
-jest.mock('@directus/sdk', () => ({
-  createDirectus: jest.fn(() => ({
-    with: jest.fn(() => ({
-      login: jest.fn(),
-      logout: jest.fn(),
-      readItems: jest.fn(),
-      createItem: jest.fn(),
-      updateItem: jest.fn(),
-    })),
-  })),
+// Mock the entire directus module
+jest.mock('../directus', () => ({
+  directus: {
+    request: jest.fn(),
+  },
+  readItems: jest.fn(),
+  createItem: jest.fn(),
+  updateItem: jest.fn(),
 }))
 
 describe('JWTAuth', () => {

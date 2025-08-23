@@ -4,39 +4,60 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
 import { useLocale } from '@/context/LocaleContext';
-import { formatPrice, convertCurrency } from '@/utils/currency';
+import { formatPrice, formatPriceForDisplay } from '@/utils/pricing';
 import { Button, QuantityButton } from '@/components/ui/Button';
 import { ClientOnlyPrice } from '@/components/ClientOnly';
 import { useEffect, useState, useMemo } from 'react';
-import { getDictionary } from '@/lib/getDictionary';
 import CartBulkActions from './CartBulkActions';
 import CartRecommendations from './CartRecommendations';
 
-export default function CartContent() {
+interface CartContentProps {
+  dictionary?: any;
+}
+
+export default function CartContent({ dictionary }: CartContentProps) {
   const { items, removeFromCart, updateQuantity, totalPrice } = useCart();
   const { locale, currency } = useLocale();
-  const [dictionary, setDictionary] = useState<any>(null);
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+  const [isSelectAll, setIsSelectAll] = useState(false);
 
-  // Načtení dictionary pro aktuální jazyk
-  useEffect(() => {
-    const loadDictionary = async () => {
-      try {
-        const dict = await getDictionary(locale);
-        setDictionary(dict);
-      } catch (error) {
-        console.warn('Failed to load dictionary:', error);
-      }
-    };
+  // Ceny sú už aplikované s regionálnymi úpravami z useCart hooku
+  const cartItems = items;
+  
+  console.log('CartContent - Cart items with prices:', cartItems.map(item => ({
+    name: item.name,
+    price: item.price,
+    quantity: item.quantity,
+    total: item.price * item.quantity
+  })));
 
-    loadDictionary();
-  }, [locale]);
+  const cartTotalPrice = useMemo(() => {
+    return cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  }, [cartItems]);
 
-  // Ceny jsou už konvertované z useCart hooku
-  const convertedItems = items;
+  // Funkcie pre správu výberu položiek
+  const handleSelectAll = () => {
+    const newSelectAll = !isSelectAll;
+    setIsSelectAll(newSelectAll);
+    
+    if (newSelectAll) {
+      const allItemIds = new Set(items.map(item => item.variantId));
+      setSelectedItems(allItemIds);
+    } else {
+      setSelectedItems(new Set());
+    }
+  };
 
-  const convertedTotalPrice = useMemo(() => {
-    return convertedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  }, [convertedItems]);
+  const handleItemSelect = (itemId: string) => {
+    const newSelected = new Set(selectedItems);
+    if (newSelected.has(itemId)) {
+      newSelected.delete(itemId);
+    } else {
+      newSelected.add(itemId);
+    }
+    setSelectedItems(newSelected);
+    setIsSelectAll(newSelected.size === items.length);
+  };
 
   if (items.length === 0) {
     return (
@@ -55,30 +76,47 @@ export default function CartContent() {
       <CartBulkActions 
         items={items} 
         className="mb-6"
+        selectedItems={selectedItems}
+        isSelectAll={isSelectAll}
+        onSelectAll={handleSelectAll}
+        onItemSelect={handleItemSelect}
+        dictionary={dictionary}
       />
       
       <div className="space-y-4">
-        {convertedItems.map((item) => (
+        {cartItems.map((item) => (
           <div
             key={item.variantId}
             className="flex items-center gap-4 p-4 bg-white/5 rounded-lg"
           >
-            {item.image && (
-              <div className="relative w-20 h-20">
-                <Image
-                  src={item.image}
-                  alt={item.name}
-                  fill
-                  className="object-cover rounded"
-                />
-              </div>
-            )}
+            {/* Checkbox for bulk selection */}
+            <input
+              type="checkbox"
+              checked={selectedItems.has(item.variantId)}
+              onChange={() => handleItemSelect(item.variantId)}
+              className="rounded border-white/30 text-green-600 focus:ring-green-500 bg-white/20"
+            />
+            
+            <div className="relative w-20 h-20">
+              <Image
+                src={item.image || '/images/placeholder.jpg'}
+                alt={item.name}
+                fill
+                className="object-cover rounded"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  if (target.src !== '/images/placeholder.jpg') {
+                    target.src = '/images/placeholder.jpg';
+                  }
+                }}
+              />
+            </div>
             <div className="flex-1">
               <h3 className="text-white font-medium">
                 {item.name}
               </h3>
               <ClientOnlyPrice className="text-green-300">
-                {formatPrice(item.price, currency)}
+                {formatPriceForDisplay(item.price, 'EUR', currency)}
               </ClientOnlyPrice>
             </div>
             <div className="flex items-center gap-2">
@@ -117,7 +155,7 @@ export default function CartContent() {
         <div className="flex justify-between items-center text-white">
           <span className="text-lg">{dictionary?.cart?.total || 'Celková cena:'}</span>
           <ClientOnlyPrice className="text-2xl font-bold text-green-300">
-            {formatPrice(convertedTotalPrice, currency)}
+            {formatPriceForDisplay(cartTotalPrice, 'EUR', currency)}
           </ClientOnlyPrice>
         </div>
         <div className="mt-4">

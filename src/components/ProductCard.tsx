@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { formatPrice, convertCurrency } from '@/utils/currency';
+import { getRegionalPrice } from '@/utils/pricing';
 import { getProductImages } from '@/utils/productImage';
 import { useLocale } from '@/context/LocaleContext';
 import { useWishlist } from '@/context/WishlistContext';
@@ -25,7 +26,9 @@ export default function ProductCard({ product, dictionary }: ProductCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   
   const priceEur = product.variants[0]?.price || 0;
-  const priceConverted = convertCurrency(priceEur, currency);
+  // Použijeme regionálnu cenovú politiku
+  const regionalPrice = getRegionalPrice(priceEur, locale === 'de' ? 'DE' : locale === 'sk' ? 'SK' : 'CZ');
+  const priceConverted = convertCurrency(regionalPrice.price, currency);
   const previewUrl = product.designs?.[0]?.previewUrl || '';
   const isInWishlistState = isInWishlist(product.id);
 
@@ -166,7 +169,7 @@ export default function ProductCard({ product, dictionary }: ProductCardProps) {
             </div>
           )}
           
-          <ClientOnlyPrice className="text-green-200 font-medium mt-3 text-lg group-hover:text-green-300 transition-all duration-300 group-hover:scale-105">
+          <ClientOnlyPrice className="text-green-400 font-bold mt-3 text-lg group-hover:text-green-300 transition-all duration-300 group-hover:scale-105">
             {formatPrice(priceConverted, currency)}
           </ClientOnlyPrice>
         </div>

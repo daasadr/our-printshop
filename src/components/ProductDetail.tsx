@@ -4,11 +4,14 @@ import Image from 'next/image';
 import { useCart } from '@/hooks/useCart';
 import { useWishlist } from '@/context/WishlistContext';
 import { useLocale } from '@/context/LocaleContext';
-import { formatPrice, convertCurrency } from '@/utils/currency';
+import { useGeolocation } from '@/hooks/useGeolocation';
+import { formatPrice, formatPriceForDisplay } from '@/utils/pricing';
+import { getRegionalPrice } from '@/utils/pricing';
 import { getProductImages } from '@/utils/productImage';
 import { Button, SelectionButton, QuantityButton } from '@/components/ui/Button';
 import { FiHeart } from 'react-icons/fi';
 import { getDictionary } from '@/lib/getDictionary';
+import AddToCartModal from '@/components/AddToCartModal';
 
 interface Variant {
   id: string;
@@ -51,6 +54,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { currency, locale } = useLocale();
+  const { countryCode } = useGeolocation();
   const [dictionary, setDictionary] = useState<any>(null);
 
   // Načtení dictionary pro aktuální jazyk
@@ -102,13 +106,18 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     })) || []
   });
 
-  // Přepočítáme ceny variant podle aktuální měny
+  // Přepočítáme ceny variant s regionálnymi úpravami podľa geolokácie
   const convertedVariants = useMemo(() => {
-    return product.variants.map(variant => ({
-      ...variant,
-      price: convertCurrency(variant.price, currency)
-    }));
-  }, [product.variants, currency]);
+    return product.variants.map(variant => {
+      const regionalPrice = getRegionalPrice(variant.price, countryCode);
+      return {
+        ...variant,
+        price: regionalPrice.price, // Regionálna cena pre zobrazenie
+        originalPrice: variant.price, // Základná cena v EUR pre košík
+        regionalPrice: regionalPrice
+      };
+    });
+  }, [product.variants, countryCode]);
   
   const [selectedVariant, setSelectedVariant] = useState<Variant | null>(
     convertedVariants && convertedVariants.length > 0 ? convertedVariants[0] : null
@@ -125,6 +134,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   );
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [showAddToCartModal, setShowAddToCartModal] = useState(false);
   
   // Aktualizujeme selectedVariant při změně měny
   React.useEffect(() => {
@@ -209,20 +219,20 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     setIsAddingToCart(true);
     
     try {
-      // Cena už je přepočítaná podle aktuální měny
-      const priceInSelectedCurrency = selectedVariant.price;
+      // Použijeme základnú cenu v EUR pre košík (regionálne úpravy sa aplikujú v useCart)
+      const basePriceInEur = selectedVariant.price; // Základná cena v EUR
       
       addToCart({
         variantId: selectedVariant.id,
         quantity,
         name: `${product.name} ${selectedSize ? `- ${selectedSize}` : ''} ${selectedColor ? `- ${selectedColor}` : ''}`,
-        price: priceInSelectedCurrency,
+        price: basePriceInEur, // Základná cena v EUR
         image: product.designs && product.designs.length > 0 ? (product.designs[0].previewUrl ?? '') : '',
         sourceCurrency: 'EUR'
       });
       
       // Zobrazíme potvrzení
-      alert('Produkt byl přidán do košíku!');
+      setShowAddToCartModal(true);
     } catch (error) {
       console.error('Chyba při přidávání do košíku:', error);
       alert('Došlo k chybě při přidávání do košíku. Zkuste to prosím znovu.');
@@ -246,7 +256,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   const { main: mainImage, others: otherImages } = getProductImages(product);
   
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       {/* Obrázek produktu */}
       <div className="rounded-lg overflow-hidden">
         {mainImage ? (
@@ -311,7 +322,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         <div className="mb-6">
           <h2 className="text-xl font-bold text-gray-800 mb-3 border-b-2 border-blue-500 pb-2">💰 {dictionary?.price || 'Cena'}</h2>
           <p className="text-2xl font-bold text-blue-600">
-            {selectedVariant ? formatPrice(selectedVariant.price, currency) : dictionary?.product?.price_not_available || 'Není k dispozici'}
+                            {selectedVariant ? formatPriceForDisplay(selectedVariant.price, 'EUR', currency) : dictionary?.product?.price_not_available || 'Není k dispozici'}
           </p>
         </div>
         
@@ -442,6 +453,14 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         )}
       </div>
     </div>
+    
+    {/* Modal pre potvrdenie pridania do košíka */}
+    <AddToCartModal
+      isOpen={showAddToCartModal}
+      onClose={() => setShowAddToCartModal(false)}
+      dictionary={dictionary}
+    />
+    </>
   );
 };
 
