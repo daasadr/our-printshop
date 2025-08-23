@@ -160,11 +160,12 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     currency,
     setLocale,
     setCurrency,
+    resetToSlovak,
     isCzech: locale === 'cs',
     isSlovak: locale === 'sk',
     isEnglish: locale === 'en',
     isGerman: locale === 'de',
-  }), [locale, currency, setLocale, setCurrency]);
+  }), [locale, currency, setLocale, setCurrency, resetToSlovak]);
 
   console.log('LocaleContext - Current state:', { 
     locale, 
