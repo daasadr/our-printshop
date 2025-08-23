@@ -45,6 +45,17 @@ export async function GET(req: Request) {
     
     console.log(`Found ${response.length} products in Directus`);
     
+    // Debug: vypíšeme prvých 3 produkty s cenami
+    if (response.length > 0) {
+      console.log('First 3 products with prices:');
+      response.slice(0, 3).forEach((product, index) => {
+        console.log(`${index + 1}. ${product.name}: price=${product.price}, variants=${product.variants?.length || 0}`);
+        if (product.variants && product.variants.length > 0) {
+          console.log(`   Variant prices: ${product.variants.map(v => v.price).join(', ')}`);
+        }
+      });
+    }
+    
     // Preklad produktov podľa jazyka
     const translatedProducts = translateProducts(response, locale);
     

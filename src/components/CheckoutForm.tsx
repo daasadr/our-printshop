@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 interface CheckoutFormProps {
   cartItems: CartItem[];
   total: number;
+  dictionary?: any;
 }
 
 interface ShippingDetails {
@@ -17,9 +18,10 @@ interface ShippingDetails {
   city: string;
   zip: string;
   country: string;
+  gdpr_consent: boolean;
 }
 
-export default function CheckoutForm({ cartItems, total }: CheckoutFormProps) {
+export default function CheckoutForm({ cartItems, total, dictionary }: CheckoutFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<ShippingDetails>({
     name: '',
@@ -29,19 +31,27 @@ export default function CheckoutForm({ cartItems, total }: CheckoutFormProps) {
     city: '',
     zip: '',
     country: 'CZ',
+    gdpr_consent: false,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target as HTMLInputElement;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
+
+    // GDPR validation
+    if (!formData.gdpr_consent) {
+      alert(dictionary?.checkout?.gdpr_required || 'Musíte souhlasit se zpracováním osobních údajů pro doručení');
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch('/api/checkout', {
@@ -164,6 +174,26 @@ export default function CheckoutForm({ cartItems, total }: CheckoutFormProps) {
           />
         </div>
 
+        {/* GDPR Consent */}
+        <div className="flex items-start space-x-2">
+          <input
+            type="checkbox"
+            id="gdpr_consent"
+            name="gdpr_consent"
+            checked={formData.gdpr_consent}
+            onChange={handleChange}
+            className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            required
+          />
+          <label htmlFor="gdpr_consent" className="text-sm text-gray-700">
+            {dictionary?.checkout?.gdpr_consent || 'Souhlasím se zpracováním osobních údajů pro účely doručení objednávky'}
+          </label>
+        </div>
+
+        <div className="text-xs text-gray-500 mb-4">
+          {dictionary?.checkout?.gdpr_info || 'Vaše údaje potřebujeme k doručení objednávky. Zpracováváme je v souladu s GDPR.'}
+        </div>
+
         <div>
           <Button
             type="submit"
@@ -173,7 +203,7 @@ export default function CheckoutForm({ cartItems, total }: CheckoutFormProps) {
             width="full"
             state={isLoading ? 'loading' : 'default'}
           >
-            {isLoading ? 'Zpracování...' : 'Pokračovat k platbě'}
+            {isLoading ? (dictionary?.checkout?.processing || 'Zpracování...') : (dictionary?.checkout?.complete_order || 'Pokračovat k platbě')}
           </Button>
         </div>
       </div>

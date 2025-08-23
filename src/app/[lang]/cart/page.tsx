@@ -27,7 +27,7 @@ export default async function CartPage({ params }: CartPageProps) {
         <h1 className="text-4xl font-bold text-white mb-8">
           {dict.cart?.title || 'Košík'}
         </h1>
-        <CartContent />
+        <CartContent dictionary={dict} />
       </div>
     </main>
   );

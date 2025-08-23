@@ -13,6 +13,7 @@ interface LoginFormProps {
     loginButton: string;
     forgotPassword: string;
     registerLink: string;
+    gdpr_info?: string;
     errors: {
       required: string;
       invalidCredentials: string;
@@ -137,6 +138,13 @@ export default function LoginForm({ dict }: LoginFormProps) {
             required
           />
         </div>
+
+        {/* GDPR Info */}
+        {dict.gdpr_info && (
+          <div className="text-xs text-gray-500 text-center">
+            {dict.gdpr_info}
+          </div>
+        )}
 
         <button
           type="submit"

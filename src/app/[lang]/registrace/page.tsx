@@ -274,28 +274,18 @@ export default function RegisterPage({ params }: RegisterPageProps) {
         </div>
       </div>
 
-      {/* Content overlay with parallax and better positioning */}
-      <div className="relative z-20 min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-        {/* Title and subtitle - responsive positioning */}
-        <div className="sm:absolute sm:right-8 sm:top-20 w-full max-w-md animate-fade-in-up sm:max-w-md max-w-sm mx-auto px-4 sm:px-0">
-          <h2 className="registration-title mt-6 text-center text-3xl font-extrabold text-white drop-shadow-lg">
-            {dict.auth.register.title}
-          </h2>
-          <p className="registration-subtitle mt-2 text-center text-sm text-purple-300 drop-shadow-lg shadow-black/80 filter drop-shadow-[0_0_10px_rgba(0,0,0,0.9)]">
-            {dict.auth.register.subtitle}
-          </p>
-        </div>
-
-        {/* Modal - responsive positioning and sizing with drag functionality */}
+      {/* Content overlay - centered layout */}
+      <div className="relative z-20 min-h-screen flex items-center justify-center py-12 sm:px-6 lg:px-8">
+        {/* Modal - centered with title inside */}
         <div 
           ref={modalRef}
           className={`w-full max-w-md animate-fade-in-up animation-delay-200 sm:max-w-md max-w-sm mx-auto px-4 sm:px-0 ${
             isDragged 
               ? 'fixed' 
-              : 'absolute right-8 top-[35rem] sm:right-8 sm:top-[35rem] right-0 top-12'
+              : 'relative'
           }`}
           style={{
-            position: isDragged ? 'fixed' : 'absolute',
+            position: isDragged ? 'fixed' : 'relative',
             left: isDragged ? `${modalPosition.x}px` : 'auto',
             top: isDragged ? `${modalPosition.y}px` : 'auto',
             zIndex: isDragged ? 50 : 'auto'

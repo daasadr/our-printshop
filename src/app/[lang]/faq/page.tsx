@@ -207,6 +207,75 @@ export default function FAQPage({ params: { lang } }: FAQPageProps) {
                 </button>
               </div>
             </section>
+
+            {/* GDPR Section */}
+            <section className="bg-white rounded-xl shadow-lg p-6 sm:p-8 lg:p-10 border border-gray-100">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-900 mb-6 lg:mb-8 border-b-2 border-purple-500 pb-3">
+                🔒 {dictionary?.faq_gdpr || 'Ochrana osobných údajov (GDPR)'}
+              </h2>
+              
+              <div className="space-y-6 lg:space-y-8">
+                {/* Question 1 */}
+                <div className="border-l-4 border-purple-500 pl-4 sm:pl-6">
+                  <h3 className="text-base sm:text-lg lg:text-xl font-medium text-gray-900 mb-3">
+                    ❓ {dictionary?.faq_gdpr_what_title || 'Čo je GDPR a ako sa týka vašich údajov?'}
+                  </h3>
+                  <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                    {dictionary?.faq_gdpr_what_content || 'GDPR (Všeobecné nariadenie o ochrane osobných údajov) je európska regulácia, ktorá chráni vaše osobné údaje. V súlade s GDPR vás informujeme o tom, ako spracovávame vaše údaje a aké máte práva.'}
+                  </p>
+                </div>
+
+                {/* Question 2 */}
+                <div className="border-l-4 border-blue-500 pl-4 sm:pl-6">
+                  <h3 className="text-base sm:text-lg lg:text-xl font-medium text-gray-900 mb-3">
+                    ❓ {dictionary?.faq_gdpr_data_title || 'Aké údaje o vás spracovávame?'}
+                  </h3>
+                  <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                    {dictionary?.faq_gdpr_data_content || 'Spracovávame vaše meno, email, adresu doručenia a informácie o objednávkach. Tieto údaje potrebujeme na vybavenie objednávok, komunikáciu a zasielanie newsletteru (len s vaším súhlasom).'}
+                  </p>
+                </div>
+
+                {/* Question 3 */}
+                <div className="border-l-4 border-green-500 pl-4 sm:pl-6">
+                  <h3 className="text-base sm:text-lg lg:text-xl font-medium text-gray-900 mb-3">
+                    ❓ {dictionary?.faq_gdpr_purpose_title || 'Na čo používame vaše údaje?'}
+                  </h3>
+                  <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                    {dictionary?.faq_gdpr_purpose_content || 'Vaše údaje používame na: vybavenie objednávok, komunikáciu o stave objednávky, zasielanie newsletteru (s vaším súhlasom), zlepšovanie našich služieb a dodržiavanie zákonných povinností.'}
+                  </p>
+                </div>
+
+                {/* Question 4 */}
+                <div className="border-l-4 border-orange-500 pl-4 sm:pl-6">
+                  <h3 className="text-base sm:text-lg lg:text-xl font-medium text-gray-900 mb-3">
+                    ❓ {dictionary?.faq_gdpr_rights_title || 'Aké máte práva?'}
+                  </h3>
+                  <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                    {dictionary?.faq_gdpr_rights_content || 'Máte právo na: prístup k vašim údajom, opravu nesprávnych údajov, vymazanie údajov, obmedzenie spracovania, prenosnosť údajov a odvolanie súhlasu. Môžete uplatniť tieto práva kontaktovaním nás.'}
+                  </p>
+                </div>
+
+                {/* Question 5 */}
+                <div className="border-l-4 border-red-500 pl-4 sm:pl-6">
+                  <h3 className="text-base sm:text-lg lg:text-xl font-medium text-gray-900 mb-3">
+                    ❓ {dictionary?.faq_gdpr_retention_title || 'Ako dlho uchovávame vaše údaje?'}
+                  </h3>
+                  <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                    {dictionary?.faq_gdpr_retention_content || 'Údaje o objednávkach uchovávame 5 rokov (účtovné účely). Newsletter údaje uchovávame do odvolania súhlasu alebo 3 roky od poslednej aktivity. Po uplynutí tejto doby údaje bezpečne vymažeme.'}
+                  </p>
+                </div>
+
+                {/* Question 6 */}
+                <div className="border-l-4 border-indigo-500 pl-4 sm:pl-6">
+                  <h3 className="text-base sm:text-lg lg:text-xl font-medium text-gray-900 mb-3">
+                    ❓ {dictionary?.faq_gdpr_contact_title || 'Ako nás môžete kontaktovať ohľadom GDPR?'}
+                  </h3>
+                  <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                    {dictionary?.faq_gdpr_contact_content || 'Pre otázky ohľadom ochrany osobných údajov nás kontaktujte na privacy@happywilderness.sk. Odpovieme vám do 30 dní. Môžete tiež použiť kontaktný formulár na našej stránke.'}
+                  </p>
+                </div>
+              </div>
+            </section>
           </div>
 
           {/* Contact Section */}

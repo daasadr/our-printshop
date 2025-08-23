@@ -95,7 +95,7 @@ export function ProductList({ products, exchangeRates, dictionary }: ProductList
             </p>
             <div className="mt-4 flex justify-between items-center">
               {priceConverted > 0 ? (
-                <ClientOnlyPrice className="text-lg font-medium text-gray-900">
+                <ClientOnlyPrice className="text-lg font-bold text-gray-800">
                   {formatPrice(priceConverted, currency)}
                 </ClientOnlyPrice>
               ) : (

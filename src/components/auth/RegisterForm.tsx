@@ -133,6 +133,15 @@ export default function RegisterForm({ dict, lang }: RegisterFormProps) {
 
   return (
     <div className="max-w-md mx-auto bg-white/95 backdrop-blur-lg rounded-lg shadow-md p-4">
+      {/* Title and subtitle inside the form */}
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          {dict.title}
+        </h2>
+        <p className="text-sm text-gray-600">
+          {dict.subtitle}
+        </p>
+      </div>
 
       {error && (
         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
@@ -201,19 +210,21 @@ export default function RegisterForm({ dict, lang }: RegisterFormProps) {
           />
         </div>
 
-        <div className="flex items-start">
-          <input
-            type="checkbox"
-            id="gdpr_consent"
-            name="gdpr_consent"
-            checked={formData.gdpr_consent}
-            onChange={handleInputChange}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1"
-            required
-          />
-          <label htmlFor="gdpr_consent" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-            {dict.gdprConsent}
-          </label>
+        <div className="mt-4">
+          <div className="flex items-start space-x-2">
+            <input
+              type="checkbox"
+              id="gdpr_consent"
+              name="gdpr_consent"
+              checked={formData.gdpr_consent}
+              onChange={handleInputChange}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1"
+              required
+            />
+            <label htmlFor="gdpr_consent" className="text-sm text-gray-700 dark:text-gray-300">
+              {dict.gdprConsent}
+            </label>
+          </div>
         </div>
 
         <button

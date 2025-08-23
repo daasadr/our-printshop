@@ -11,6 +11,7 @@ interface LocaleContextType {
   currency: Currency;
   setLocale: (locale: Locale) => void;
   setCurrency: (currency: Currency) => void;
+  resetToSlovak: () => void;
   isCzech: boolean;
   isSlovak: boolean;
   isEnglish: boolean;
@@ -48,6 +49,16 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     
     console.log('LocaleContext - Using default language:', defaultLocale);
     return defaultLocale;
+  };
+
+  // Funkcia na reset jazyka na slovenský
+  const resetToSlovak = () => {
+    console.log('LocaleContext - Resetting to Slovak language');
+    localStorage.setItem('locale', 'sk');
+    setLocaleState('sk');
+    const currentPath = window.location.pathname;
+    const pathWithoutLang = currentPath.replace(/^\/(cs|sk|en|de)/, '');
+    window.location.href = `/sk${pathWithoutLang}`;
   };
   
   const [locale, setLocaleState] = useState<Locale>(() => getInitialLocale());

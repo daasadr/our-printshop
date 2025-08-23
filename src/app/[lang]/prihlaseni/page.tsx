@@ -147,6 +147,11 @@ export default function LoginPage({ params: { lang } }: LoginPageProps) {
             <div className="text-red-500 text-sm text-center">{error}</div>
           )}
 
+          {/* GDPR Info */}
+          <div className="text-xs text-gray-500 text-center">
+            {dict.gdpr_info || 'Přihlášením souhlasíte se zpracováním vašich údajů v souladu s našimi zásadami ochrany soukromí.'}
+          </div>
+
           <div>
             <button
               type="submit"

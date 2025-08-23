@@ -49,6 +49,17 @@
   },
   "welcome": "Originální oblečení s autorskými potisky",
   "addToCart": "Do košíku",
+  "floating_cart": {
+    "title": "Košík",
+    "view_cart": "Zobrazit košík",
+    "checkout": "Pokračovat v objednávce",
+    "pay": "Zaplatit",
+    "empty": "Prázdný košík",
+    "empty_message": "Přidejte si produkty do košíka",
+    "items": "položek",
+    "item": "položka",
+    "items_2_4": "položky"
+  },
   "welcome_back": "Vítejte!",
   "welcome_back_message": "Jsme rádi, že jste zpět, {name}",
   "subtitle": "Vyjádřete svůj jedinečný styl s našimi kreativními designy.",
@@ -76,6 +87,8 @@
     "quantity": "Množství",
     "color": "Barva",
     "size": "Velikost",
+    "added_to_cart": "Produkt byl přidán do košíku!",
+    "close": "Zavřít",
     "stock_status": {
       "in_stock": "Skladem",
       "out_of_stock": "Nedostupné",
@@ -124,6 +137,7 @@
       "clear_cart": "Vyprázdnit košík"
     },
     "confirm_remove": "Opravdu chcete odebrat",
+    "items_from_cart": "položek z košíku",
     "confirm_clear": "Opravdu chcete vyprázdnit košík?",
     "saved_for_later": "Uložené na později",
     "no_saved_items": "Nemáte uložené položky",
@@ -220,7 +234,24 @@
     "unsubscribe_reason_other": "Jiný důvod",
     "unsubscribe_button": "Zrušit odběr",
     "unsubscribe_success": "Byli jste úspěšně odhlášeni.",
-    "unsubscribing": "Odhlašování..."
+    "unsubscribing": "Odhlašování...",
+    "privacy_notice": "Přihlášením k odběru souhlasíte se zpracováním vašich osobních údajů v souladu s našimi",
+    "privacy_policy": "zásadami ochrany soukromí",
+    "gdpr_required": "Musíte souhlasit se zpracováním osobních údajů.",
+    "privacy_policy_title": "Zásady ochrany soukromí",
+    "gdpr_title": "GDPR - Obecné nařízení o ochraně osobních údajů",
+    "gdpr_intro": "V souladu s Nařízením Evropského parlamentu a Rady (EU) 2016/679 (GDPR) vás informujeme o zpracování vašich osobních údajů:",
+    "data_controller": "Správce údajů:",
+    "purpose": "Účel zpracování:",
+    "purpose_text": "Zasílání newsletteru s novinkami a nabídkami",
+    "legal_basis": "Právní základ:",
+    "legal_basis_text": "Váš souhlas (čl. 6 odst. 1 písm. a) GDPR)",
+    "retention": "Doba uchovávání:",
+    "retention_text": "Do odvolání souhlasu nebo 3 roky od poslední aktivity",
+    "rights": "Vaše práva:",
+    "rights_text": "Právo na přístup, opravu, výmaz, omezení zpracování a přenositelnost údajů",
+    "gdpr_contact": "Pro uplatnění vašich práv nás kontaktujte na:",
+    "close": "Zavřít"
   },
   
   "contact": {
@@ -412,6 +443,7 @@
     "max_photos": "Nahrajte fotografie problému (max. 5 fotografií)",
     "select_photos": "Vybrat fotografie",
     "cancel": "Zrušit",
+    "confirm": "Potvrdit",
     "submit": "Odeslat reklamaci",
     "submitting": "Odesílám...",
     "success_title": "Reklamace odeslána!",
@@ -492,5 +524,36 @@
       "title": "Sledování zásilky",
       "description": "Tracking číslo dostanete emailem do 24 hodin od objednávky"
     }
+  },
+  "faq_gdpr": "Ochrana osobních údajů (GDPR)",
+  "faq_gdpr_what_title": "Co je GDPR a jak se týká vašich údajů?",
+  "faq_gdpr_what_content": "GDPR (Obecné nařízení o ochraně osobních údajů) je evropská regulace, která chrání vaše osobní údaje. V souladu s GDPR vás informujeme o tom, jak zpracováváme vaše údaje a jaká máte práva.",
+  "faq_gdpr_data_title": "Jaké údaje o vás zpracováváme?",
+  "faq_gdpr_data_content": "Zpracováváme vaše jméno, email, adresu doručení a informace o objednávkách. Tyto údaje potřebujeme na vyřízení objednávek, komunikaci a zasílání newsletteru (pouze s vaším souhlasem).",
+  "faq_gdpr_purpose_title": "Na co používáme vaše údaje?",
+  "faq_gdpr_purpose_content": "Vaše údaje používáme na: vyřízení objednávek, komunikaci o stavu objednávky, zasílání newsletteru (s vaším souhlasem), zlepšování našich služeb a dodržování zákonných povinností.",
+  "faq_gdpr_rights_title": "Jaká máte práva?",
+  "faq_gdpr_rights_content": "Máte právo na: přístup k vašim údajům, opravu nesprávných údajů, vymazání údajů, omezení zpracování, přenositelnost údajů a odvolání souhlasu. Můžete uplatnit tato práva kontaktováním nás.",
+  "faq_gdpr_retention_title": "Jak dlouho uchováváme vaše údaje?",
+  "faq_gdpr_retention_content": "Údaje o objednávkách uchováváme 5 let (účetní účely). Newsletter údaje uchováváme do odvolání souhlasu nebo 3 roky od poslední aktivity. Po uplynutí této doby údaje bezpečně vymažeme.",
+  "faq_gdpr_contact_title": "Jak nás můžete kontaktovat ohledně GDPR?",
+  "faq_gdpr_contact_content": "Pro otázky ohledně ochrany osobních údajů nás kontaktujte na privacy@happywilderness.sk. Odpovíme vám do 30 dnů. Můžete také použít kontaktní formulář na našich stránkách.",
+  "checkout": {
+    "title": "Dokončení objednávky",
+    "shipping_details": "Dodací údaje",
+    "order_summary": "Shrnutí objednávky",
+    "gdpr_consent": "Souhlasím se zpracováním osobních údajů pro účely doručení objednávky",
+    "gdpr_required": "Musíte souhlasit se zpracováním osobních údajů pro doručení",
+    "gdpr_info": "Vaše údaje potřebujeme k doručení objednávky. Zpracováváme je v souladu s GDPR.",
+    "complete_order": "Dokončit objednávku",
+    "processing": "Zpracovávám..."
+  },
+  "contact": {
+    "gdpr_consent": "Souhlasím se zpracováním osobních údajů pro účely odpovědi na mou zprávu",
+    "gdpr_required": "Musíte souhlasit se zpracováním osobních údajů",
+    "gdpr_info": "Vaše údaje potřebujeme k odpovědi na vaši zprávu. Zpracováváme je v souladu s GDPR."
+  },
+  "login": {
+    "gdpr_info": "Přihlášením souhlasíte se zpracováním vašich údajů v souladu s našimi zásadami ochrany soukromí."
   }
 } 

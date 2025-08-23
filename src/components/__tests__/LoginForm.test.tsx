@@ -17,6 +17,15 @@ jest.mock('next/navigation', () => ({
 // Mock fetch
 global.fetch = jest.fn()
 
+// Mock localStorage
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+}
+global.localStorage = localStorageMock
+
 const mockDict = {
   title: 'Přihlášení',
   subtitle: 'Přihlaste se ke svému účtu',

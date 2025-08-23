@@ -2,15 +2,16 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useLocale } from '@/context/LocaleContext';
-import { convertCurrency } from '@/utils/currency';
+import { useGeolocation } from '@/hooks/useGeolocation';
+import { getRegionalPrice } from '@/utils/pricing';
 
 export interface CartItem {
   variantId: string;
   quantity: number;
   name: string;
-  price: number;
+  price: number; // Základná cena v EUR
   image?: string;
-  sourceCurrency: string; // Přidáno: měna, ve které byla cena původně
+  sourceCurrency: string; // Mena, v ktorej bola cena pôvodne
 }
 
 interface StoredCart {
@@ -30,18 +31,19 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-const CART_EXPIRATION_DAYS = 7; // Košík vyprší po 7 dnech
+const CART_EXPIRATION_DAYS = 7; // Košík vyprší po 7 dňoch
 const CART_STORAGE_KEY = 'shopping-cart';
 
 function isCartExpired(timestamp: number): boolean {
   const now = Date.now();
-  const expirationTime = CART_EXPIRATION_DAYS * 24 * 60 * 60 * 1000; // Převod dnů na milisekundy
+  const expirationTime = CART_EXPIRATION_DAYS * 24 * 60 * 60 * 1000; // Prevod dní na milisekundy
   return now - timestamp > expirationTime;
 }
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
-  const { currency } = useLocale();
+  const { currency, locale } = useLocale();
+  const { countryCode, isLoading: geolocationLoading } = useGeolocation();
 
   // Načtení košíku z localStorage při prvním načtení
   useEffect(() => {
@@ -106,15 +108,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const addToCart = (newItem: CartItem) => {
     console.log('Adding to cart:', newItem);
     
-    // Převedeme cenu na EUR pro uložení (základní měna)
-    const priceInEur = convertCurrency(newItem.price, 'EUR', newItem.sourceCurrency as any);
+    // Uložíme základnú cenu v EUR (bez regionálnych úprav)
     const itemToStore = {
       ...newItem,
-      price: priceInEur,
+      price: newItem.price, // Základná cena v EUR
       sourceCurrency: 'EUR' // Vždy ukládáme v EUR
     };
     
-    console.log('Storing item in EUR:', itemToStore);
+    console.log('Storing item with base price in EUR:', itemToStore);
     
     setItems(currentItems => {
       const existingItem = currentItems.find(item => item.variantId === newItem.variantId);
@@ -146,7 +147,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const removeFromCart = (variantId: string) => {
-    setItems(currentItems => currentItems.filter(item => item.variantId !== variantId));
+    console.log('useCart - Removing item with variantId:', variantId);
+    setItems(currentItems => {
+      const filtered = currentItems.filter(item => item.variantId !== variantId);
+      console.log('useCart - Items after removal:', filtered);
+      return filtered;
+    });
   };
 
   const clearCart = () => {
@@ -154,33 +160,40 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem(CART_STORAGE_KEY);
   };
 
-  // Konverze cen při změně měny
+  // Aplikovanie regionálnych cien a konverzia podľa geolokácie
   const convertedItems = React.useMemo(() => {
-    console.log('useCart - Converting prices for currency:', currency);
+    // Čakáme na načítanie geolokácie, aby sme predišli hydration erroru
+    if (geolocationLoading) {
+      console.log('useCart - Waiting for geolocation to load...');
+      return items; // Vrátime pôvodné ceny bez regionálnych úprav
+    }
+    
+    console.log('useCart - Applying regional pricing for country:', countryCode);
     console.log('useCart - Original items:', items);
     
     const converted = items.map(item => {
-      const originalPrice = item.price;
-      // Všechny ceny jsou uložené v EUR, konvertujeme na aktuální měnu
-      const convertedPrice = convertCurrency(item.price, currency, 'EUR');
-      console.log(`useCart - Converting ${item.name}: ${originalPrice} EUR → ${convertedPrice} ${currency}`);
+      const basePrice = item.price; // Základná cena v EUR
+      const regionalPrice = getRegionalPrice(basePrice, countryCode);
+      
+      console.log(`useCart - ${item.name}: ${basePrice} EUR → ${regionalPrice.price} ${regionalPrice.zone.currency} (multiplier: ${regionalPrice.zone.multiplier})`);
       
       return {
         ...item,
-        price: convertedPrice
+        price: regionalPrice.price, // Regionálna cena
+        regionalPrice: regionalPrice // Pre prípadné použitie
       };
     });
     
-    console.log('useCart - Converted items:', converted);
+    console.log('useCart - Items with regional pricing:', converted);
     return converted;
-  }, [items, currency]);
+  }, [items, countryCode, geolocationLoading]);
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = convertedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   return (
     <CartContext.Provider value={{
-      items: convertedItems, // Používáme konvertované ceny
+      items: convertedItems, // Používáme regionálne ceny
       addToCart,
       updateQuantity,
       removeFromCart,
