@@ -17,6 +17,11 @@ export function middleware(request: NextRequest) {
   ) {
     return NextResponse.next();
   }
+
+  // Admin panel protection - allow /admin routes without locale
+  if (pathname === '/admin' || pathname.startsWith('/admin/')) {
+    return NextResponse.next();
+  }
   
   const pathnameIsMissingLocale = locales.every(
     (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
